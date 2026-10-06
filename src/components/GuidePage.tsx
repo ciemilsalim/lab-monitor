@@ -276,13 +276,19 @@ export default function GuidePage() {
                     desc: 'Pastikan semua komputer muncul di dashboard dengan status "Online". Agent akan otomatis terhubung ke server.',
                     code: '# Cek status agent di client\nlabmonitor-agent --status\n\n# Output yang diharapkan:\n# Status: Connected\n# Server: 192.168.1.1:8080\n# Last heartbeat: 2 seconds ago'
                   },
+                  {
+                    step: 5,
+                    title: 'Konfigurasi Auto-Start (Penting!)',
+                    desc: 'Agar agent otomatis berjalan setiap kali komputer di-restart, aktifkan service agent. Tanpa langkah ini, agent harus dijalankan manual setiap kali komputer menyala.',
+                    code: '# Windows - Daftarkan sebagai Service (otomatis start)\nlabmonitor-agent --install-service\n\n# Verifikasi service terdaftar\nsc query LabMonitorAgent\n\n# Aktifkan auto-start\nsc config LabMonitorAgent start= auto\n\n# Untuk Linux (systemd)\nsudo systemctl enable labmonitor-agent\nsudo systemctl start labmonitor-agent\n\n# Cek status service\nsudo systemctl status labmonitor-agent'
+                  },
                 ].map((item) => (
                   <div key={item.step} className="flex gap-4">
                     <div className="flex flex-col items-center">
                       <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
                         {item.step}
                       </div>
-                      {item.step < 4 && <div className="w-0.5 flex-1 bg-green-200 mt-2" />}
+                      {item.step < 5 && <div className="w-0.5 flex-1 bg-green-200 mt-2" />}
                     </div>
                     <div className="flex-1 pb-4">
                       <p className="font-bold text-gray-900">{item.title}</p>
@@ -306,6 +312,40 @@ export default function GuidePage() {
                       <li>• Restart komputer setelah instalasi agent selesai</li>
                       <li>• Pastikan waktu (NTP) sinkron di semua komputer</li>
                     </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-green-50 border-l-4 border-green-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-green-900">Auto-Start Setelah Restart</p>
+                    <p className="text-green-800 text-sm mt-2 leading-relaxed">
+                      Setelah menjalankan perintah <code className="bg-green-200 px-1.5 py-0.5 rounded text-xs font-mono">labmonitor-agent --install-service</code>, 
+                      agent akan <strong>otomatis berjalan setiap kali komputer di-restart</strong> tanpa perlu login atau intervensi manual. 
+                      Agent berjalan sebagai <em>Windows Service</em> (di Windows) atau <em>systemd service</em> (di Linux) yang dimulai sebelum user login.
+                    </p>
+                    <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="bg-white/60 rounded-lg p-3 border border-green-200">
+                        <p className="text-xs font-bold text-green-900 mb-1">✅ Setelah Auto-Start Aktif:</p>
+                        <ul className="text-xs text-green-800 space-y-1">
+                          <li>• Agent start otomatis saat boot</li>
+                          <li>• Berjalan di background (tanpa window)</li>
+                          <li>• Auto-reconnect jika koneksi putus</li>
+                          <li>• Tidak perlu login user</li>
+                        </ul>
+                      </div>
+                      <div className="bg-white/60 rounded-lg p-3 border border-green-200">
+                        <p className="text-xs font-bold text-green-900 mb-1">⚙️ Cara Verifikasi:</p>
+                        <ul className="text-xs text-green-800 space-y-1">
+                          <li>• Buka Task Manager → Services</li>
+                          <li>• Cari "LabMonitorAgent"</li>
+                          <li>• Status harus "Running"</li>
+                          <li>• Startup Type: "Automatic"</li>
+                        </ul>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -864,6 +904,14 @@ export default function GuidePage() {
                   {
                     q: 'Bagaimana cara menambah komputer baru?',
                     a: 'Instal agent LabMonitor di komputer baru, pastikan terhubung ke jaringan yang sama. Komputer akan otomatis terdeteksi oleh server dalam waktu 30 detik.'
+                  },
+                  {
+                    q: 'Agent tidak otomatis berjalan setelah komputer restart?',
+                    a: 'Pastikan Anda sudah menjalankan perintah "labmonitor-agent --install-service" dan mengonfigurasi startup type ke "Automatic". Buka Services (services.msc), cari "LabMonitorAgent", pastikan Startup Type = Automatic dan Status = Running. Jika masih bermasalah, jalankan "sc config LabMonitorAgent start= auto" di Command Prompt (Admin).'
+                  },
+                  {
+                    q: 'Agent berjalan tapi tidak terkoneksi ke server setelah restart?',
+                    a: 'Kemungkinan server belum siap saat agent start. Agent memiliki mekanisme auto-reconnect yang akan mencoba setiap 30 detik. Jika setelah 5 menit masih tidak terhubung, restart service agent dengan perintah "net stop LabMonitorAgent && net start LabMonitorAgent".'
                   },
                 ].map((faq, idx) => (
                   <div key={idx} className="border border-gray-200 rounded-xl overflow-hidden">
