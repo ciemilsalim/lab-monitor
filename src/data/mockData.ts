@@ -45,7 +45,7 @@ const apps = [
   'Microsoft Word', 'Excel', 'Notepad++', 'Terminal'
 ];
 
-const statuses: Computer['status'][] = ['online', 'online', 'online', 'online', 'online', 'online', 'idle', 'offline'];
+const statuses: Computer['status'][] = ['online', 'online', 'online', 'online', 'online', 'idle', 'idle', 'offline', 'offline', 'locked'];
 
 function generateComputers(): Computer[] {
   const computers: Computer[] = [];

@@ -9,7 +9,7 @@ import AlertsView from './components/AlertsView';
 import NetworkMap from './components/NetworkMap';
 import LoginPage from './components/LoginPage';
 import { computers as mockComputers, activities as mockActivities, alerts as mockAlerts } from './data/mockData';
-import { Menu, X, Bell, Wifi, WifiOff, RefreshCw } from 'lucide-react';
+import { Menu, X, Bell, Wifi } from 'lucide-react';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);

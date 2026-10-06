@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Monitor, Power, RotateCcw, Lock, Cpu, HardDrive, Check } from 'lucide-react';
+import { Monitor, Cpu, HardDrive } from 'lucide-react';
 import { Computer } from '../types';
 
 interface ComputerGridProps {

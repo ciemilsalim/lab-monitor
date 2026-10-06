@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Power, RotateCcw, Lock, Unlock, Eye, Monitor, Cpu, HardDrive, Wifi, Terminal, Shield, Check } from 'lucide-react';
+import { X, Power, RotateCcw, Lock, Eye, Monitor, Terminal, Shield, Check } from 'lucide-react';
 import { Computer, BrowsingActivity } from '../types';
 
 interface ComputerDetailProps {
