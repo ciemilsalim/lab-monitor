@@ -7,6 +7,8 @@ import {
   Bell, MousePointer, Keyboard, Zap, HelpCircle
 } from 'lucide-react';
 
+// MousePointer already imported above
+
 type GuideSection =
   | 'overview'
   | 'installation'
@@ -851,6 +853,40 @@ export default function GuidePage() {
               </div>
 
               <h4 className="font-bold text-gray-900 text-lg">Perintah yang Tersedia</h4>
+              
+              {/* Remote Desktop Control - Featured */}
+              <div className="mb-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-2xl p-6 text-white shadow-xl">
+                <div className="flex items-start gap-4">
+                  <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30 shrink-0">
+                    <MousePointer className="w-8 h-8" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <p className="font-bold text-xl">🎮 Remote Desktop Control</p>
+                      <span className="px-2 py-1 bg-white/20 rounded-lg text-xs font-bold">BARU!</span>
+                    </div>
+                    <p className="text-white/90 text-sm leading-relaxed">
+                      Fitur canggih untuk <strong>mengambil alih mouse cursor dan keyboard</strong> komputer siswa secara real-time. 
+                      Guru dapat langsung mengontrol komputer siswa untuk membantu, memberikan contoh, atau mengawasi aktivitas.
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+                      <div className="bg-white/10 rounded-lg p-3 border border-white/20">
+                        <p className="font-bold text-sm mb-1">🖱️ Kontrol Mouse</p>
+                        <p className="text-xs text-white/80">Gerakkan cursor, klik, drag & drop</p>
+                      </div>
+                      <div className="bg-white/10 rounded-lg p-3 border border-white/20">
+                        <p className="font-bold text-sm mb-1">⌨️ Kontrol Keyboard</p>
+                        <p className="text-xs text-white/80">Ketik teks, kirim shortcut keys</p>
+                      </div>
+                      <div className="bg-white/10 rounded-lg p-3 border border-white/20">
+                        <p className="font-bold text-sm mb-1">👁️ Lihat Saja</p>
+                        <p className="text-xs text-white/80">Monitor tanpa mengontrol</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
                   { icon: Power, label: 'Shutdown', desc: 'Mematikan komputer secara remote', color: 'from-red-500 to-rose-600', warning: 'Data yang belum disimpan akan hilang' },
@@ -876,7 +912,28 @@ export default function GuidePage() {
                 })}
               </div>
 
-              <h4 className="font-bold text-gray-900 text-lg">Cara Menggunakan</h4>
+              <h4 className="font-bold text-gray-900 text-lg">Cara Menggunakan Remote Desktop Control</h4>
+              <div className="space-y-3 mb-6">
+                {[
+                  'Buka halaman "Komputer" dari sidebar',
+                  'Klik pada komputer siswa yang ingin dikontrol',
+                  'Pilih tab "Kontrol" pada panel detail',
+                  'Klik tombol besar "🎮 Remote Desktop Control"',
+                  'Pilih mode: "Lihat Saja" atau "Mode Kontrol"',
+                  'Jika Mode Kontrol: aktifkan Mouse dan/atau Keyboard',
+                  'Gunakan mouse untuk menggerakkan cursor di layar siswa',
+                  'Gunakan keyboard untuk mengetik atau kirim shortcut keys',
+                ].map((step, idx) => (
+                  <div key={idx} className="flex items-center gap-3 p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100">
+                    <div className="w-7 h-7 bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-full flex items-center justify-center text-xs font-bold shrink-0">
+                      {idx + 1}
+                    </div>
+                    <p className="text-sm text-gray-700">{step}</p>
+                  </div>
+                ))}
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Cara Menggunakan Perintah Lainnya</h4>
               <div className="space-y-3">
                 {[
                   'Buka halaman "Komputer" dari sidebar',

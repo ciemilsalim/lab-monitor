@@ -40,6 +40,17 @@ export interface Computer {
   currentUrl: string;
   row: number;
   col: number;
+  screenCapture?: string;
+}
+
+export interface RemoteControlSession {
+  id: string;
+  computerId: string;
+  startTime: Date;
+  isActive: boolean;
+  mouseControl: boolean;
+  keyboardControl: boolean;
+  viewOnly: boolean;
 }
 
 export interface Alert {

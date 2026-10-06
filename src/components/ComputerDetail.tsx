@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { X, Power, RotateCcw, Lock, Eye, Monitor, Terminal, Shield, Check } from 'lucide-react';
+import { X, Power, RotateCcw, Lock, Eye, Monitor, Terminal, Shield, Check, MousePointer } from 'lucide-react';
 import { Computer, BrowsingActivity } from '../types';
+import RemoteDesktopViewer from './RemoteDesktopViewer';
 
 interface ComputerDetailProps {
   computer: Computer;
@@ -11,6 +12,7 @@ interface ComputerDetailProps {
 export default function ComputerDetail({ computer, activities, onClose }: ComputerDetailProps) {
   const [activeTab, setActiveTab] = useState<'info' | 'activity' | 'control'>('info');
   const [actionFeedback, setActionFeedback] = useState<string | null>(null);
+  const [showRemoteDesktop, setShowRemoteDesktop] = useState(false);
 
   const computerActivities = activities.filter(a => a.computerId === computer.id).slice(0, 20);
 
@@ -200,6 +202,27 @@ export default function ComputerDetail({ computer, activities, onClose }: Comput
           {activeTab === 'control' && (
             <div>
               <h4 className="font-bold text-gray-900 text-lg mb-4">Panel Kontrol Remote</h4>
+              
+              {/* Remote Desktop Control - Featured Button */}
+              <button
+                onClick={() => setShowRemoteDesktop(true)}
+                className="w-full mb-6 flex items-center gap-4 p-5 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-2xl text-white shadow-xl hover:shadow-2xl transition-all active:scale-[0.98] group"
+              >
+                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30 group-hover:scale-110 transition-transform">
+                  <MousePointer className="w-8 h-8" />
+                </div>
+                <div className="flex-1 text-left">
+                  <p className="font-bold text-lg">🎮 Remote Desktop Control</p>
+                  <p className="text-sm text-white/80 mt-0.5">
+                    Ambil alih mouse & keyboard komputer siswa secara real-time
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 bg-white/20 px-3 py-1.5 rounded-lg">
+                  <span className="text-xs font-bold">MULAI</span>
+                  <span className="text-lg">→</span>
+                </div>
+              </button>
+
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {[
                   { action: 'shutdown', icon: Power, label: 'Shutdown', color: 'from-red-500 to-rose-600', bg: 'from-red-50 to-rose-50 border-red-200' },
@@ -228,6 +251,14 @@ export default function ComputerDetail({ computer, activities, onClose }: Comput
           )}
         </div>
       </div>
+
+      {/* Remote Desktop Viewer */}
+      {showRemoteDesktop && (
+        <RemoteDesktopViewer
+          computer={computer}
+          onClose={() => setShowRemoteDesktop(false)}
+        />
+      )}
     </div>
   );
 }
