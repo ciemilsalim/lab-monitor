@@ -1,4 +1,4 @@
-import { Computer, BrowsingActivity, Alert } from '../types';
+import { Computer, BrowsingActivity, Alert, BrowserTab } from '../types';
 
 const studentNames = [
   'Ahmad Rizki', 'Siti Nurhaliza', 'Budi Santoso', 'Dewi Lestari',
@@ -77,6 +77,27 @@ function generateComputers(): Computer[] {
   return computers;
 }
 
+function generateBrowserTabs(): BrowserTab[] {
+  const tabs: BrowserTab[] = [];
+  const tabCount = Math.floor(Math.random() * 5) + 1; // 1-5 tabs per activity
+  
+  for (let i = 0; i < tabCount; i++) {
+    const site = allSites[Math.floor(Math.random() * allSites.length)];
+    tabs.push({
+      id: `TAB-${Math.random().toString(36).substr(2, 9)}`,
+      url: site.url,
+      domain: site.domain,
+      title: `${site.domain} - ${Math.random() > 0.5 ? 'Home' : 'Page ' + Math.floor(Math.random() * 10)}`,
+      category: site.category,
+      isActive: i === 0, // First tab is active
+      openTime: new Date(Date.now() - Math.floor(Math.random() * 3600000)),
+      duration: Math.floor(Math.random() * 1800) + 60,
+    });
+  }
+  
+  return tabs;
+}
+
 function generateActivities(computers: Computer[]): BrowsingActivity[] {
   const activities: BrowsingActivity[] = [];
   const now = new Date();
@@ -85,6 +106,8 @@ function generateActivities(computers: Computer[]): BrowsingActivity[] {
     if (computer.status === 'offline') continue;
     const site = allSites[Math.floor(Math.random() * allSites.length)];
     const minutesAgo = Math.floor(Math.random() * 120);
+    const tabs = generateBrowserTabs();
+    
     activities.push({
       id: `ACT-${String(i).padStart(4, '0')}`,
       timestamp: new Date(now.getTime() - minutesAgo * 60000),
@@ -94,6 +117,7 @@ function generateActivities(computers: Computer[]): BrowsingActivity[] {
       duration: Math.floor(Math.random() * 600) + 10,
       studentName: computer.studentName,
       computerId: computer.id,
+      tabs: tabs,
     });
   }
   return activities.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());

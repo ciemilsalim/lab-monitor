@@ -1,5 +1,16 @@
 export type ComputerStatus = 'online' | 'offline' | 'idle' | 'locked';
 
+export interface BrowserTab {
+  id: string;
+  url: string;
+  domain: string;
+  title: string;
+  category: 'educational' | 'social-media' | 'entertainment' | 'search-engine' | 'shopping' | 'news' | 'other';
+  isActive: boolean;
+  openTime: Date;
+  duration: number;
+}
+
 export interface BrowsingActivity {
   id: string;
   timestamp: Date;
@@ -9,6 +20,7 @@ export interface BrowsingActivity {
   duration: number;
   studentName: string;
   computerId: string;
+  tabs?: BrowserTab[];
 }
 
 export interface Computer {

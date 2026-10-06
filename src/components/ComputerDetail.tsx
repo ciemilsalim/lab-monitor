@@ -141,26 +141,58 @@ export default function ComputerDetail({ computer, activities, onClose }: Comput
               {computerActivities.length === 0 ? (
                 <p className="text-gray-500 text-center py-8">Tidak ada aktivitas</p>
               ) : (
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b-2 border-gray-200">
-                      <th className="pb-3 text-left text-xs font-semibold text-gray-700 uppercase">Waktu</th>
-                      <th className="pb-3 text-left text-xs font-semibold text-gray-700 uppercase">Website</th>
-                      <th className="pb-3 text-left text-xs font-semibold text-gray-700 uppercase">Durasi</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {computerActivities.map((activity) => (
-                      <tr key={activity.id} className="border-b border-gray-100 hover:bg-gray-50">
-                        <td className="py-3 text-gray-600 font-mono text-xs">
-                          {activity.timestamp.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
-                        </td>
-                        <td className="py-3 text-blue-600 font-medium">{activity.domain}</td>
-                        <td className="py-3 text-gray-700">{Math.floor(activity.duration / 60)}m</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <div className="space-y-4">
+                  {computerActivities.map((activity) => (
+                    <div key={activity.id} className="border border-gray-200 rounded-xl overflow-hidden">
+                      <div className="bg-gradient-to-r from-gray-50 to-slate-50 px-4 py-3 border-b border-gray-200">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <span className="text-gray-600 font-mono text-xs">
+                              {activity.timestamp.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                            <span className="text-blue-600 font-semibold text-sm">{activity.domain}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {activity.tabs && activity.tabs.length > 0 && (
+                              <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs font-bold">
+                                {activity.tabs.length} Tab
+                              </span>
+                            )}
+                            <span className="text-gray-500 text-xs">{Math.floor(activity.duration / 60)}m</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {activity.tabs && activity.tabs.length > 0 && (
+                        <div className="p-3 bg-white">
+                          <p className="text-xs font-semibold text-gray-700 mb-2 uppercase">Semua Tab Browser:</p>
+                          <div className="space-y-2">
+                            {activity.tabs.map((tab) => (
+                              <div 
+                                key={tab.id} 
+                                className={`flex items-center gap-3 p-2 rounded-lg ${
+                                  tab.isActive ? 'bg-green-50 border border-green-200' : 'bg-gray-50'
+                                }`}
+                              >
+                                <div className={`w-2 h-2 rounded-full ${tab.isActive ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm font-medium text-gray-900 truncate">{tab.title}</p>
+                                  <p className="text-xs text-gray-600 truncate">{tab.url}</p>
+                                </div>
+                                <div className="text-right shrink-0">
+                                  <p className="text-xs text-gray-500">{Math.floor(tab.duration / 60)}m</p>
+                                  {tab.isActive && (
+                                    <span className="text-xs font-semibold text-green-600">AKTIF</span>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
           )}

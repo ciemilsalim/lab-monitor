@@ -644,6 +644,39 @@ export default function GuidePage() {
                   );
                 })}
               </div>
+
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <Info className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-blue-900">🔍 Monitoring Semua Tab Browser</p>
+                    <p className="text-blue-800 text-sm mt-2 leading-relaxed">
+                      LabMonitor dapat mendeteksi <strong>semua tab browser</strong> yang dibuka siswa, bukan hanya tab yang sedang aktif! 
+                      Badge <span className="px-2 py-0.5 bg-blue-200 text-blue-800 rounded text-xs font-bold">+N tab</span> di kolom Website 
+                      menunjukkan jumlah tab tambahan yang dibuka.
+                    </p>
+                    <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="bg-white/70 rounded-lg p-3 border border-blue-200">
+                        <p className="text-xs font-bold text-blue-900 mb-2">📊 Di Tabel Aktivitas:</p>
+                        <ul className="text-xs text-blue-800 space-y-1">
+                          <li>• Menampilkan domain utama (tab aktif)</li>
+                          <li>• Badge "+N tab" untuk tab tambahan</li>
+                          <li>• Klik untuk lihat detail semua tab</li>
+                        </ul>
+                      </div>
+                      <div className="bg-white/70 rounded-lg p-3 border border-blue-200">
+                        <p className="text-xs font-bold text-blue-900 mb-2">🖥️ Di Detail Komputer:</p>
+                        <ul className="text-xs text-blue-800 space-y-1">
+                          <li>• Daftar lengkap semua tab browser</li>
+                          <li>• Indikator tab aktif (hijau + "AKTIF")</li>
+                          <li>• Judul halaman & URL lengkap</li>
+                          <li>• Durasi setiap tab dibuka</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
 

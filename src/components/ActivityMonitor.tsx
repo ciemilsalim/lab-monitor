@@ -90,7 +90,7 @@ export default function ActivityMonitor({ activities }: ActivityMonitorProps) {
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Waktu</th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Siswa</th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Komputer</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Website</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Website (Tab)</th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Kategori</th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Durasi</th>
               </tr>
@@ -103,7 +103,16 @@ export default function ActivityMonitor({ activities }: ActivityMonitorProps) {
                   </td>
                   <td className="px-6 py-4 font-semibold text-gray-900">{activity.studentName}</td>
                   <td className="px-6 py-4 text-gray-700 font-mono text-xs">{activity.computerId}</td>
-                  <td className="px-6 py-4 text-blue-600 font-semibold">{activity.domain}</td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-blue-600 font-semibold">{activity.domain}</span>
+                      {activity.tabs && activity.tabs.length > 1 && (
+                        <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-bold">
+                          +{activity.tabs.length - 1} tab
+                        </span>
+                      )}
+                    </div>
+                  </td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold text-white bg-gradient-to-r ${getCategoryColor(activity.category)} shadow-md`}>
                       {getCategoryLabel(activity.category)}
