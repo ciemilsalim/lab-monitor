@@ -7,6 +7,7 @@ import ComputerDetail from './components/ComputerDetail';
 import ActivityMonitor from './components/ActivityMonitor';
 import AlertsView from './components/AlertsView';
 import NetworkMap from './components/NetworkMap';
+import GuidePage from './components/GuidePage';
 import LoginPage from './components/LoginPage';
 import { computers as mockComputers, activities as mockActivities, alerts as mockAlerts } from './data/mockData';
 import { Menu, X, Bell, Wifi } from 'lucide-react';
@@ -67,6 +68,8 @@ function App() {
         return <AlertsView alerts={alerts} />;
       case 'network':
         return <NetworkMap computers={computers} />;
+      case 'guide':
+        return <GuidePage />;
       default:
         return <Dashboard computers={computers} activities={activities} alerts={alerts} />;
     }
