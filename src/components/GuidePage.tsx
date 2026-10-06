@@ -1,13 +1,11 @@
 import { useState } from 'react';
 import {
   BookOpen, Monitor, LogIn, LayoutDashboard, Globe, AlertTriangle,
-  Network, Shield, Settings, Download, Server, ChevronRight, ChevronDown,
+  Network, Shield, Download, Server, ChevronRight, ChevronDown,
   CheckCircle2, Info, Lightbulb, Wrench, Terminal, Users, Cpu,
-  HardDrive, Wifi, Eye, Lock, Power, RotateCcw, Search, Filter,
+  Eye, Lock, Power, RotateCcw, Search, Filter,
   Bell, MousePointer, Keyboard, Zap, HelpCircle
 } from 'lucide-react';
-
-// MousePointer already imported above
 
 type GuideSection =
   | 'overview'

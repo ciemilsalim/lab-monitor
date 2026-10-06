@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import {
-  X, Maximize2, Minimize2, MousePointer, Keyboard, Eye, Lock, Unlock,
-  Power, RotateCcw, MessageSquare, Camera, Volume2, VolumeX, Monitor,
-  AlertTriangle, CheckCircle2, Info, Wifi, WifiOff, Zap
+  X, Maximize2, Minimize2, MousePointer, Keyboard, Eye, Unlock,
+  MessageSquare, Camera, VolumeX, Monitor,
+  Wifi, Zap
 } from 'lucide-react';
 import { Computer, RemoteControlSession } from '../types';
 
