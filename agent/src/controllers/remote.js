@@ -12,45 +12,75 @@ class RemoteController {
 
   async execute(command) {
     try {
-      logger.info('Executing command:', command);
+      logger.info('🎮 ========================================');
+      logger.info('🎮 Executing remote command');
+      logger.info(`🎮 Action: ${command.action}`);
+      logger.info('🎮 ========================================');
+
+      let result;
 
       switch (command.action) {
         case 'shutdown':
-          return await this.shutdown(command.delay || 0);
+          logger.info('⏹️ Executing SHUTDOWN command');
+          result = await this.shutdown(command.delay || 0);
+          break;
         
         case 'restart':
-          return await this.restart(command.delay || 0);
+          logger.info('🔄 Executing RESTART command');
+          result = await this.restart(command.delay || 0);
+          break;
         
         case 'lock':
-          return await this.lockScreen();
+          logger.info('🔒 Executing LOCK SCREEN command');
+          result = await this.lockScreen();
+          break;
         
         case 'message':
-          return await this.showMessage(command.message || 'Pesan dari admin');
+          logger.info('💬 Executing SHOW MESSAGE command');
+          result = await this.showMessage(command.message || 'Pesan dari admin');
+          break;
         
         case 'block_internet':
-          return await this.blockInternet();
+          logger.info('🚫 Executing BLOCK INTERNET command');
+          result = await this.blockInternet();
+          break;
         
         case 'unblock_internet':
-          return await this.unblockInternet();
+          logger.info('✅ Executing UNBLOCK INTERNET command');
+          result = await this.unblockInternet();
+          break;
         
         case 'screenshot':
-          return await this.takeScreenshot();
+          logger.info('📸 Executing SCREENSHOT command');
+          result = await this.takeScreenshot();
+          break;
         
         case 'open_url':
-          return await this.openUrl(command.url);
+          logger.info('🌐 Executing OPEN URL command');
+          result = await this.openUrl(command.url);
+          break;
         
         case 'close_app':
-          return await this.closeApp(command.appName);
+          logger.info('❌ Executing CLOSE APP command');
+          result = await this.closeApp(command.appName);
+          break;
         
         default:
-          return {
+          logger.warn(`⚠️ Unknown command: ${command.action}`);
+          result = {
             success: false,
             message: `Unknown command: ${command.action}`
           };
       }
 
+      logger.info(`✅ Command result: ${result.success ? 'SUCCESS' : 'FAILED'}`);
+      logger.info(`✅ Message: ${result.message}`);
+
+      return result;
+
     } catch (error) {
-      logger.error('Error executing command:', error.message);
+      logger.error('❌ Error executing command:', error.message);
+      logger.error('❌ Stack:', error.stack);
       return {
         success: false,
         message: error.message

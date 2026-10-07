@@ -109,32 +109,56 @@ class LabMonitorAgent {
   }
 
   setupRemoteCommands() {
+    // Listen untuk execute-command dari backend
     this.socketService.on('execute-command', async (command) => {
       try {
-        logger.info('📡 Received remote command:', command);
+        logger.info('📡 ========================================');
+        logger.info('📡 Received remote command');
+        logger.info(`📡 Action: ${command.action}`);
+        logger.info(`📡 Target: ${command.computerId || 'all'}`);
+        logger.info('📡 ========================================');
         
+        // Check jika command ini untuk komputer ini
+        if (command.computerId && command.computerId !== this.computerId) {
+          logger.info(`⏭️ Skipping command - not for this computer (${this.computerId})`);
+          return;
+        }
+        
+        // Execute command
         const result = await this.remoteController.execute(command);
         
+        // Send result back to backend
         this.socketService.emit('command-result', {
           computerId: this.computerId,
-          command: command,
+          command: command.action,
           success: result.success,
-          message: result.message
+          message: result.message,
+          timestamp: new Date().toISOString()
         });
 
-        logger.info('✅ Command executed:', result);
+        if (result.success) {
+          logger.info('✅ Command executed successfully');
+          logger.info(`✅ Result: ${result.message}`);
+        } else {
+          logger.error('❌ Command execution failed');
+          logger.error(`❌ Error: ${result.message}`);
+        }
 
       } catch (error) {
         logger.error('❌ Error executing command:', error.message);
+        logger.error('❌ Stack:', error.stack);
         
         this.socketService.emit('command-result', {
           computerId: this.computerId,
-          command: command,
+          command: command.action,
           success: false,
-          message: error.message
+          message: error.message,
+          timestamp: new Date().toISOString()
         });
       }
     });
+
+    logger.info('✅ Remote command listener active');
   }
 
   async stop() {
