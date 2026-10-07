@@ -10,6 +10,7 @@ import {
 type GuideSection =
   | 'overview'
   | 'installation'
+  | 'backend-setup'
   | 'login'
   | 'dashboard'
   | 'computers'
@@ -29,6 +30,7 @@ interface SectionItem {
 const sections: SectionItem[] = [
   { id: 'overview', label: 'Ikhtisar Aplikasi', icon: BookOpen, sub: 'Tentang LabMonitor' },
   { id: 'installation', label: 'Instalasi & Persiapan', icon: Download, sub: 'Cara memasang' },
+  { id: 'backend-setup', label: 'Setup Backend', icon: Server, sub: 'Node.js + Express + Socket.io' },
   { id: 'login', label: 'Login & Akun', icon: LogIn, sub: 'Masuk ke sistem' },
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, sub: 'Ringkasan monitoring' },
   { id: 'computers', label: 'Monitor Komputer', icon: Monitor, sub: 'Lihat semua PC' },
@@ -352,7 +354,835 @@ export default function GuidePage() {
             </div>
           </section>
 
-          {/* 3. Login */}
+          {/* 3. Backend Setup */}
+          <section id="guide-backend-setup" className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
+            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Server className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">3. Setup Backend (Node.js + Express + Socket.io)</h3>
+                  <p className="text-sm text-gray-600">Konfigurasi server backend dengan Laragon untuk MySQL</p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6 space-y-6">
+              <div className="bg-blue-50 border-l-4 border-blue-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <Info className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-blue-900">Arsitektur Backend LabMonitor</p>
+                    <p className="text-blue-800 text-sm mt-1 leading-relaxed">
+                      Backend LabMonitor menggunakan <strong>Node.js + Express + Socket.io</strong> untuk performa real-time terbaik.
+                      <strong> Laragon</strong> digunakan khusus untuk <strong>MySQL database</strong> saja, bukan untuk web server.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gray-900 rounded-xl p-6 text-white">
+                <h4 className="font-bold text-lg mb-4">Diagram Arsitektur Backend</h4>
+                <div className="flex flex-col items-center gap-4">
+                  <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl px-6 py-3 text-center">
+                    <p className="font-bold">🖥️ Frontend React</p>
+                    <p className="text-xs text-green-100">Port 5173 (dev) / Static Build</p>
+                  </div>
+                  <div className="text-gray-400 text-sm">↕️ HTTP + WebSocket</div>
+                  <div className="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl px-6 py-3 text-center">
+                    <p className="font-bold">⚡ Node.js + Express + Socket.io</p>
+                    <p className="text-xs text-blue-100">Port 3001 - Backend API Server</p>
+                  </div>
+                  <div className="text-gray-400 text-sm">↕️ SQL Queries</div>
+                  <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl px-6 py-3 text-center">
+                    <p className="font-bold">🗄️ MySQL (via Laragon)</p>
+                    <p className="text-xs text-purple-100">Port 3306 - Database</p>
+                  </div>
+                  <div className="text-gray-400 text-sm">↕️ Agent Communication</div>
+                  <div className="bg-gradient-to-r from-orange-600 to-red-600 rounded-xl px-6 py-3 text-center">
+                    <p className="font-bold">🤖 Agent di PC Siswa</p>
+                    <p className="text-xs text-orange-100">Kirim data monitoring</p>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Persyaratan Sistem</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Server className="w-5 h-5 text-purple-600" />
+                    <p className="font-bold text-gray-900">Software yang Diperlukan</p>
+                  </div>
+                  <ul className="space-y-2 text-sm text-gray-700">
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>Laragon</strong> (untuk MySQL)</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>Node.js</strong> v18+ (LTS)</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>npm</strong> atau <strong>yarn</strong></li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>Git</strong> (opsional)</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>Code Editor</strong> (VS Code recommended)</li>
+                  </ul>
+                </div>
+                <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Monitor className="w-5 h-5 text-blue-600" />
+                    <p className="font-bold text-gray-900">Port yang Digunakan</p>
+                  </div>
+                  <ul className="space-y-2 text-sm text-gray-700">
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>3001</strong> - Backend API Server</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>3306</strong> - MySQL (Laragon)</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>5173</strong> - Frontend dev server</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>8080</strong> - Agent communication</li>
+                  </ul>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Langkah 1: Install Node.js</h4>
+              <div className="space-y-3">
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
+                      1
+                    </div>
+                    <div className="w-0.5 flex-1 bg-purple-200 mt-2" />
+                  </div>
+                  <div className="flex-1 pb-4">
+                    <p className="font-bold text-gray-900">Download & Install Node.js</p>
+                    <p className="text-sm text-gray-600 mt-1">Download Node.js versi LTS dari website resmi</p>
+                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# Download dari:
+https://nodejs.org/
+
+# Pilih versi LTS (Long Term Support)
+# Saat ini: Node.js 20.x LTS
+
+# Setelah install, verifikasi:
+node --version
+# Output: v20.x.x
+
+npm --version
+# Output: 10.x.x`}</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Langkah 2: Setup Laragon untuk MySQL</h4>
+              <div className="space-y-3">
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
+                      2
+                    </div>
+                    <div className="w-0.5 flex-1 bg-purple-200 mt-2" />
+                  </div>
+                  <div className="flex-1 pb-4">
+                    <p className="font-bold text-gray-900">Konfigurasi Laragon (MySQL Only)</p>
+                    <p className="text-sm text-gray-600 mt-1">Start hanya MySQL, matikan Apache (tidak diperlukan)</p>
+                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# 1. Buka Laragon
+# 2. Klik "Start All" atau start MySQL saja
+# 3. Matikan Apache (klik kanan → Stop → Apache)
+# 4. Pastikan MySQL running (indikator hijau)
+
+# Akses phpMyAdmin untuk manage database:
+http://localhost/phpmyadmin
+
+# Login default:
+Username: root
+Password: (kosong)`}</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Langkah 3: Create Database</h4>
+              <div className="space-y-3">
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
+                      3
+                    </div>
+                    <div className="w-0.5 flex-1 bg-purple-200 mt-2" />
+                  </div>
+                  <div className="flex-1 pb-4">
+                    <p className="font-bold text-gray-900">Buat Database di MySQL</p>
+                    <p className="text-sm text-gray-600 mt-1">Buka phpMyAdmin dan buat database baru</p>
+                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`-- Buka phpMyAdmin: http://localhost/phpmyadmin
+-- Klik tab "SQL" dan jalankan:
+
+CREATE DATABASE labmonitor CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- Verifikasi database sudah dibuat:
+SHOW DATABASES;
+
+-- Output harus ada:
+-- labmonitor`}</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Langkah 4: Setup Backend Project</h4>
+              <div className="space-y-3">
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
+                      4
+                    </div>
+                    <div className="w-0.5 flex-1 bg-purple-200 mt-2" />
+                  </div>
+                  <div className="flex-1 pb-4">
+                    <p className="font-bold text-gray-900">Create Backend Project Structure</p>
+                    <p className="text-sm text-gray-600 mt-1">Buat folder backend dan install dependencies</p>
+                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# Buat folder untuk backend
+mkdir C:\\labmonitor-backend
+cd C:\\labmonitor-backend
+
+# Initialize npm project
+npm init -y
+
+# Install dependencies
+npm install express socket.io mysql2 cors dotenv bcryptjs jsonwebtoken
+
+# Install dev dependencies
+npm install --save-dev nodemon @types/node @types/express @types/cors
+
+# Struktur folder yang akan dibuat:
+C:\\labmonitor-backend\\
+├── node_modules\\
+├── src\\
+│   ├── config\\
+│   │   └── database.js
+│   ├── models\\
+│   │   ├── Computer.js
+│   │   ├── Student.js
+│   │   └── Activity.js
+│   ├── routes\\
+│   │   ├── computers.js
+│   │   ├── students.js
+│   │   └── activities.js
+│   ├── controllers\\
+│   │   ├── computerController.js
+│   │   ├── studentController.js
+│   │   └── activityController.js
+│   ├── socket\\
+│   │   └── socketHandler.js
+│   ├── middleware\\
+│   │   └── auth.js
+│   ├── utils\\
+│   │   └── helpers.js
+│   ├── app.js
+│   └── server.js
+├── .env
+├── .gitignore
+└── package.json`}</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Langkah 5: Konfigurasi Environment</h4>
+              <div className="space-y-3">
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
+                      5
+                    </div>
+                    <div className="w-0.5 flex-1 bg-purple-200 mt-2" />
+                  </div>
+                  <div className="flex-1 pb-4">
+                    <p className="font-bold text-gray-900">Setup File .env</p>
+                    <p className="text-sm text-gray-600 mt-1">Konfigurasi database dan server settings</p>
+                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# Buat file .env di root folder backend
+# C:\\labmonitor-backend\\.env
+
+# Server Configuration
+PORT=3001
+NODE_ENV=development
+
+# Database Configuration (Laragon MySQL)
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=
+DB_NAME=labmonitor
+
+# JWT Secret (ganti dengan random string yang panjang)
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+
+# CORS Origin (frontend URL)
+CORS_ORIGIN=http://localhost:5173
+
+# Socket.io Configuration
+SOCKET_PING_INTERVAL=25000
+SOCKET_PING_TIMEOUT=60000`}</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Langkah 6: Database Schema</h4>
+              <div className="space-y-3">
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
+                      6
+                    </div>
+                    <div className="w-0.5 flex-1 bg-purple-200 mt-2" />
+                  </div>
+                  <div className="flex-1 pb-4">
+                    <p className="font-bold text-gray-900">Buat Tabel Database</p>
+                    <p className="text-sm text-gray-600 mt-1">Jalankan SQL berikut di phpMyAdmin</p>
+                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`-- Tabel Users (Admin/Guru/Viewer)
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  role ENUM('admin', 'guru', 'viewer') DEFAULT 'viewer',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Tabel Computers
+CREATE TABLE computers (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  computer_id VARCHAR(50) UNIQUE NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  ip_address VARCHAR(50) NOT NULL,
+  mac_address VARCHAR(50),
+  status ENUM('online', 'offline', 'idle', 'locked') DEFAULT 'offline',
+  student_id INT,
+  cpu_usage DECIMAL(5,2) DEFAULT 0,
+  ram_usage DECIMAL(5,2) DEFAULT 0,
+  network_speed DECIMAL(10,2) DEFAULT 0,
+  os VARCHAR(100),
+  uptime INT DEFAULT 0,
+  current_app VARCHAR(255),
+  current_url TEXT,
+  last_heartbeat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE SET NULL
+);
+
+-- Tabel Students
+CREATE TABLE students (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  student_id VARCHAR(50) UNIQUE NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  class VARCHAR(50),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Tabel Activities (Browsing History)
+CREATE TABLE activities (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  computer_id INT NOT NULL,
+  student_id INT,
+  url TEXT NOT NULL,
+  domain VARCHAR(255) NOT NULL,
+  category ENUM('educational', 'social-media', 'entertainment', 'search-engine', 'shopping', 'news', 'other') DEFAULT 'other',
+  duration INT DEFAULT 0,
+  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (computer_id) REFERENCES computers(id) ON DELETE CASCADE,
+  FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE SET NULL
+);
+
+-- Tabel Browser Tabs (untuk monitoring semua tab)
+CREATE TABLE browser_tabs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  activity_id INT NOT NULL,
+  url TEXT NOT NULL,
+  domain VARCHAR(255) NOT NULL,
+  title VARCHAR(500),
+  category ENUM('educational', 'social-media', 'entertainment', 'search-engine', 'shopping', 'news', 'other') DEFAULT 'other',
+  is_active BOOLEAN DEFAULT FALSE,
+  open_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  duration INT DEFAULT 0,
+  FOREIGN KEY (activity_id) REFERENCES activities(id) ON DELETE CASCADE
+);
+
+-- Tabel Alerts
+CREATE TABLE alerts (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  computer_id INT NOT NULL,
+  student_id INT,
+  type ENUM('warning', 'danger', 'info') NOT NULL,
+  message TEXT NOT NULL,
+  is_read BOOLEAN DEFAULT FALSE,
+  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (computer_id) REFERENCES computers(id) ON DELETE CASCADE,
+  FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE SET NULL
+);
+
+-- Insert default admin user
+-- Password: admin123 (hash bcrypt)
+INSERT INTO users (email, password, name, role) VALUES
+('admin@labmonitor.local', '$2b$10$YourHashedPasswordHere', 'Admin Lab', 'admin');
+
+-- Insert sample students
+INSERT INTO students (student_id, name, class) VALUES
+('STD2024001', 'Ahmad Rizki', 'XII-RPL1'),
+('STD2024002', 'Siti Nurhaliza', 'XII-RPL1'),
+('STD2024003', 'Budi Santoso', 'XII-RPL1');
+
+-- Insert sample computers
+INSERT INTO computers (computer_id, name, ip_address, mac_address, student_id) VALUES
+('PC-01', 'Komputer 1', '192.168.1.100', 'AA:BB:CC:DD:EE:01', 1),
+('PC-02', 'Komputer 2', '192.168.1.101', 'AA:BB:CC:DD:EE:02', 2),
+('PC-03', 'Komputer 3', '192.168.1.102', 'AA:BB:CC:DD:EE:03', 3);`}</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Langkah 7: Create Main Server File</h4>
+              <div className="space-y-3">
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
+                      7
+                    </div>
+                    <div className="w-0.5 flex-1 bg-purple-200 mt-2" />
+                  </div>
+                  <div className="flex-1 pb-4">
+                    <p className="font-bold text-gray-900">Buat File server.js</p>
+                    <p className="text-sm text-gray-600 mt-1">File utama untuk menjalankan backend server</p>
+                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`// C:\\labmonitor-backend\\src\\server.js
+
+const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const db = require('./config/database');
+
+// Load environment variables
+dotenv.config();
+
+const app = express();
+const server = http.createServer(app);
+
+// Socket.io setup
+const io = socketIo(server, {
+  cors: {
+    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    methods: ['GET', 'POST'],
+    credentials: true
+  },
+  pingInterval: parseInt(process.env.SOCKET_PING_INTERVAL) || 25000,
+  pingTimeout: parseInt(process.env.SOCKET_PING_TIMEOUT) || 60000
+});
+
+// Middleware
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  credentials: true
+}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Routes
+app.use('/api/computers', require('./routes/computers'));
+app.use('/api/students', require('./routes/students'));
+app.use('/api/activities', require('./routes/activities'));
+app.use('/api/auth', require('./routes/auth'));
+
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+// Socket.io connection handler
+io.on('connection', (socket) => {
+  console.log('Client connected:', socket.id);
+  
+  // Handle agent connection
+  socket.on('agent-connect', (data) => {
+    console.log('Agent connected:', data.computerId);
+    socket.join('agents');
+  });
+  
+  // Handle computer status update
+  socket.on('computer-update', (data) => {
+    console.log('Computer update received:', data.computerId);
+    // Update database
+    db.query(
+      'UPDATE computers SET status = ?, cpu_usage = ?, ram_usage = ?, network_speed = ?, current_app = ?, current_url = ?, last_heartbeat = NOW() WHERE computer_id = ?',
+      [data.status, data.cpu, data.ram, data.networkSpeed, data.currentApp, data.currentUrl, data.computerId],
+      (err, results) => {
+        if (err) {
+          console.error('Error updating computer:', err);
+          return;
+        }
+        // Broadcast to all connected clients
+        io.emit('computer-updated', data);
+      }
+    );
+  });
+  
+  // Handle browsing activity
+  socket.on('activity-log', (data) => {
+    console.log('Activity log received:', data);
+    // Insert to database
+    db.query(
+      'INSERT INTO activities (computer_id, student_id, url, domain, category, duration) VALUES (?, ?, ?, ?, ?, ?)',
+      [data.computerId, data.studentId, data.url, data.domain, data.category, data.duration],
+      (err, results) => {
+        if (err) {
+          console.error('Error inserting activity:', err);
+          return;
+        }
+        // Broadcast to all connected clients
+        io.emit('new-activity', data);
+      }
+    );
+  });
+  
+  // Handle remote control commands
+  socket.on('remote-command', (data) => {
+    console.log('Remote command:', data);
+    // Send command to specific agent
+    io.to('agents').emit('execute-command', data);
+  });
+  
+  socket.on('disconnect', () => {
+    console.log('Client disconnected:', socket.id);
+  });
+});
+
+// Start server
+const PORT = process.env.PORT || 3001;
+server.listen(PORT, () => {
+  console.log(\`🚀 Backend server running on port \${PORT}\`);
+  console.log(\`📡 Socket.io ready for connections\`);
+  console.log(\`🗄️ MySQL connected to \${process.env.DB_HOST}:\${process.env.DB_PORT}\`);
+});
+
+// Handle errors
+process.on('unhandledRejection', (err) => {
+  console.error('Unhandled Rejection:', err);
+  server.close(() => process.exit(1));
+});`}</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Langkah 8: Database Connection</h4>
+              <div className="space-y-3">
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
+                      8
+                    </div>
+                    <div className="w-0.5 flex-1 bg-purple-200 mt-2" />
+                  </div>
+                  <div className="flex-1 pb-4">
+                    <p className="font-bold text-gray-900">Setup Database Connection</p>
+                    <p className="text-sm text-gray-600 mt-1">File konfigurasi koneksi MySQL</p>
+                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`// C:\\labmonitor-backend\\src\\config\\database.js
+
+const mysql = require('mysql2');
+const dotenv = require('dotenv');
+
+dotenv.config();
+
+const pool = mysql.createPool({
+  host: process.env.DB_HOST || 'localhost',
+  port: process.env.DB_PORT || 3306,
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || 'labmonitor',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0
+});
+
+// Test connection
+pool.getConnection((err, connection) => {
+  if (err) {
+    console.error('❌ Error connecting to MySQL:', err.message);
+    return;
+  }
+  console.log('✅ MySQL Connected successfully');
+  connection.release();
+});
+
+// Promise wrapper for async/await
+const promisePool = pool.promise();
+
+module.exports = promisePool;`}</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Langkah 9: Create API Routes</h4>
+              <div className="space-y-3">
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
+                      9
+                    </div>
+                    <div className="w-0.5 flex-1 bg-purple-200 mt-2" />
+                  </div>
+                  <div className="flex-1 pb-4">
+                    <p className="font-bold text-gray-900">Buat API Endpoints</p>
+                    <p className="text-sm text-gray-600 mt-1">Contoh route untuk computers</p>
+                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`// C:\\labmonitor-backend\\src\\routes\\computers.js
+
+const express = require('express');
+const router = express.Router();
+const db = require('../config/database');
+
+// Get all computers
+router.get('/', async (req, res) => {
+  try {
+    const [computers] = await db.query(
+      'SELECT c.*, s.name as student_name, s.student_id FROM computers c LEFT JOIN students s ON c.student_id = s.id ORDER BY c.computer_id'
+    );
+    res.json({ success: true, data: computers });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Get computer by ID
+router.get('/:id', async (req, res) => {
+  try {
+    const [computers] = await db.query(
+      'SELECT c.*, s.name as student_name, s.student_id FROM computers c LEFT JOIN students s ON c.student_id = s.id WHERE c.id = ?',
+      [req.params.id]
+    );
+    
+    if (computers.length === 0) {
+      return res.status(404).json({ success: false, error: 'Computer not found' });
+    }
+    
+    res.json({ success: true, data: computers[0] });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Update computer status
+router.put('/:id/status', async (req, res) => {
+  try {
+    const { status, cpu, ram, networkSpeed, currentApp, currentUrl } = req.body;
+    
+    await db.query(
+      'UPDATE computers SET status = ?, cpu_usage = ?, ram_usage = ?, network_speed = ?, current_app = ?, current_url = ?, last_heartbeat = NOW() WHERE id = ?',
+      [status, cpu, ram, networkSpeed, currentApp, currentUrl, req.params.id]
+    );
+    
+    res.json({ success: true, message: 'Computer status updated' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+module.exports = router;`}</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Langkah 10: Update Package.json Scripts</h4>
+              <div className="space-y-3">
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
+                      10
+                    </div>
+                    <div className="w-0.5 flex-1 bg-purple-200 mt-2" />
+                  </div>
+                  <div className="flex-1 pb-4">
+                    <p className="font-bold text-gray-900">Setup NPM Scripts</p>
+                    <p className="text-sm text-gray-600 mt-1">Tambahkan scripts untuk development dan production</p>
+                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`// C:\\labmonitor-backend\\package.json
+
+{
+  "name": "labmonitor-backend",
+  "version": "1.0.0",
+  "description": "Backend API for LabMonitor",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "echo \\"Error: no test specified\\" && exit 1"
+  },
+  "keywords": ["labmonitor", "api", "socket.io"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.6.5",
+    "socket.io": "^4.7.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.10.6",
+    "nodemon": "^3.0.2"
+  }
+}`}</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Langkah 11: Start Backend Server</h4>
+              <div className="space-y-3">
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
+                      ✓
+                    </div>
+                  </div>
+                  <div className="flex-1 pb-4">
+                    <p className="font-bold text-gray-900">Jalankan Backend Server</p>
+                    <p className="text-sm text-gray-600 mt-1">Start server untuk development</p>
+                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# Di folder backend
+cd C:\\labmonitor-backend
+
+# Development mode (auto-restart saat ada perubahan)
+npm run dev
+
+# Production mode
+npm start
+
+# Output yang diharapkan:
+# ✅ MySQL Connected successfully
+# 🚀 Backend server running on port 3001
+# 📡 Socket.io ready for connections
+# 🗄️ MySQL connected to localhost:3306`}</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Langkah 12: Update Frontend untuk Connect ke Backend</h4>
+              <div className="space-y-3">
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
+                      ✓
+                    </div>
+                  </div>
+                  <div className="flex-1 pb-4">
+                    <p className="font-bold text-gray-900">Konfigurasi Frontend React</p>
+                    <p className="text-sm text-gray-600 mt-1">Update frontend untuk connect ke backend API</p>
+                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# Install socket.io-client di frontend
+cd C:\\labmonitor-frontend
+npm install socket.io-client axios
+
+# Buat file .env di frontend
+# C:\\labmonitor-frontend\\.env
+
+VITE_API_URL=http://localhost:3001
+VITE_SOCKET_URL=http://localhost:3001
+
+# Contoh penggunaan di React component:
+import { io } from 'socket.io-client';
+import axios from 'axios';
+
+const socket = io(import.meta.env.VITE_SOCKET_URL);
+const API_URL = import.meta.env.VITE_API_URL;
+
+// Fetch computers from API
+const fetchComputers = async () => {
+  const response = await axios.get(\`\${API_URL}/api/computers\`);
+  return response.data.data;
+};
+
+// Listen for real-time updates
+socket.on('computer-updated', (data) => {
+  console.log('Computer updated:', data);
+  // Update UI
+});
+
+socket.on('new-activity', (data) => {
+  console.log('New activity:', data);
+  // Update UI
+});`}</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-green-50 border-l-4 border-green-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-green-900">Setup Backend Selesai!</p>
+                    <p className="text-green-800 text-sm mt-2 leading-relaxed">
+                      Backend Node.js + Express + Socket.io sudah siap digunakan dengan Laragon MySQL.
+                      Server berjalan di port <strong>3001</strong> dan terhubung ke database MySQL di port <strong>3306</strong>.
+                    </p>
+                    <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="bg-white/60 rounded-lg p-3 border border-green-200">
+                        <p className="text-xs font-bold text-green-900 mb-1">✅ Yang Sudah Berjalan:</p>
+                        <ul className="text-xs text-green-800 space-y-1">
+                          <li>• Express API server (port 3001)</li>
+                          <li>• Socket.io real-time communication</li>
+                          <li>• MySQL database connection</li>
+                          <li>• REST API endpoints</li>
+                        </ul>
+                      </div>
+                      <div className="bg-white/60 rounded-lg p-3 border border-green-200">
+                        <p className="text-xs font-bold text-green-900 mb-1">🔗 Akses URLs:</p>
+                        <ul className="text-xs text-green-800 space-y-1">
+                          <li>• API: http://localhost:3001</li>
+                          <li>• Health: http://localhost:3001/health</li>
+                          <li>• phpMyAdmin: http://localhost/phpmyadmin</li>
+                          <li>• Frontend: http://localhost:5173</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <Lightbulb className="w-5 h-5 text-yellow-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-yellow-900">Tips Setup Backend</p>
+                    <ul className="text-yellow-800 text-sm mt-2 space-y-1">
+                      <li>• Gunakan <code className="bg-yellow-200 px-1.5 py-0.5 rounded text-xs font-mono">npm run dev</code> saat development untuk auto-restart</li>
+                      <li>• Pastikan Laragon MySQL running sebelum start backend</li>
+                      <li>• Cek port 3001 tidak digunakan aplikasi lain</li>
+                      <li>• Gunakan <code className="bg-yellow-200 px-1.5 py-0.5 rounded text-xs font-mono">nodemon</code> untuk development</li>
+                      <li>• Untuk production, gunakan <code className="bg-yellow-200 px-1.5 py-0.5 rounded text-xs font-mono">pm2</code> untuk process management</li>
+                      <li>• Setup firewall untuk mengizinkan port 3001 dan 3306</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* 4. Login */}
           <section id="guide-login" className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
             <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-cyan-50">
               <div className="flex items-center gap-3">
@@ -360,7 +1190,7 @@ export default function GuidePage() {
                   <LogIn className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">3. Login & Akun</h3>
+                  <h3 className="text-xl font-bold text-gray-900">4. Login & Akun</h3>
                   <p className="text-sm text-gray-600">Masuk ke sistem dengan akun yang sesuai</p>
                 </div>
               </div>
@@ -452,7 +1282,7 @@ export default function GuidePage() {
                   <LayoutDashboard className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">4. Dashboard</h3>
+                  <h3 className="text-xl font-bold text-gray-900">5. Dashboard</h3>
                   <p className="text-sm text-gray-600">Ringkasan monitoring secara keseluruhan</p>
                 </div>
               </div>
@@ -523,7 +1353,7 @@ export default function GuidePage() {
                   <Monitor className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">5. Monitor Komputer</h3>
+                  <h3 className="text-xl font-bold text-gray-900">6. Monitor Komputer</h3>
                   <p className="text-sm text-gray-600">Melihat status semua komputer di lab</p>
                 </div>
               </div>
@@ -595,7 +1425,7 @@ export default function GuidePage() {
                   <Globe className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">6. Aktivitas Internet</h3>
+                  <h3 className="text-xl font-bold text-gray-900">7. Aktivitas Internet</h3>
                   <p className="text-sm text-gray-600">Memantau akses internet siswa</p>
                 </div>
               </div>
@@ -688,7 +1518,7 @@ export default function GuidePage() {
                   <AlertTriangle className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">7. Peringatan & Notifikasi</h3>
+                  <h3 className="text-xl font-bold text-gray-900">8. Peringatan & Notifikasi</h3>
                   <p className="text-sm text-gray-600">Memantau alert dari aktivitas siswa</p>
                 </div>
               </div>
@@ -776,7 +1606,7 @@ export default function GuidePage() {
                   <Network className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">8. Peta Jaringan</h3>
+                  <h3 className="text-xl font-bold text-gray-900">9. Peta Jaringan</h3>
                   <p className="text-sm text-gray-600">Visualisasi topologi jaringan LAN</p>
                 </div>
               </div>
@@ -831,7 +1661,7 @@ export default function GuidePage() {
                   <Shield className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">9. Kontrol Remote</h3>
+                  <h3 className="text-xl font-bold text-gray-900">10. Kontrol Remote</h3>
                   <p className="text-sm text-gray-600">Mengontrol komputer dari jarak jauh</p>
                 </div>
               </div>
@@ -960,7 +1790,7 @@ export default function GuidePage() {
                   <Wrench className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">10. Troubleshooting</h3>
+                  <h3 className="text-xl font-bold text-gray-900">11. Troubleshooting</h3>
                   <p className="text-sm text-gray-600">Masalah umum dan cara mengatasinya</p>
                 </div>
               </div>
