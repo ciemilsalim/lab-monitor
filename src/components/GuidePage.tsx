@@ -11,6 +11,7 @@ type GuideSection =
   | 'overview'
   | 'installation'
   | 'backend-setup'
+  | 'agent-setup'
   | 'login'
   | 'dashboard'
   | 'computers'
@@ -31,6 +32,7 @@ const sections: SectionItem[] = [
   { id: 'overview', label: 'Ikhtisar Aplikasi', icon: BookOpen, sub: 'Tentang LabMonitor' },
   { id: 'installation', label: 'Instalasi & Persiapan', icon: Download, sub: 'Cara memasang' },
   { id: 'backend-setup', label: 'Setup Backend', icon: Server, sub: 'Node.js + Express + Socket.io' },
+  { id: 'agent-setup', label: 'Setup Agent', icon: Terminal, sub: 'Agent monitoring PC siswa' },
   { id: 'login', label: 'Login & Akun', icon: LogIn, sub: 'Masuk ke sistem' },
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, sub: 'Ringkasan monitoring' },
   { id: 'computers', label: 'Monitor Komputer', icon: Monitor, sub: 'Lihat semua PC' },
@@ -1182,7 +1184,260 @@ socket.on('new-activity', (data) => {
             </div>
           </section>
 
-          {/* 4. Login */}
+          {/* 4. Agent Setup */}
+          <section id="guide-agent-setup" className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
+            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Terminal className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">4. Setup Agent Monitoring</h3>
+                  <p className="text-sm text-gray-600">Install agent di PC siswa untuk monitoring real-time</p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6 space-y-6">
+              <div className="bg-blue-50 border-l-4 border-blue-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <Info className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-blue-900">Apa itu Agent?</p>
+                    <p className="text-blue-800 text-sm mt-1 leading-relaxed">
+                      Agent adalah program kecil yang diinstall di <strong>setiap PC siswa</strong>. Agent berjalan di background dan mengirim data monitoring (CPU, RAM, browser tabs) ke server secara real-time. Agent juga menerima perintah remote dari admin (shutdown, lock, block internet, dll).
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Fitur Agent</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  { icon: Cpu, title: 'System Monitoring', desc: 'CPU, RAM, Network speed real-time', color: 'from-blue-500 to-cyan-600' },
+                  { icon: Globe, title: 'Browser Monitoring', desc: 'Deteksi semua tab browser yang terbuka', color: 'from-green-500 to-emerald-600' },
+                  { icon: Shield, title: 'Remote Control', desc: 'Shutdown, restart, lock, block internet', color: 'from-purple-500 to-pink-600' },
+                  { icon: Power, title: 'Auto-start', desc: 'Berjalan otomatis saat komputer boot', color: 'from-orange-500 to-red-600' },
+                ].map((feature, idx) => {
+                  const Icon = feature.icon;
+                  return (
+                    <div key={idx} className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                      <div className={`w-10 h-10 bg-gradient-to-br ${feature.color} rounded-lg flex items-center justify-center shrink-0`}>
+                        <Icon className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-gray-900 text-sm">{feature.title}</p>
+                        <p className="text-xs text-gray-600 mt-1">{feature.desc}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Persyaratan Agent</h4>
+              <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
+                <ul className="space-y-2 text-sm text-gray-700">
+                  <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>Node.js</strong> v18+ (akan diinstall otomatis jika belum ada)</li>
+                  <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>Windows 10/11</strong> (64-bit)</li>
+                  <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>Koneksi LAN</strong> ke server backend</li>
+                  <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>Administrator access</strong> untuk install sebagai service</li>
+                  <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>Firewall</strong> mengizinkan koneksi ke port 3001</li>
+                </ul>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Langkah 1: Copy Agent ke PC Siswa</h4>
+              <div className="space-y-3">
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
+                      1
+                    </div>
+                    <div className="w-0.5 flex-1 bg-green-200 mt-2" />
+                  </div>
+                  <div className="flex-1 pb-4">
+                    <p className="font-bold text-gray-900">Copy Folder Agent</p>
+                    <p className="text-sm text-gray-600 mt-1">Copy folder <code className="bg-gray-200 px-2 py-0.5 rounded text-xs font-mono">agent</code> dari server ke setiap PC siswa</p>
+                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# Dari server admin, copy ke PC siswa via network share
+# Atau copy manual via USB flash drive
+
+# Contoh lokasi di PC siswa:
+C:\\labmonitor-agent\\
+├── src\\
+│   ├── agent.js
+│   ├── monitors\\
+│   ├── controllers\\
+│   ├── services\\
+│   └── utils\\
+├── package.json
+├── .env
+├── install.bat
+└── README.md`}</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Langkah 2: Jalankan Installer</h4>
+              <div className="space-y-3">
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
+                      2
+                    </div>
+                    <div className="w-0.5 flex-1 bg-green-200 mt-2" />
+                  </div>
+                  <div className="flex-1 pb-4">
+                    <p className="font-bold text-gray-900">Run install.bat sebagai Administrator</p>
+                    <p className="text-sm text-gray-600 mt-1">Installer akan otomatis setup agent dan konfigurasi</p>
+                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# 1. Buka folder agent
+cd C:\\labmonitor-agent
+
+# 2. Right-click install.bat → Run as Administrator
+
+# 3. Ikuti instruksi:
+# - Enter Computer ID: PC-01
+# - Enter Student ID: 1
+# - Enter Backend URL: http://192.168.100.166:3001
+# - Install as Windows Service? Y
+
+# 4. Selesai! Agent akan otomatis berjalan`}</pre>
+                    </div>
+                    <div className="mt-3 bg-yellow-50 border-l-4 border-yellow-500 rounded-r-xl p-3">
+                      <p className="text-xs text-yellow-800">
+                        <strong>⚠️ Penting:</strong> Computer ID harus sama dengan yang ada di database MySQL!
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Langkah 3: Verifikasi Agent Berjalan</h4>
+              <div className="space-y-3">
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
+                      3
+                    </div>
+                  </div>
+                  <div className="flex-1 pb-4">
+                    <p className="font-bold text-gray-900">Cek Status Agent</p>
+                    <p className="text-sm text-gray-600 mt-1">Pastikan agent terhubung ke backend</p>
+                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# Cek log agent
+type C:\\labmonitor-agent\\logs\\agent.log
+
+# Output yang diharapkan:
+🚀 ========================================
+🚀 LabMonitor Agent Starting...
+🚀 Computer ID: PC-01
+🚀 ========================================
+✅ Connected to backend
+📡 Socket ID: xxxxxxxx
+✅ Agent started successfully
+✅ Monitoring started
+
+# Cek di dashboard admin
+# Buka http://192.168.100.166:3000
+# Komputer PC-01 harus muncul dengan status "online"
+# CPU/RAM harus update real-time`}</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Konfigurasi Manual (Opsional)</h4>
+              <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
+                <p className="text-sm text-gray-700 mb-3">Edit file <code className="bg-gray-200 px-2 py-0.5 rounded text-xs font-mono">.env</code> untuk konfigurasi manual:</p>
+                <div className="bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                  <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# Backend Server URL
+BACKEND_URL=http://192.168.100.166:3001
+
+# Computer ID (harus sama dengan database)
+COMPUTER_ID=PC-01
+
+# Student ID
+STUDENT_ID=1
+
+# Monitoring intervals (milidetik)
+SYSTEM_MONITOR_INTERVAL=5000
+BROWSER_MONITOR_INTERVAL=10000
+
+# Logging
+LOG_LEVEL=info
+LOG_FILE=logs/agent.log`}</pre>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Windows Service Management</h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-green-50 rounded-xl p-4 border border-green-200">
+                  <p className="font-bold text-green-900 text-sm mb-2">✅ Install Service</p>
+                  <code className="text-xs text-green-800 font-mono">npm run install-service</code>
+                </div>
+                <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-200">
+                  <p className="font-bold text-yellow-900 text-sm mb-2">⚠️ Uninstall Service</p>
+                  <code className="text-xs text-yellow-800 font-mono">npm run uninstall-service</code>
+                </div>
+                <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
+                  <p className="font-bold text-blue-900 text-sm mb-2">🔍 Check Status</p>
+                  <code className="text-xs text-blue-800 font-mono">services.msc</code>
+                </div>
+              </div>
+
+              <div className="bg-green-50 border-l-4 border-green-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-green-900">Agent Setup Selesai!</p>
+                    <p className="text-green-800 text-sm mt-2 leading-relaxed">
+                      Agent sekarang berjalan di background dan mengirim data monitoring ke server secara real-time.
+                      Data akan muncul di dashboard admin dalam 5-10 detik.
+                    </p>
+                    <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="bg-white/60 rounded-lg p-3 border border-green-200">
+                        <p className="text-xs font-bold text-green-900 mb-1">✅ Data yang Dikirim:</p>
+                        <ul className="text-xs text-green-800 space-y-1">
+                          <li>• CPU & RAM usage (5 detik)</li>
+                          <li>• Network speed (5 detik)</li>
+                          <li>• Active application (5 detik)</li>
+                          <li>• Browser tabs (10 detik)</li>
+                        </ul>
+                      </div>
+                      <div className="bg-white/60 rounded-lg p-3 border border-green-200">
+                        <p className="text-xs font-bold text-green-900 mb-1">🎮 Remote Commands:</p>
+                        <ul className="text-xs text-green-800 space-y-1">
+                          <li>• Shutdown / Restart</li>
+                          <li>• Lock screen</li>
+                          <li>• Block internet</li>
+                          <li>• Show message</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <Lightbulb className="w-5 h-5 text-yellow-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-yellow-900">Tips Deploy Agent</p>
+                    <ul className="text-yellow-800 text-sm mt-2 space-y-1">
+                      <li>• Gunakan <strong>network share</strong> untuk copy agent ke banyak PC sekaligus</li>
+                      <li>• Buat <strong>batch script</strong> untuk automated deployment</li>
+                      <li>• Test agent di 1-2 PC dulu sebelum deploy ke semua PC</li>
+                      <li>• Monitor log agent untuk troubleshooting</li>
+                      <li>• Backup folder agent untuk recovery</li>
+                      <li>• Update agent secara berkala untuk fitur baru</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* 5. Login */}
           <section id="guide-login" className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
             <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-cyan-50">
               <div className="flex items-center gap-3">
@@ -1190,7 +1445,7 @@ socket.on('new-activity', (data) => {
                   <LogIn className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">4. Login & Akun</h3>
+                  <h3 className="text-xl font-bold text-gray-900">5. Login & Akun</h3>
                   <p className="text-sm text-gray-600">Masuk ke sistem dengan akun yang sesuai</p>
                 </div>
               </div>
@@ -1282,7 +1537,7 @@ socket.on('new-activity', (data) => {
                   <LayoutDashboard className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">5. Dashboard</h3>
+                  <h3 className="text-xl font-bold text-gray-900">6. Dashboard</h3>
                   <p className="text-sm text-gray-600">Ringkasan monitoring secara keseluruhan</p>
                 </div>
               </div>
@@ -1353,7 +1608,7 @@ socket.on('new-activity', (data) => {
                   <Monitor className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">6. Monitor Komputer</h3>
+                  <h3 className="text-xl font-bold text-gray-900">7. Monitor Komputer</h3>
                   <p className="text-sm text-gray-600">Melihat status semua komputer di lab</p>
                 </div>
               </div>
@@ -1425,7 +1680,7 @@ socket.on('new-activity', (data) => {
                   <Globe className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">7. Aktivitas Internet</h3>
+                  <h3 className="text-xl font-bold text-gray-900">8. Aktivitas Internet</h3>
                   <p className="text-sm text-gray-600">Memantau akses internet siswa</p>
                 </div>
               </div>
@@ -1518,7 +1773,7 @@ socket.on('new-activity', (data) => {
                   <AlertTriangle className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">8. Peringatan & Notifikasi</h3>
+                  <h3 className="text-xl font-bold text-gray-900">9. Peringatan & Notifikasi</h3>
                   <p className="text-sm text-gray-600">Memantau alert dari aktivitas siswa</p>
                 </div>
               </div>
@@ -1606,7 +1861,7 @@ socket.on('new-activity', (data) => {
                   <Network className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">9. Peta Jaringan</h3>
+                  <h3 className="text-xl font-bold text-gray-900">10. Peta Jaringan</h3>
                   <p className="text-sm text-gray-600">Visualisasi topologi jaringan LAN</p>
                 </div>
               </div>
@@ -1661,7 +1916,7 @@ socket.on('new-activity', (data) => {
                   <Shield className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">10. Kontrol Remote</h3>
+                  <h3 className="text-xl font-bold text-gray-900">11. Kontrol Remote</h3>
                   <p className="text-sm text-gray-600">Mengontrol komputer dari jarak jauh</p>
                 </div>
               </div>
@@ -1790,7 +2045,7 @@ socket.on('new-activity', (data) => {
                   <Wrench className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">11. Troubleshooting</h3>
+                  <h3 className="text-xl font-bold text-gray-900">12. Troubleshooting</h3>
                   <p className="text-sm text-gray-600">Masalah umum dan cara mengatasinya</p>
                 </div>
               </div>
