@@ -124,11 +124,44 @@ function App() {
     // Connect socket
     socketService.connect();
     
-    // Listen socket events
-    socketService.onComputerUpdated((data) => {
-      console.log('📡 Real-time update:', data);
-      // Refresh data
-      fetchData();
+    // Listen for real-time computer updates from agent
+    socketService.onComputerUpdated((data: any) => {
+      console.log('📡 Real-time computer update:', data);
+      
+      // Update computer in state directly (no need to refetch)
+      setComputers(prev => prev.map(c => 
+        c.id === data.computerId 
+          ? {
+              ...c,
+              status: data.status || c.status,
+              cpu: data.cpu ?? c.cpu,
+              ram: data.ram ?? c.ram,
+              networkSpeed: data.networkSpeed ?? c.networkSpeed,
+              currentApp: data.currentApp || c.currentApp,
+              currentUrl: data.currentUrl || c.currentUrl,
+            }
+          : c
+      ));
+    });
+
+    // Listen for real-time activity updates from agent
+    socketService.onNewActivity((data: any) => {
+      console.log('🌐 Real-time activity:', data);
+      
+      // Add new activity to state
+      const newActivity: BrowsingActivity = {
+        id: data.id?.toString() || Date.now().toString(),
+        timestamp: new Date(data.timestamp),
+        url: data.url || '',
+        domain: data.domain || '',
+        category: data.category || 'other',
+        duration: data.duration || 0,
+        studentName: data.studentName || 'Unknown',
+        computerId: data.computerId || '',
+        tabs: data.tabs || [],
+      };
+      
+      setActivities(prev => [newActivity, ...prev].slice(0, 100)); // Keep last 100
     });
 
     // Check socket connection
