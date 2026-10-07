@@ -83,11 +83,32 @@ function App() {
         }
 
         if (activitiesRes.data.success && activitiesRes.data.data.length > 0) {
-          setActivities(activitiesRes.data.data);
+          // Transform activities - convert timestamp string ke Date object
+          const transformedActivities: BrowsingActivity[] = activitiesRes.data.data.map((a: any) => ({
+            id: a.id.toString(),
+            timestamp: new Date(a.timestamp), // Convert string ke Date
+            url: a.url,
+            domain: a.domain,
+            category: a.category || 'other',
+            duration: a.duration || 0,
+            studentName: a.student_name || 'Unknown',
+            computerId: a.computer_id?.toString() || '',
+          }));
+          setActivities(transformedActivities);
         }
 
         if (alertsRes.data.success && alertsRes.data.data.length > 0) {
-          setAlerts(alertsRes.data.data);
+          // Transform alerts - convert timestamp string ke Date object
+          const transformedAlerts: Alert[] = alertsRes.data.data.map((al: any) => ({
+            id: al.id.toString(),
+            type: al.type,
+            message: al.message,
+            timestamp: new Date(al.timestamp), // Convert string ke Date
+            computerId: al.computer_id?.toString() || '',
+            studentName: al.student_name || 'Unknown',
+            is_read: al.is_read || false,
+          }));
+          setAlerts(transformedAlerts);
         }
 
       } catch (error) {
