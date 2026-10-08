@@ -43,6 +43,17 @@ export interface Computer {
   screenCapture?: string;
 }
 
+export interface Screenshot {
+  id: string;
+  computerId: string;
+  computerName: string;
+  studentName: string;
+  image: string; // base64 encoded image
+  timestamp: Date;
+  size: number;
+  path?: string;
+}
+
 export interface RemoteControlSession {
   id: string;
   computerId: string;

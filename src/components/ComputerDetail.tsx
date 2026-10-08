@@ -20,6 +20,23 @@ export default function ComputerDetail({ computer, activities, onClose }: Comput
   const handleAction = (action: string) => {
     console.log('🎮 Sending remote command from ComputerDetail:', { action, computerId: computer.id });
     
+    // Special handling for screenshot/view action
+    if (action === 'view' || action === 'screenshot') {
+      console.log('📸 Requesting screenshot from:', computer.id);
+      
+      // Emit screenshot request
+      socketService.emitScreenshotRequest({
+        computerId: computer.id,
+        computerName: computer.name,
+        studentName: computer.studentName,
+        timestamp: new Date().toISOString()
+      });
+      
+      setActionFeedback(`📸 Meminta screenshot dari ${computer.id}...`);
+      setTimeout(() => setActionFeedback(null), 3000);
+      return;
+    }
+    
     // Emit command ke backend via socket
     socketService.emitRemoteCommand({
       action,

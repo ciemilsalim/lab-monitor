@@ -86,6 +86,15 @@ class SocketService {
     this.registerListener('new-alert', callback);
   }
 
+  // Screenshot events
+  onScreenshotCaptured(callback: (data: any) => void): void {
+    this.registerListener('screenshot-captured', callback);
+  }
+
+  emitScreenshotRequest(data: any): void {
+    this.socket?.emit('request-screenshot', data);
+  }
+
   // Generic listener registration
   private registerListener(event: string, callback: Function): void {
     if (!this.listeners.has(event)) {

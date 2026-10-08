@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ViewMode, Computer, BrowsingActivity, Alert } from './types';
+import { ViewMode, Computer, BrowsingActivity, Alert, Screenshot } from './types';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import ComputerGrid from './components/ComputerGrid';
@@ -9,6 +9,7 @@ import AlertsView from './components/AlertsView';
 import NetworkMap from './components/NetworkMap';
 import GuidePage from './components/GuidePage';
 import LoginPage from './components/LoginPage';
+import ScreenshotViewer from './components/ScreenshotViewer';
 import { computers as mockComputers, activities as mockActivities, alerts as mockAlerts } from './data/mockData';
 import { computersAPI, activitiesAPI, alertsAPI } from './services/api';
 import socketService from './services/socket';
@@ -30,6 +31,10 @@ function App() {
   const [apiConnected, setApiConnected] = useState(false);
   const [socketConnected, setSocketConnected] = useState(false);
   const [useRealData, setUseRealData] = useState(false);
+  
+  // Screenshot state
+  const [currentScreenshot, setCurrentScreenshot] = useState<Screenshot | null>(null);
+  const [screenshots, setScreenshots] = useState<Screenshot[]>([]);
 
   // Check login status on mount
   useEffect(() => {
@@ -162,6 +167,28 @@ function App() {
       };
       
       setActivities(prev => [newActivity, ...prev].slice(0, 100)); // Keep last 100
+    });
+
+    // Listen for screenshot captures from agent
+    socketService.onScreenshotCaptured((data: any) => {
+      console.log('📸 Screenshot captured:', data.computerId);
+      
+      const newScreenshot: Screenshot = {
+        id: data.id || Date.now().toString(),
+        computerId: data.computerId,
+        computerName: data.computerName || 'Unknown',
+        studentName: data.studentName || 'Unknown',
+        image: data.image,
+        timestamp: new Date(data.timestamp || Date.now()),
+        size: data.size || 0,
+        path: data.path,
+      };
+      
+      // Add to screenshots array
+      setScreenshots(prev => [newScreenshot, ...prev].slice(0, 50)); // Keep last 50
+      
+      // Set as current screenshot to display
+      setCurrentScreenshot(newScreenshot);
     });
 
     // Check socket connection
@@ -338,6 +365,14 @@ function App() {
           computer={selectedComputer}
           activities={activities}
           onClose={() => setSelectedComputer(null)}
+        />
+      )}
+
+      {/* Screenshot Viewer Modal */}
+      {currentScreenshot && (
+        <ScreenshotViewer
+          screenshot={currentScreenshot}
+          onClose={() => setCurrentScreenshot(null)}
         />
       )}
     </div>
