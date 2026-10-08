@@ -225,13 +225,37 @@ MsgBox "${message}", vbInformation + vbSystemModal, "Pesan dari Admin"
     return new Promise((resolve) => {
       logger.info('🚫 Attempting to block internet...');
       
-      // Block ALL outbound traffic (more effective)
+      // Get backend server IP from config
+      const config = require('../utils/config');
+      const backendUrl = config.get('BACKEND_URL') || 'http://192.168.100.166:3001';
+      
+      // Extract IP from URL
+      let serverIp = '192.168.100.166'; // default
+      try {
+        const url = new URL(backendUrl);
+        serverIp = url.hostname;
+        logger.info(`📡 Backend server IP: ${serverIp}`);
+      } catch (e) {
+        logger.warn('⚠️ Could not parse backend URL, using default IP');
+      }
+      
+      // IMPORTANT: Whitelist server IP FIRST, then block internet
       const commands = [
-        // Block ALL outbound traffic (most effective)
+        // STEP 1: Allow traffic to backend server (agent needs this!)
+        `netsh advfirewall firewall add rule name="LabMonitor_Allow_Server" dir=out action=allow remoteip=${serverIp} protocol=any`,
+        
+        // STEP 2: Allow LAN traffic (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
+        'netsh advfirewall firewall add rule name="LabMonitor_Allow_LAN_192" dir=out action=allow remoteip=192.168.0.0/16 protocol=any',
+        'netsh advfirewall firewall add rule name="LabMonitor_Allow_LAN_10" dir=out action=allow remoteip=10.0.0.0/8 protocol=any',
+        'netsh advfirewall firewall add rule name="LabMonitor_Allow_LAN_172" dir=out action=allow remoteip=172.16.0.0/12 protocol=any',
+        
+        // STEP 3: Block ALL other outbound traffic (internet)
         'netsh advfirewall firewall add rule name="LabMonitor_Block_ALL_Out" dir=out action=block remoteip=any',
-        // Block HTTP/HTTPS specifically
+        
+        // STEP 4: Block HTTP/HTTPS specifically (extra layer)
         'netsh advfirewall firewall add rule name="LabMonitor_Block_HTTP" dir=out action=block protocol=TCP remoteport=80,443',
-        // Block DNS
+        
+        // STEP 5: Block DNS (UDP and TCP)
         'netsh advfirewall firewall add rule name="LabMonitor_Block_DNS" dir=out action=block protocol=UDP remoteport=53',
         'netsh advfirewall firewall add rule name="LabMonitor_Block_DNS_TCP" dir=out action=block protocol=TCP remoteport=53',
       ];
@@ -243,9 +267,10 @@ MsgBox "${message}", vbInformation + vbSystemModal, "Pesan dari Admin"
         if (index >= commands.length) {
           if (successCount > 0) {
             logger.info(`✅ Internet blocked: ${successCount}/${commands.length} rules applied`);
+            logger.info(`✅ Agent can still connect to server: ${serverIp}`);
             resolve({
               success: true,
-              message: `Internet blocked successfully (${successCount}/${commands.length} rules applied). Test: ping google.com should fail.`
+              message: `Internet blocked successfully. Agent still connected to server. Student cannot access internet.`
             });
           } else {
             resolve({
