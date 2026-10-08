@@ -79,12 +79,15 @@ function App() {
             currentUrl: c.current_url || '',
             row: 0,
             col: 0,
+            isConnected: c.isConnected || false,
+            lastHeartbeat: c.last_heartbeat || c.lastHeartbeat,
           }));
 
           setComputers(transformedComputers);
           setUseRealData(true);
           setApiConnected(true);
           console.log('✅ Data loaded from API:', transformedComputers.length, 'computers');
+          console.log('📊 Connected agents:', transformedComputers.filter(c => c.isConnected).length);
         }
 
         if (activitiesRes.data.success && activitiesRes.data.data.length > 0) {
@@ -156,6 +159,8 @@ function App() {
           name: data.name || prev[computerIndex].name,
           ipAddress: data.ipAddress || prev[computerIndex].ipAddress,
           os: data.os || prev[computerIndex].os,
+          isConnected: data.isConnected ?? prev[computerIndex].isConnected,
+          lastHeartbeat: data.lastHeartbeat || data.timestamp || prev[computerIndex].lastHeartbeat,
         };
         
         // Create new array with updated computer
@@ -173,9 +178,40 @@ function App() {
       });
     });
     
+    // Listen for computer OFFLINE events (NEW!)
+    socketService.on('computer-offline', (data: any) => {
+      console.log('🔴 Computer OFFLINE:', data.computerId, 'reason:', data.reason);
+      
+      setComputers(prev => {
+        const computerIndex = prev.findIndex(c => c.id === data.computerId);
+        
+        if (computerIndex === -1) {
+          return prev;
+        }
+        
+        const newComputers = [...prev];
+        newComputers[computerIndex] = {
+          ...newComputers[computerIndex],
+          status: 'offline',
+          isConnected: false,
+          cpu: 0,
+          ram: 0,
+          networkSpeed: 0,
+          currentApp: '',
+          currentUrl: '',
+        };
+        
+        console.log('✅ Computer marked offline in state:', data.computerId);
+        
+        return newComputers;
+      });
+    });
+    
     // Listen for full computer list (for sync)
     socketService.onComputerList((data: any) => {
       console.log('📋 Received full computer list:', data.length, 'computers');
+      console.log('🟢 Connected:', data.filter((c: any) => c.isConnected).length);
+      console.log('🔴 Offline:', data.filter((c: any) => !c.isConnected).length);
       
       const transformedComputers: Computer[] = data.map((c: any) => ({
         id: c.computerId,
@@ -194,6 +230,8 @@ function App() {
         currentUrl: c.currentUrl || '',
         row: 0,
         col: 0,
+        isConnected: c.isConnected || false,
+        lastHeartbeat: c.lastHeartbeat,
       }));
       
       setComputers(transformedComputers);

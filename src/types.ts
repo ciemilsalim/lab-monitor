@@ -41,6 +41,8 @@ export interface Computer {
   row: number;
   col: number;
   screenCapture?: string;
+  isConnected?: boolean; // Real-time connection status
+  lastHeartbeat?: string | Date; // Last time agent sent data
 }
 
 export interface Screenshot {

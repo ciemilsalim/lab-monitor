@@ -70,6 +70,27 @@ export default function ComputerGrid({ computers, onSelectComputer }: ComputerGr
               <p className="font-bold text-sm text-gray-900">{computer.id}</p>
               <p className="text-xs text-gray-600 mt-1">{computer.studentName.split(' ')[0]}</p>
 
+              {/* Real-time connection indicator */}
+              {computer.status === 'online' && computer.isConnected !== undefined && (
+                <div className={`mt-2 px-2 py-0.5 rounded-full text-xs font-semibold ${
+                  computer.isConnected 
+                    ? 'bg-green-100 text-green-700' 
+                    : 'bg-red-100 text-red-700'
+                }`}>
+                  {computer.isConnected ? '🟢 Connected' : '🔴 Disconnected'}
+                </div>
+              )}
+
+              {/* Last heartbeat indicator */}
+              {computer.lastHeartbeat && computer.status === 'online' && (
+                <p className="text-xs text-gray-500 mt-1">
+                  Last seen: {new Date(computer.lastHeartbeat).toLocaleTimeString('id-ID', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                  })}
+                </p>
+              )}
+
               {computer.status !== 'offline' && (
                 <div className="mt-3 w-full space-y-2">
                   <div className="flex items-center gap-2 text-xs">
