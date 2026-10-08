@@ -5,6 +5,7 @@ import {
   Wifi, Zap
 } from 'lucide-react';
 import { Computer, RemoteControlSession } from '../types';
+import socketService from '../services/socket';
 
 interface RemoteDesktopViewerProps {
   computer: Computer;
@@ -96,7 +97,31 @@ export default function RemoteDesktopViewer({ computer, onClose }: RemoteDesktop
       notify('⚠️ Aktifkan kontrol keyboard terlebih dahulu');
       return;
     }
+    
+    // Emit command ke backend via socket
+    console.log('🎮 Sending key combination:', combo);
+    socketService.emitRemoteCommand({
+      action: 'key_combination',
+      computerId: computer.id,
+      keys: combo,
+      timestamp: new Date().toISOString()
+    });
+    
     notify(`⌨️ Kombinasi tombol "${combo}" dikirim ke ${computer.id}`);
+  };
+
+  // Fungsi untuk mengirim command remote control
+  const sendRemoteCommand = (action: string, params: Record<string, any> = {}) => {
+    console.log('🎮 Sending remote command:', { action, computerId: computer.id, ...params });
+    
+    socketService.emitRemoteCommand({
+      action,
+      computerId: computer.id,
+      ...params,
+      timestamp: new Date().toISOString()
+    });
+    
+    notify(`✅ Perintah "${action}" dikirim ke ${computer.id}`);
   };
 
   const getConnectionColor = () => {
@@ -225,14 +250,14 @@ export default function RemoteDesktopViewer({ computer, onClose }: RemoteDesktop
         <div className="flex items-center gap-2">
           {/* Quick Actions */}
           <button
-            onClick={() => notify(`📸 Screenshot disimpan dari ${computer.id}`)}
+            onClick={() => sendRemoteCommand('screenshot')}
             className="flex items-center gap-2 px-3 py-2 bg-gray-700 text-gray-300 rounded-lg text-sm hover:bg-gray-600 transition-colors"
           >
             <Camera className="w-4 h-4" />
             Screenshot
           </button>
           <button
-            onClick={() => notify(`🔊 Audio dimatikan di ${computer.id}`)}
+            onClick={() => sendRemoteCommand('mute_audio')}
             className="flex items-center gap-2 px-3 py-2 bg-gray-700 text-gray-300 rounded-lg text-sm hover:bg-gray-600 transition-colors"
           >
             <VolumeX className="w-4 h-4" />
@@ -241,7 +266,7 @@ export default function RemoteDesktopViewer({ computer, onClose }: RemoteDesktop
           <button
             onClick={() => {
               const msg = prompt('Masukkan pesan untuk siswa:');
-              if (msg) notify(`💬 Pesan dikirim ke ${computer.id}: "${msg}"`);
+              if (msg) sendRemoteCommand('message', { message: msg });
             }}
             className="flex items-center gap-2 px-3 py-2 bg-gray-700 text-gray-300 rounded-lg text-sm hover:bg-gray-600 transition-colors"
           >
