@@ -172,13 +172,33 @@ function App() {
     // Listen for screenshot captures from agent
     socketService.onScreenshotCaptured((data: any) => {
       console.log('📸 Screenshot captured:', data.computerId);
+      console.log('📸 Image data length:', data.image?.length || 0);
+      
+      // Validate and fix base64 format
+      let validImage = data.image || '';
+      
+      // Check jika sudah ada prefix 'data:'
+      if (!validImage.startsWith('data:')) {
+        // Check jika ada prefix 'image/png;base64,' tanpa 'data:'
+        if (validImage.startsWith('image/png;base64,')) {
+          validImage = 'data:' + validImage;
+          console.log('📸 Fixed: Added "data:" prefix');
+        } 
+        // Check jika hanya base64 string tanpa prefix
+        else if (!validImage.includes('base64,')) {
+          validImage = 'data:image/png;base64,' + validImage;
+          console.log('📸 Fixed: Added full data URI prefix');
+        }
+      }
+      
+      console.log('📸 Image format valid:', validImage.substring(0, 50) + '...');
       
       const newScreenshot: Screenshot = {
         id: data.id || Date.now().toString(),
         computerId: data.computerId,
         computerName: data.computerName || 'Unknown',
         studentName: data.studentName || 'Unknown',
-        image: data.image,
+        image: validImage,
         timestamp: new Date(data.timestamp || Date.now()),
         size: data.size || 0,
         path: data.path,

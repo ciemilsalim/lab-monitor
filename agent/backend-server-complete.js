@@ -40,7 +40,9 @@ const io = socketIo(server, {
     credentials: true
   },
   pingInterval: parseInt(process.env.SOCKET_PING_INTERVAL) || 25000,
-  pingTimeout: parseInt(process.env.SOCKET_PING_TIMEOUT) || 60000
+  pingTimeout: parseInt(process.env.SOCKET_PING_TIMEOUT) || 60000,
+  maxHttpBufferSize: 50 * 1024 * 1024, // 50 MB - untuk base64 image besar
+  transports: ['websocket', 'polling']
 });
 
 // ========================================

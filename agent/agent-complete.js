@@ -196,32 +196,42 @@ class LabMonitorAgent {
         // Take screenshot
         const result = await this.remoteController.takeScreenshot();
         
-        if (result.success && result.path) {
-          // Read screenshot file and convert to base64
-          fs.readFile(result.path, (err, fileData) => {
-            if (err) {
-              logger.error('❌ Failed to read screenshot file:', err.message);
-              return;
-            }
-            
-            // Convert to base64
+        if (result.success) {
+          let imageData = '';
+          let imageSize = 0;
+          
+          // Check jika result sudah ada image (base64)
+          if (result.image) {
+            // Gunakan langsung dari result
+            imageData = result.image;
+            imageSize = result.size || 0;
+            logger.info('✅ Using pre-encoded image from result');
+          } else if (result.path) {
+            // Baca file dan convert ke base64
+            const fileData = fs.readFileSync(result.path);
             const base64Image = fileData.toString('base64');
+            imageData = `data:image/png;base64,${base64Image}`;
+            imageSize = fileData.length;
+            logger.info('✅ Converted file to base64');
+          } else {
+            logger.error('❌ No image data or path in result');
+            return;
+          }
             
-            // Emit screenshot to backend
-            this.socketService.emit('screenshot-captured', {
-              id: Date.now().toString(),
-              computerId: this.computerId,
-              computerName: data.computerName || 'Unknown',
-              studentName: data.studentName || 'Unknown',
-              image: `image/png;base64,${base64Image}`,
-              timestamp: new Date().toISOString(),
-              size: fileData.length,
-              path: result.path
-            });
-            
-            logger.info('✅ Screenshot sent to backend');
-            logger.info(`✅ Image size: ${(fileData.length / 1024).toFixed(2)} KB`);
+          // Emit screenshot to backend
+          this.socketService.emit('screenshot-captured', {
+            id: Date.now().toString(),
+            computerId: this.computerId,
+            computerName: data.computerName || 'Unknown',
+            studentName: data.studentName || 'Unknown',
+            image: imageData,
+            timestamp: new Date().toISOString(),
+            size: imageSize,
+            path: result.path
           });
+          
+          logger.info('✅ Screenshot sent to backend');
+          logger.info(`✅ Image size: ${(imageSize / 1024).toFixed(2)} KB`);
         } else {
           logger.error('❌ Failed to take screenshot:', result.message);
         }

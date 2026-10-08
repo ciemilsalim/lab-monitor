@@ -14,6 +14,26 @@ export default function ScreenshotViewer({ screenshot, onClose }: ScreenshotView
 
   useEffect(() => {
     if (screenshot?.image) {
+      // Validate and fix base64 format
+      let validImage = screenshot.image;
+      
+      // Check jika sudah ada prefix 'data:'
+      if (!validImage.startsWith('data:')) {
+        // Check jika ada prefix 'image/png;base64,' tanpa 'data:'
+        if (validImage.startsWith('image/png;base64,')) {
+          validImage = 'data:' + validImage;
+        } 
+        // Check jika hanya base64 string tanpa prefix
+        else if (!validImage.includes('base64,')) {
+          validImage = 'data:image/png;base64,' + validImage;
+        }
+      }
+      
+      console.log('📸 Image format:', validImage.substring(0, 50) + '...');
+      console.log('📸 Image size:', (screenshot.size / 1024).toFixed(2), 'KB');
+      
+      // Update screenshot dengan format yang benar
+      screenshot.image = validImage;
       setIsLoading(false);
     }
   }, [screenshot]);
