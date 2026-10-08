@@ -19,55 +19,78 @@ class RemoteController {
 
       let result;
 
-      switch (command.action) {
+      // Normalize action name (accept multiple variations)
+      const action = command.action.toLowerCase().replace(/[-_\s]/g, '_');
+      
+      switch (action) {
         case 'shutdown':
+        case 'shut_down':
+        case 'power_off':
           logger.info('⏹️ Executing SHUTDOWN command');
           result = await this.shutdown(command.delay || 0);
           break;
         
         case 'restart':
+        case 'reboot':
           logger.info('🔄 Executing RESTART command');
           result = await this.restart(command.delay || 0);
           break;
         
         case 'lock':
+        case 'lock_screen':
+        case 'lockscreen':
           logger.info('🔒 Executing LOCK SCREEN command');
           result = await this.lockScreen();
           break;
         
         case 'message':
+        case 'show_message':
+        case 'send_message':
+        case 'msg':
           logger.info('💬 Executing SHOW MESSAGE command');
           result = await this.showMessage(command.message || 'Pesan dari admin');
           break;
         
         case 'block_internet':
+        case 'block':
+        case 'block_network':
+        case 'disable_internet':
           logger.info('🚫 Executing BLOCK INTERNET command');
           result = await this.blockInternet();
           break;
         
         case 'unblock_internet':
+        case 'unblock':
+        case 'unblock_network':
+        case 'enable_internet':
           logger.info('✅ Executing UNBLOCK INTERNET command');
           result = await this.unblockInternet();
           break;
         
         case 'screenshot':
         case 'view_screen':
+        case 'screen':
+        case 'capture':
           logger.info('📸 Executing VIEW SCREEN / SCREENSHOT command');
           result = await this.takeScreenshot();
           break;
         
         case 'open_url':
+        case 'openurl':
+        case 'open_browser':
           logger.info('🌐 Executing OPEN URL command');
           result = await this.openUrl(command.url);
           break;
         
         case 'close_app':
+        case 'close':
+        case 'kill_app':
           logger.info('❌ Executing CLOSE APP command');
           result = await this.closeApp(command.appName);
           break;
         
         default:
-          logger.warn(`⚠️ Unknown command: ${command.action}`);
+          logger.warn(`⚠️ Unknown command: ${command.action} (normalized: ${action})`);
           result = {
             success: false,
             message: `Unknown command: ${command.action}`
