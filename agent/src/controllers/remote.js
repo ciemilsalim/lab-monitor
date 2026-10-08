@@ -368,10 +368,28 @@ Write-Host "Screenshot saved to: ${screenshotPath.replace(/\\/g, '\\\\')}"
             });
           } else {
             logger.info('✅ Screenshot saved to:', screenshotPath);
-            resolve({
-              success: true,
-              message: 'Screenshot taken successfully',
-              path: screenshotPath
+            
+            // Read screenshot file and convert to base64
+            fs.readFile(screenshotPath, (err, data) => {
+              if (err) {
+                logger.error('Failed to read screenshot:', err.message);
+                resolve({
+                  success: true,
+                  message: 'Screenshot taken but failed to read file',
+                  path: screenshotPath
+                });
+              } else {
+                // Convert to base64 for sending via socket
+                const base64Image = data.toString('base64');
+                
+                resolve({
+                  success: true,
+                  message: 'Screenshot taken successfully',
+                  path: screenshotPath,
+                  image: `data:image/png;base64,${base64Image}`,
+                  size: data.length
+                });
+              }
             });
           }
         });
