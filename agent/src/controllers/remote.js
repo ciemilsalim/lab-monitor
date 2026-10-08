@@ -51,7 +51,8 @@ class RemoteController {
           break;
         
         case 'screenshot':
-          logger.info('📸 Executing SCREENSHOT command');
+        case 'view_screen':
+          logger.info('📸 Executing VIEW SCREEN / SCREENSHOT command');
           result = await this.takeScreenshot();
           break;
         
@@ -196,44 +197,97 @@ MsgBox "${message}", vbInformation + vbSystemModal, "Pesan dari Admin"
 
   async blockInternet() {
     return new Promise((resolve) => {
-      // Block internet by disabling network adapter or adding firewall rules
-      // Method 1: Add firewall rule to block all outbound traffic
-      const command = 'netsh advfirewall firewall add rule name="LabMonitor_Block" dir=out action=block protocol=any enable=yes';
+      logger.info('🚫 Attempting to block internet...');
       
-      exec(command, { shell: 'cmd.exe' }, (error) => {
-        if (error) {
-          resolve({
-            success: false,
-            message: `Failed to block internet: ${error.message}`
-          });
-        } else {
-          resolve({
-            success: true,
-            message: 'Internet blocked successfully'
-          });
+      // Block internet by adding firewall rules
+      const commands = [
+        // Block all outbound HTTP/HTTPS
+        'netsh advfirewall firewall add rule name="LabMonitor_Block_HTTP" dir=out action=block protocol=TCP remoteport=80,443',
+        // Block all outbound DNS
+        'netsh advfirewall firewall add rule name="LabMonitor_Block_DNS" dir=out action=block protocol=UDP remoteport=53',
+        // Block all outbound TCP
+        'netsh advfirewall firewall add rule name="LabMonitor_Block_TCP" dir=out action=block protocol=TCP',
+      ];
+      
+      let successCount = 0;
+      let errorMessages = [];
+      
+      const executeCommands = (index) => {
+        if (index >= commands.length) {
+          if (successCount > 0) {
+            resolve({
+              success: true,
+              message: `Internet blocked successfully (${successCount}/${commands.length} rules applied)`
+            });
+          } else {
+            resolve({
+              success: false,
+              message: `Failed to block internet. Errors: ${errorMessages.join('; ')}. Make sure agent is running as Administrator.`
+            });
+          }
+          return;
         }
-      });
+
+        exec(commands[index], { shell: 'cmd.exe' }, (error, stdout, stderr) => {
+          if (error) {
+            logger.error(`❌ Command ${index + 1} failed:`, error.message);
+            errorMessages.push(`Rule ${index + 1}: ${error.message}`);
+          } else {
+            logger.info(`✅ Command ${index + 1} succeeded`);
+            successCount++;
+          }
+          
+          executeCommands(index + 1);
+        });
+      };
+      
+      executeCommands(0);
     });
   }
 
   async unblockInternet() {
     return new Promise((resolve) => {
-      // Remove firewall rule
-      const command = 'netsh advfirewall firewall delete rule name="LabMonitor_Block"';
+      logger.info('✅ Attempting to unblock internet...');
       
-      exec(command, { shell: 'cmd.exe' }, (error) => {
-        if (error) {
-          resolve({
-            success: false,
-            message: `Failed to unblock internet: ${error.message}`
-          });
-        } else {
-          resolve({
-            success: true,
-            message: 'Internet unblocked successfully'
-          });
+      // Remove all LabMonitor firewall rules
+      const commands = [
+        'netsh advfirewall firewall delete rule name="LabMonitor_Block_HTTP"',
+        'netsh advfirewall firewall delete rule name="LabMonitor_Block_DNS"',
+        'netsh advfirewall firewall delete rule name="LabMonitor_Block_TCP"',
+      ];
+      
+      let successCount = 0;
+      let errorMessages = [];
+      
+      const executeCommands = (index) => {
+        if (index >= commands.length) {
+          if (successCount > 0) {
+            resolve({
+              success: true,
+              message: `Internet unblocked successfully (${successCount}/${commands.length} rules removed)`
+            });
+          } else {
+            resolve({
+              success: true,
+              message: 'Internet unblocked (no rules found or already unblocked)'
+            });
+          }
+          return;
         }
-      });
+
+        exec(commands[index], { shell: 'cmd.exe' }, (error, stdout, stderr) => {
+          if (error) {
+            logger.debug(`Rule ${index + 1} not found or already removed`);
+          } else {
+            logger.info(`✅ Rule ${index + 1} removed`);
+            successCount++;
+          }
+          
+          executeCommands(index + 1);
+        });
+      };
+      
+      executeCommands(0);
     });
   }
 
