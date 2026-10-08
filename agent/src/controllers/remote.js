@@ -316,35 +316,65 @@ MsgBox "${message}", vbInformation + vbSystemModal, "Pesan dari Admin"
 
   async takeScreenshot() {
     return new Promise((resolve) => {
-      // Use PowerShell to take screenshot
-      const timestamp = Date.now();
-      const screenshotPath = `${process.env.TEMP}\\labmonitor_screenshot_${timestamp}.png`;
+      const fs = require('fs');
+      const path = require('path');
       
-      const psCommand = `
+      const timestamp = Date.now();
+      const screenshotPath = path.join(process.env.TEMP || 'C:\\Temp', `labmonitor_screenshot_${timestamp}.png`);
+      
+      // Create PowerShell script file (more reliable than inline command)
+      const psScript = `
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
+
 $screen = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
 $bitmap = New-Object System.Drawing.Bitmap($screen.Width, $screen.Height)
 $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
-$graphics.CopyFromScreen($screen.Location, [System.Drawing.Point]::Empty, $screen.Size)
-$bitmap.Save('${screenshotPath}')
+
+$point = New-Object System.Drawing.Point(0, 0)
+$graphics.CopyFromScreen($screen.Location, $point, $screen.Size)
+
+$bitmap.Save('${screenshotPath.replace(/\\/g, '\\\\')}')
+
 $graphics.Dispose()
 $bitmap.Dispose()
+
+Write-Host "Screenshot saved to: ${screenshotPath.replace(/\\/g, '\\\\')}"
 `;
 
-      exec(`powershell -Command "${psCommand.replace(/\n/g, ' ')}"`, (error) => {
-        if (error) {
+      const psScriptPath = path.join(process.env.TEMP || 'C:\\Temp', `labmonitor_screenshot_script_${timestamp}.ps1`);
+      
+      // Write PowerShell script to file
+      fs.writeFile(psScriptPath, psScript, (err) => {
+        if (err) {
           resolve({
             success: false,
-            message: `Failed to take screenshot: ${error.message}`
+            message: `Failed to create screenshot script: ${err.message}`
           });
-        } else {
-          resolve({
-            success: true,
-            message: 'Screenshot taken successfully',
-            path: screenshotPath
-          });
+          return;
         }
+
+        // Execute PowerShell script
+        exec(`powershell -ExecutionPolicy Bypass -File "${psScriptPath}"`, (error, stdout, stderr) => {
+          // Clean up script file
+          fs.unlink(psScriptPath, () => {});
+          
+          if (error) {
+            logger.error('Screenshot error:', error.message);
+            logger.error('Stderr:', stderr);
+            resolve({
+              success: false,
+              message: `Failed to take screenshot: ${error.message}`
+            });
+          } else {
+            logger.info('✅ Screenshot saved to:', screenshotPath);
+            resolve({
+              success: true,
+              message: 'Screenshot taken successfully',
+              path: screenshotPath
+            });
+          }
+        });
       });
     });
   }
