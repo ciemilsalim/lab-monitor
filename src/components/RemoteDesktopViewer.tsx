@@ -139,14 +139,73 @@ export default function RemoteDesktopViewer({ computer, onClose }: RemoteDesktop
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
     setMousePosition({ x, y });
+    
+    // Send mouse move to agent
+    socketService.emitRemoteCommand({
+      action: 'mouse_move',
+      computerId: computer.id,
+      x: x,
+      y: y,
+      timestamp: new Date().toISOString()
+    });
+  };
+
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!session.mouseControl) return;
+    e.preventDefault();
+    
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    
+    // Determine button
+    const button = e.button === 0 ? 'left' : e.button === 2 ? 'right' : 'middle';
+    
+    // Send mouse click to agent
+    socketService.emitRemoteCommand({
+      action: 'mouse_click',
+      computerId: computer.id,
+      button: button,
+      x: x,
+      y: y,
+      timestamp: new Date().toISOString()
+    });
+    
+    notify(`🖱️ ${button.charAt(0).toUpperCase() + button.slice(1)} click at (${Math.round(x)}%, ${Math.round(y)}%)`);
+  };
+
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    if (!session.mouseControl) return;
+    e.preventDefault();
+    
+    const direction = e.deltaY < 0 ? 'up' : 'down';
+    const amount = Math.abs(Math.round(e.deltaY / 100));
+    
+    // Send scroll to agent
+    socketService.emitRemoteCommand({
+      action: 'mouse_scroll',
+      computerId: computer.id,
+      direction: direction,
+      amount: amount,
+      timestamp: new Date().toISOString()
+    });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!session.keyboardControl) return;
     e.preventDefault();
+    
     setIsTyping(true);
     setTypedText(prev => prev + e.key);
     setTimeout(() => setIsTyping(false), 500);
+    
+    // Send key press to agent
+    socketService.emitRemoteCommand({
+      action: 'press_key',
+      computerId: computer.id,
+      key: e.key,
+      timestamp: new Date().toISOString()
+    });
   };
 
   const sendKeyCombination = (combo: string) => {
@@ -361,8 +420,16 @@ export default function RemoteDesktopViewer({ computer, onClose }: RemoteDesktop
       <div
         className="flex-1 relative overflow-hidden bg-gray-950"
         onMouseMove={handleMouseMove}
+        onMouseDown={handleMouseDown}
+        onWheel={handleWheel}
         onKeyDown={handleKeyDown}
         tabIndex={0}
+        onContextMenu={(e) => {
+          if (session.mouseControl) {
+            e.preventDefault();
+            handleMouseDown({ ...e, button: 2 } as any);
+          }
+        }}
       >
         {/* View Only Mode - Tampilkan Screenshot */}
         {session.viewOnly ? (
@@ -521,26 +588,58 @@ export default function RemoteDesktopViewer({ computer, onClose }: RemoteDesktop
               </div>
             </div>
 
-            {/* Remote Cursor */}
+            {/* Remote Cursor - Enhanced */}
             {session.mouseControl && (
-              <div
-                className="absolute pointer-events-none transition-all duration-75"
-                style={{ left: `${mousePosition.x}%`, top: `${mousePosition.y}%` }}
-              >
-                <svg width="20" height="20" viewBox="0 0 20 20" className="drop-shadow-lg">
-                  <path d="M0,0 L0,16 L4,12 L7,18 L9,17 L6,11 L12,11 Z" fill="white" stroke="black" strokeWidth="1" />
-                </svg>
-                <div className="absolute -top-6 left-4 bg-black/80 text-white text-xs px-2 py-0.5 rounded whitespace-nowrap">
-                  Admin Remote
+              <>
+                <div
+                  className="absolute pointer-events-none transition-all duration-75 z-50"
+                  style={{ left: `${mousePosition.x}%`, top: `${mousePosition.y}%` }}
+                >
+                  <svg width="24" height="24" viewBox="0 0 20 20" className="drop-shadow-lg">
+                    <path d="M0,0 L0,16 L4,12 L7,18 L9,17 L6,11 L12,11 Z" fill="#3b82f6" stroke="white" strokeWidth="1.5" />
+                  </svg>
+                  <div className="absolute -top-8 left-6 bg-blue-600 text-white text-xs px-2 py-1 rounded whitespace-nowrap shadow-lg">
+                    Admin Remote
+                  </div>
                 </div>
+                
+                {/* Control Mode Indicator */}
+                <div className="absolute top-4 left-4 bg-green-600/90 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-lg">
+                  <MousePointer className="w-5 h-5" />
+                  <Keyboard className="w-5 h-5" />
+                  <span className="font-medium">Mode Kontrol Aktif</span>
+                </div>
+
+                {/* Mouse Position Indicator */}
+                <div className="absolute top-4 right-4 bg-black/70 text-white px-3 py-1.5 rounded-lg text-xs font-mono">
+                  X: {Math.round(mousePosition.x)}% Y: {Math.round(mousePosition.y)}%
+                </div>
+              </>
+            )}
+
+            {/* Typing Indicator - Enhanced */}
+            {isTyping && session.keyboardControl && (
+              <div className="absolute top-16 right-4 bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 animate-pulse shadow-lg">
+                <Keyboard className="w-3 h-3" />
+                Mengetik: {typedText.slice(-20)}
               </div>
             )}
 
-            {/* Typing Indicator */}
-            {isTyping && session.keyboardControl && (
-              <div className="absolute top-4 right-4 bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 animate-pulse">
-                <Keyboard className="w-3 h-3" />
-                Mengetik...
+            {/* Control Instructions */}
+            {session.mouseControl && (
+              <div className="absolute bottom-4 left-4 bg-black/70 text-white px-4 py-2 rounded-lg text-xs space-y-1">
+                <p className="font-semibold mb-1">🖱️ Kontrol Mouse:</p>
+                <p>• Gerakkan mouse untuk menggerakkan cursor</p>
+                <p>• Klik kiri/kanan untuk klik</p>
+                <p>• Scroll untuk scroll</p>
+              </div>
+            )}
+
+            {session.keyboardControl && (
+              <div className="absolute bottom-4 right-4 bg-black/70 text-white px-4 py-2 rounded-lg text-xs space-y-1">
+                <p className="font-semibold mb-1">⌨️ Kontrol Keyboard:</p>
+                <p>• Ketik untuk mengirim teks</p>
+                <p>• Gunakan tombol shortcut di toolbar</p>
               </div>
             )}
           </div>

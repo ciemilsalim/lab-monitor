@@ -92,6 +92,44 @@ class RemoteController {
           result = await this.closeApp(command.appName);
           break;
         
+        case 'mouse_move':
+        case 'move_mouse':
+          logger.info('🖱️ Executing MOUSE MOVE command');
+          result = await this.moveMouse(command.x, command.y);
+          break;
+        
+        case 'mouse_click':
+        case 'click':
+        case 'click_mouse':
+          logger.info('🖱️ Executing MOUSE CLICK command');
+          result = await this.clickMouse(command.button || 'left', command.x, command.y);
+          break;
+        
+        case 'mouse_scroll':
+        case 'scroll':
+          logger.info('🖱️ Executing MOUSE SCROLL command');
+          result = await this.scrollMouse(command.direction, command.amount);
+          break;
+        
+        case 'type_text':
+        case 'type':
+          logger.info('⌨️ Executing TYPE TEXT command');
+          result = await this.typeText(command.text);
+          break;
+        
+        case 'press_key':
+        case 'key':
+          logger.info('⌨️ Executing PRESS KEY command');
+          result = await this.pressKey(command.key);
+          break;
+        
+        case 'key_combination':
+        case 'combo':
+        case 'hotkey':
+          logger.info('⌨️ Executing KEY COMBINATION command');
+          result = await this.keyCombination(command.keys);
+          break;
+        
         default:
           logger.warn(`⚠️ Unknown command: ${command.action} (normalized: ${action})`);
           result = {
@@ -452,6 +490,288 @@ Write-Host "Screenshot saved to: ${screenshotPath.replace(/\\/g, '\\\\')}"
           resolve({
             success: true,
             message: `Application closed: ${appName}`
+          });
+        }
+      });
+    });
+  }
+
+  // ========================================
+  // MOUSE CONTROL METHODS
+  // ========================================
+
+  async moveMouse(x, y) {
+    return new Promise((resolve) => {
+      // Convert percentage to actual screen coordinates
+      const screenX = Math.round((x / 100) * 1920); // Assume 1920x1080
+      const screenY = Math.round((y / 100) * 1080);
+      
+      const psCommand = `
+Add-Type -AssemblyName System.Windows.Forms
+[System.Windows.Forms.Cursor]::Position = New-Object System.Drawing.Point(${screenX}, ${screenY})
+`;
+      
+      exec(`powershell -Command "${psCommand.replace(/\n/g, ' ')}"`, (error) => {
+        if (error) {
+          resolve({
+            success: false,
+            message: `Failed to move mouse: ${error.message}`
+          });
+        } else {
+          logger.info(`✅ Mouse moved to: ${screenX}, ${screenY}`);
+          resolve({
+            success: true,
+            message: `Mouse moved to: ${screenX}, ${screenY}`
+          });
+        }
+      });
+    });
+  }
+
+  async clickMouse(button = 'left', x, y) {
+    return new Promise(async (resolve) => {
+      try {
+        // Move mouse first if coordinates provided
+        if (x !== undefined && y !== undefined) {
+          await this.moveMouse(x, y);
+          await new Promise(r => setTimeout(r, 100)); // Wait for mouse move
+        }
+
+        // Map button to Windows API constants
+        const buttonMap = {
+          'left': 'LEFTDOWN',
+          'right': 'RIGHTDOWN',
+          'middle': 'MIDDLEDOWN'
+        };
+        
+        const downFlag = buttonMap[button] || 'LEFTDOWN';
+        const upFlag = downFlag.replace('DOWN', 'UP');
+
+        const psCommand = `
+Add-Type -AssemblyName System.Windows.Forms
+[System.Windows.Forms.SendKeys]::SendWait('{${downFlag}}')
+Start-Sleep -Milliseconds 50
+[System.Windows.Forms.SendKeys]::SendWait('{${upFlag}}')
+`;
+        
+        exec(`powershell -Command "${psCommand.replace(/\n/g, ' ')}"`, (error) => {
+          if (error) {
+            resolve({
+              success: false,
+              message: `Failed to click mouse: ${error.message}`
+            });
+          } else {
+            logger.info(`✅ Mouse ${button} click executed`);
+            resolve({
+              success: true,
+              message: `Mouse ${button} click executed`
+            });
+          }
+        });
+      } catch (error) {
+        resolve({
+          success: false,
+          message: `Failed to click mouse: ${error.message}`
+        });
+      }
+    });
+  }
+
+  async scrollMouse(direction = 'down', amount = 3) {
+    return new Promise((resolve) => {
+      const scrollAmount = direction === 'up' ? amount : -amount;
+      
+      const psCommand = `
+Add-Type -TypeDefinition @"
+using System;
+using System.Runtime.InteropServices;
+public class MouseHelper {
+    [DllImport("user32.dll")]
+    public static extern void mouse_event(uint dwFlags, int dx, int dy, uint dwData, int dwExtraInfo);
+    public const uint MOUSEEVENTF_WHEEL = 0x0800;
+    public static void Scroll(int amount) {
+        mouse_event(MOUSEEVENTF_WHEEL, 0, 0, (uint)amount, 0);
+    }
+}
+"@
+[MouseHelper]::Scroll(${scrollAmount * 120})
+`;
+      
+      exec(`powershell -Command "${psCommand.replace(/\n/g, ' ')}"`, (error) => {
+        if (error) {
+          resolve({
+            success: false,
+            message: `Failed to scroll mouse: ${error.message}`
+          });
+        } else {
+          logger.info(`✅ Mouse scrolled ${direction} by ${amount}`);
+          resolve({
+            success: true,
+            message: `Mouse scrolled ${direction} by ${amount}`
+          });
+        }
+      });
+    });
+  }
+
+  // ========================================
+  // KEYBOARD CONTROL METHODS
+  // ========================================
+
+  async typeText(text) {
+    return new Promise((resolve) => {
+      // Escape special characters for PowerShell
+      const escapedText = text.replace(/'/g, "''").replace(/"/g, '""');
+      
+      const psCommand = `
+Add-Type -AssemblyName System.Windows.Forms
+[System.Windows.Forms.SendKeys]::SendWait('${escapedText}')
+`;
+      
+      exec(`powershell -Command "${psCommand.replace(/\n/g, ' ')}"`, (error) => {
+        if (error) {
+          resolve({
+            success: false,
+            message: `Failed to type text: ${error.message}`
+          });
+        } else {
+          logger.info(`✅ Text typed: ${text}`);
+          resolve({
+            success: true,
+            message: `Text typed: ${text}`
+          });
+        }
+      });
+    });
+  }
+
+  async pressKey(key) {
+    return new Promise((resolve) => {
+      // Map common keys to SendKeys format
+      const keyMap = {
+        'enter': '{ENTER}',
+        'return': '{ENTER}',
+        'tab': '{TAB}',
+        'escape': '{ESC}',
+        'esc': '{ESC}',
+        'backspace': '{BACKSPACE}',
+        'delete': '{DELETE}',
+        'del': '{DELETE}',
+        'space': ' ',
+        'up': '{UP}',
+        'down': '{DOWN}',
+        'left': '{LEFT}',
+        'right': '{RIGHT}',
+        'home': '{HOME}',
+        'end': '{END}',
+        'pageup': '{PGUP}',
+        'pagedown': '{PGDN}',
+        'f1': '{F1}',
+        'f2': '{F2}',
+        'f3': '{F3}',
+        'f4': '{F4}',
+        'f5': '{F5}',
+        'f6': '{F6}',
+        'f7': '{F7}',
+        'f8': '{F8}',
+        'f9': '{F9}',
+        'f10': '{F10}',
+        'f11': '{F11}',
+        'f12': '{F12}'
+      };
+      
+      const sendKey = keyMap[key.toLowerCase()] || `{${key.toUpperCase()}}`;
+      
+      const psCommand = `
+Add-Type -AssemblyName System.Windows.Forms
+[System.Windows.Forms.SendKeys]::SendWait('${sendKey}')
+`;
+      
+      exec(`powershell -Command "${psCommand.replace(/\n/g, ' ')}"`, (error) => {
+        if (error) {
+          resolve({
+            success: false,
+            message: `Failed to press key: ${error.message}`
+          });
+        } else {
+          logger.info(`✅ Key pressed: ${key}`);
+          resolve({
+            success: true,
+            message: `Key pressed: ${key}`
+          });
+        }
+      });
+    });
+  }
+
+  async keyCombination(keys) {
+    return new Promise((resolve) => {
+      // Parse key combination (e.g., "Ctrl+Alt+Del", "Ctrl+C", "Alt+Tab")
+      const keyArray = keys.split('+').map(k => k.trim().toLowerCase());
+      
+      // Map to SendKeys format
+      const modifierMap = {
+        'ctrl': '^',
+        'control': '^',
+        'alt': '%',
+        'shift': '+',
+        'win': '^({ESC})'
+      };
+      
+      let sendKeys = '';
+      let specialKey = '';
+      
+      for (const key of keyArray) {
+        if (modifierMap[key]) {
+          sendKeys += modifierMap[key];
+        } else {
+          specialKey = key;
+        }
+      }
+      
+      // Handle special combinations
+      if (keys.toLowerCase().includes('ctrl+alt+del')) {
+        // Ctrl+Alt+Del requires special handling
+        const psCommand = `
+Add-Type -AssemblyName System.Windows.Forms
+[System.Windows.Forms.SendKeys]::SendWait('^(%({DELETE}))')
+`;
+        exec(`powershell -Command "${psCommand.replace(/\n/g, ' ')}"`, (error) => {
+          if (error) {
+            resolve({
+              success: false,
+              message: `Failed to send key combination: ${error.message}`
+            });
+          } else {
+            logger.info(`✅ Key combination sent: ${keys}`);
+            resolve({
+              success: true,
+              message: `Key combination sent: ${keys}`
+            });
+          }
+        });
+        return;
+      }
+      
+      // Regular key combination
+      sendKeys += specialKey.toUpperCase();
+      
+      const psCommand = `
+Add-Type -AssemblyName System.Windows.Forms
+[System.Windows.Forms.SendKeys]::SendWait('${sendKeys}')
+`;
+      
+      exec(`powershell -Command "${psCommand.replace(/\n/g, ' ')}"`, (error) => {
+        if (error) {
+          resolve({
+            success: false,
+            message: `Failed to send key combination: ${error.message}`
+          });
+        } else {
+          logger.info(`✅ Key combination sent: ${keys}`);
+          resolve({
+            success: true,
+            message: `Key combination sent: ${keys}`
           });
         }
       });
