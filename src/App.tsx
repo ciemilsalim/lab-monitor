@@ -133,21 +133,78 @@ function App() {
     socketService.onComputerUpdated((data: any) => {
       console.log('📡 Real-time computer update:', data);
       
-      // Update computer in state directly (no need to refetch)
-      setComputers(prev => prev.map(c => 
-        c.id === data.computerId 
-          ? {
-              ...c,
-              status: data.status || c.status,
-              cpu: data.cpu ?? c.cpu,
-              ram: data.ram ?? c.ram,
-              networkSpeed: data.networkSpeed ?? c.networkSpeed,
-              currentApp: data.currentApp || c.currentApp,
-              currentUrl: data.currentUrl || c.currentUrl,
-            }
-          : c
-      ));
+      // Update computer in state with FULL data from backend
+      setComputers(prev => {
+        const computerIndex = prev.findIndex(c => c.id === data.computerId);
+        
+        if (computerIndex === -1) {
+          console.warn('⚠️ Computer not found in state:', data.computerId);
+          return prev;
+        }
+        
+        // Create updated computer object with all fields
+        const updatedComputer = {
+          ...prev[computerIndex],
+          status: data.status || prev[computerIndex].status,
+          cpu: data.cpu ?? prev[computerIndex].cpu,
+          ram: data.ram ?? prev[computerIndex].ram,
+          networkSpeed: data.networkSpeed ?? prev[computerIndex].networkSpeed,
+          currentApp: data.currentApp || prev[computerIndex].currentApp,
+          currentUrl: data.currentUrl || prev[computerIndex].currentUrl,
+          studentName: data.studentName || prev[computerIndex].studentName,
+          studentId: data.studentId || prev[computerIndex].studentId,
+          name: data.name || prev[computerIndex].name,
+          ipAddress: data.ipAddress || prev[computerIndex].ipAddress,
+          os: data.os || prev[computerIndex].os,
+        };
+        
+        // Create new array with updated computer
+        const newComputers = [...prev];
+        newComputers[computerIndex] = updatedComputer;
+        
+        console.log('✅ Computer updated in state:', {
+          id: updatedComputer.id,
+          status: updatedComputer.status,
+          cpu: updatedComputer.cpu,
+          ram: updatedComputer.ram
+        });
+        
+        return newComputers;
+      });
     });
+    
+    // Listen for full computer list (for sync)
+    socketService.onComputerList((data: any) => {
+      console.log('📋 Received full computer list:', data.length, 'computers');
+      
+      const transformedComputers: Computer[] = data.map((c: any) => ({
+        id: c.computerId,
+        name: c.name,
+        ipAddress: c.ipAddress,
+        macAddress: c.macAddress || '',
+        status: c.status,
+        studentName: c.studentName || 'Belum ditetapkan',
+        studentId: c.studentId || '',
+        cpu: c.cpu || 0,
+        ram: c.ram || 0,
+        networkSpeed: c.networkSpeed || 0,
+        os: c.os || 'Windows 11 Pro',
+        uptime: 0,
+        currentApp: c.currentApp || '',
+        currentUrl: c.currentUrl || '',
+        row: 0,
+        col: 0,
+      }));
+      
+      setComputers(transformedComputers);
+    });
+
+    // Request computer list every 10 seconds to ensure sync
+    const syncInterval = setInterval(() => {
+      if (socketService.isConnected()) {
+        socketService.requestComputerList();
+      }
+    }, 10000);
 
     // Listen for real-time activity updates from agent
     socketService.onNewActivity((data: any) => {
@@ -218,6 +275,7 @@ function App() {
 
     return () => {
       clearInterval(checkSocket);
+      clearInterval(syncInterval);
       socketService.disconnect();
     };
   }, [isLoggedIn]);

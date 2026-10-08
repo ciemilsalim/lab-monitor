@@ -95,6 +95,20 @@ class SocketService {
     this.socket?.emit('request-screenshot', data);
   }
 
+  // Computer list sync
+  onComputerList(callback: (data: any) => void): void {
+    this.registerListener('computer-list', callback);
+  }
+
+  requestComputerList(): void {
+    this.socket?.emit('request-computer-list');
+  }
+
+  // Generic event listener
+  on(event: string, callback: (data: any) => void): void {
+    this.registerListener(event, callback);
+  }
+
   // Generic listener registration
   private registerListener(event: string, callback: Function): void {
     if (!this.listeners.has(event)) {
