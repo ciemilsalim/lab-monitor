@@ -69,8 +69,11 @@ class RemoteController {
         
         case 'screenshot':
         case 'view_screen':
+        case 'view':
         case 'screen':
         case 'capture':
+        case 'see_screen':
+        case 'look':
           logger.info('📸 Executing VIEW SCREEN / SCREENSHOT command');
           result = await this.takeScreenshot();
           break;
@@ -222,14 +225,15 @@ MsgBox "${message}", vbInformation + vbSystemModal, "Pesan dari Admin"
     return new Promise((resolve) => {
       logger.info('🚫 Attempting to block internet...');
       
-      // Block internet by adding firewall rules
+      // Block ALL outbound traffic (more effective)
       const commands = [
-        // Block all outbound HTTP/HTTPS
+        // Block ALL outbound traffic (most effective)
+        'netsh advfirewall firewall add rule name="LabMonitor_Block_ALL_Out" dir=out action=block remoteip=any',
+        // Block HTTP/HTTPS specifically
         'netsh advfirewall firewall add rule name="LabMonitor_Block_HTTP" dir=out action=block protocol=TCP remoteport=80,443',
-        // Block all outbound DNS
+        // Block DNS
         'netsh advfirewall firewall add rule name="LabMonitor_Block_DNS" dir=out action=block protocol=UDP remoteport=53',
-        // Block all outbound TCP
-        'netsh advfirewall firewall add rule name="LabMonitor_Block_TCP" dir=out action=block protocol=TCP',
+        'netsh advfirewall firewall add rule name="LabMonitor_Block_DNS_TCP" dir=out action=block protocol=TCP remoteport=53',
       ];
       
       let successCount = 0;
@@ -238,9 +242,10 @@ MsgBox "${message}", vbInformation + vbSystemModal, "Pesan dari Admin"
       const executeCommands = (index) => {
         if (index >= commands.length) {
           if (successCount > 0) {
+            logger.info(`✅ Internet blocked: ${successCount}/${commands.length} rules applied`);
             resolve({
               success: true,
-              message: `Internet blocked successfully (${successCount}/${commands.length} rules applied)`
+              message: `Internet blocked successfully (${successCount}/${commands.length} rules applied). Test: ping google.com should fail.`
             });
           } else {
             resolve({
@@ -256,7 +261,7 @@ MsgBox "${message}", vbInformation + vbSystemModal, "Pesan dari Admin"
             logger.error(`❌ Command ${index + 1} failed:`, error.message);
             errorMessages.push(`Rule ${index + 1}: ${error.message}`);
           } else {
-            logger.info(`✅ Command ${index + 1} succeeded`);
+            logger.info(`✅ Rule ${index + 1} applied successfully`);
             successCount++;
           }
           
@@ -272,29 +277,24 @@ MsgBox "${message}", vbInformation + vbSystemModal, "Pesan dari Admin"
     return new Promise((resolve) => {
       logger.info('✅ Attempting to unblock internet...');
       
-      // Remove all LabMonitor firewall rules
+      // Remove ALL LabMonitor firewall rules
       const commands = [
+        'netsh advfirewall firewall delete rule name="LabMonitor_Block_ALL_Out"',
         'netsh advfirewall firewall delete rule name="LabMonitor_Block_HTTP"',
         'netsh advfirewall firewall delete rule name="LabMonitor_Block_DNS"',
+        'netsh advfirewall firewall delete rule name="LabMonitor_Block_DNS_TCP"',
         'netsh advfirewall firewall delete rule name="LabMonitor_Block_TCP"',
       ];
       
       let successCount = 0;
-      let errorMessages = [];
       
       const executeCommands = (index) => {
         if (index >= commands.length) {
-          if (successCount > 0) {
-            resolve({
-              success: true,
-              message: `Internet unblocked successfully (${successCount}/${commands.length} rules removed)`
-            });
-          } else {
-            resolve({
-              success: true,
-              message: 'Internet unblocked (no rules found or already unblocked)'
-            });
-          }
+          logger.info(`✅ Internet unblocked: ${successCount} rules removed`);
+          resolve({
+            success: true,
+            message: `Internet unblocked successfully. Test: ping google.com should work now.`
+          });
           return;
         }
 
