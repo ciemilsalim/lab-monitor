@@ -12,6 +12,7 @@ type GuideSection =
   | 'installation'
   | 'backend-setup'
   | 'agent-setup'
+  | 'switch-mode'
   | 'login'
   | 'dashboard'
   | 'computers'
@@ -34,6 +35,7 @@ const sections: SectionItem[] = [
   { id: 'installation', label: 'Instalasi & Persiapan', icon: Download, sub: 'Cara memasang' },
   { id: 'backend-setup', label: 'Setup Backend', icon: Server, sub: 'Node.js + Express + Socket.io' },
   { id: 'agent-setup', label: 'Setup Agent', icon: Terminal, sub: 'Agent monitoring PC siswa' },
+  { id: 'switch-mode', label: 'Switch Mode', icon: Eye, sub: 'Visible ↔ Silent mode' },
   { id: 'login', label: 'Login & Akun', icon: LogIn, sub: 'Masuk ke sistem' },
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, sub: 'Ringkasan monitoring' },
   { id: 'computers', label: 'Monitor Komputer', icon: Monitor, sub: 'Lihat semua PC' },
@@ -586,7 +588,230 @@ export default function GuidePage() {
             </div>
           </section>
 
-          {/* 5. Login */}
+          {/* 5. Switch Mode */}
+          <section id="guide-switch-mode" className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
+            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-violet-50 to-purple-50">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Eye className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">5. Switch Mode (Visible ↔ Silent)</h3>
+                  <p className="text-sm text-gray-600">Kontrol tampilan window CMD agent</p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6 space-y-6">
+              <div className="bg-violet-50 border-l-4 border-violet-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <Info className="w-5 h-5 text-violet-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-violet-900">Apa itu Switch Mode?</p>
+                    <p className="text-violet-800 text-sm mt-1 leading-relaxed">
+                      Fitur <strong>Switch Mode</strong> memungkinkan Anda untuk mengubah tampilan agent antara <strong>VISIBLE mode</strong> (dengan window CMD) 
+                      dan <strong>SILENT mode</strong> (tanpa window CMD). Siswa tidak akan bisa melihat atau menutup agent saat dalam SILENT mode.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Perbandingan Mode</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-blue-50 rounded-xl p-5 border border-blue-200">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                      <Eye className="w-5 h-5 text-white" />
+                    </div>
+                    <p className="font-bold text-blue-900">VISIBLE Mode</p>
+                  </div>
+                  <ul className="space-y-2 text-sm text-blue-800">
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" /> Window CMD terlihat</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" /> Bisa lihat log real-time</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" /> Cocok untuk debugging</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" /> Siswa bisa lihat agent</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" /> Siswa bisa close (Ctrl+C)</li>
+                  </ul>
+                  <p className="text-xs text-blue-700 mt-3 font-semibold">📌 Gunakan saat: Instalasi, Testing, Debugging</p>
+                </div>
+
+                <div className="bg-green-50 rounded-xl p-5 border border-green-200">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                      <Lock className="w-5 h-5 text-white" />
+                    </div>
+                    <p className="font-bold text-green-900">SILENT Mode</p>
+                  </div>
+                  <ul className="space-y-2 text-sm text-green-800">
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 shrink-0" /> Window CMD <strong>TIDAK</strong> terlihat</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 shrink-0" /> Agent berjalan di background</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 shrink-0" /> Cocok untuk production</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 shrink-0" /> Siswa <strong>TIDAK</strong> bisa lihat</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 shrink-0" /> Siswa <strong>TIDAK</strong> bisa close</li>
+                  </ul>
+                  <p className="text-xs text-green-700 mt-3 font-semibold">📌 Gunakan saat: Production, Daily Operation, Ujian</p>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Workflow yang Direkomendasikan</h4>
+              <div className="space-y-4">
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
+                      1
+                    </div>
+                    <div className="w-0.5 flex-1 bg-blue-200 mt-2" />
+                  </div>
+                  <div className="flex-1 pb-4">
+                    <p className="font-bold text-gray-900">Phase 1: Instalasi (VISIBLE Mode)</p>
+                    <p className="text-sm text-gray-600 mt-1">Install agent dengan window CMD terlihat untuk melihat progress</p>
+                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# Di PC siswa
+cd C:\\labmonitor-agent
+
+# Jalankan installer (VISIBLE mode)
+install-autostart-simple.bat
+
+# Expected:
+# ✅ CMD window terlihat
+# ✅ Bisa lihat progress instalasi
+# ✅ Agent running dengan CMD window`}</pre>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
+                      2
+                    </div>
+                    <div className="w-0.5 flex-1 bg-green-200 mt-2" />
+                  </div>
+                  <div className="flex-1 pb-4">
+                    <p className="font-bold text-gray-900">Phase 2: Testing (VISIBLE Mode)</p>
+                    <p className="text-sm text-gray-600 mt-1">Test semua fitur dengan CMD window terlihat untuk debugging</p>
+                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# Test semua fitur:
+# ✅ Monitoring CPU/RAM
+# ✅ Screenshot
+# ✅ Mouse/Keyboard control
+# ✅ Block/Unblock internet
+
+# Jika semua berjalan normal, lanjut ke Phase 3`}</pre>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
+                      3
+                    </div>
+                  </div>
+                  <div className="flex-1 pb-4">
+                    <p className="font-bold text-gray-900">Phase 3: Production (SILENT Mode)</p>
+                    <p className="text-sm text-gray-600 mt-1">Switch ke SILENT mode agar siswa tidak bisa lihat/close agent</p>
+                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# Di PC siswa
+cd C:\\labmonitor-agent
+
+# Switch ke SILENT mode
+switch-to-silent.bat
+
+# Expected:
+# ✅ CMD window HILANG
+# ✅ Agent masih running di background
+# ✅ Siswa tidak bisa lihat agent
+# ✅ Siswa tidak bisa close agent`}</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Cara Switch Mode</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl p-5 text-white">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Eye className="w-6 h-6" />
+                    <p className="font-bold text-lg">Switch ke VISIBLE</p>
+                  </div>
+                  <p className="text-sm text-blue-100 mb-3">Untuk debugging atau monitoring</p>
+                  <div className="bg-black/30 rounded-lg p-3">
+                    <code className="text-xs text-green-300 font-mono">switch-to-visible.bat</code>
+                  </div>
+                  <p className="text-xs text-blue-100 mt-3">📌 CMD window akan MUNCUL</p>
+                </div>
+
+                <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl p-5 text-white">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Lock className="w-6 h-6" />
+                    <p className="font-bold text-lg">Switch ke SILENT</p>
+                  </div>
+                  <p className="text-sm text-green-100 mb-3">Untuk production/deployment</p>
+                  <div className="bg-black/30 rounded-lg p-3">
+                    <code className="text-xs text-green-300 font-mono">switch-to-silent.bat</code>
+                  </div>
+                  <p className="text-xs text-green-100 mt-3">📌 CMD window akan HILANG</p>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Cara Cek Mode Saat Ini</h4>
+              <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
+                <p className="text-sm text-gray-700 mb-3">Jalankan command ini untuk cek mode agent:</p>
+                <div className="bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                  <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# Cek command yang digunakan
+schtasks /query /tn "LabMonitor Agent" /v /fo list | findstr "Task To Run"
+
+# Jika output:
+# - wscript.exe "run-agent.vbs" → SILENT mode ✅
+# - node.exe "src\\agent.js"     → VISIBLE mode ✅
+
+# Cek process
+tasklist | findstr "node.exe cmd.exe"
+
+# Jika output:
+# - Hanya node.exe              → SILENT mode ✅
+# - node.exe DAN cmd.exe        → VISIBLE mode ✅`}</pre>
+                </div>
+              </div>
+
+              <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <Lightbulb className="w-5 h-5 text-yellow-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-yellow-900">Tips Switch Mode</p>
+                    <ul className="text-yellow-800 text-sm mt-2 space-y-1">
+                      <li>• <strong>Install dulu dengan VISIBLE mode</strong> untuk melihat progress</li>
+                      <li>• <strong>Test semua fitur</strong> dalam VISIBLE mode</li>
+                      <li>• <strong>Switch ke SILENT</strong> setelah yakin semua berjalan</li>
+                      <li>• <strong>Switch ke VISIBLE</strong> jika perlu debugging</li>
+                      <li>• <strong>Switch balik ke SILENT</strong> setelah selesai debugging</li>
+                      <li>• <strong>Agent tetap running</strong> saat switch mode (tidak interrupt)</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-red-50 border-l-4 border-red-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-red-900">Catatan Keamanan</p>
+                    <p className="text-red-800 text-sm mt-1 leading-relaxed">
+                      Meskipun dalam SILENT mode, siswa masih bisa melihat <code className="bg-red-200 px-1 rounded text-xs font-mono">node.exe</code> di Task Manager. 
+                      Untuk keamanan maksimal, pertimbangkan untuk:
+                    </p>
+                    <ul className="text-red-800 text-sm mt-2 space-y-1">
+                      <li>• Disable Task Manager via Group Policy</li>
+                      <li>• Hide folder agent: <code className="bg-red-200 px-1 rounded text-xs font-mono">attrib +h C:\labmonitor-agent</code></li>
+                      <li>• Rename folder agent ke nama yang tidak mencurigakan</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* 6. Login */}
           <section id="guide-login" className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
             <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-cyan-50">
               <div className="flex items-center gap-3">
@@ -594,7 +819,7 @@ export default function GuidePage() {
                   <LogIn className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">5. Login & Akun</h3>
+                  <h3 className="text-xl font-bold text-gray-900">6. Login & Akun</h3>
                   <p className="text-sm text-gray-600">Masuk ke sistem dengan akun yang sesuai</p>
                 </div>
               </div>
@@ -678,7 +903,7 @@ export default function GuidePage() {
             </div>
           </section>
 
-          {/* 6. Dashboard */}
+          {/* 7. Dashboard */}
           <section id="guide-dashboard" className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
             <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
               <div className="flex items-center gap-3">
@@ -686,7 +911,7 @@ export default function GuidePage() {
                   <LayoutDashboard className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">6. Dashboard</h3>
+                  <h3 className="text-xl font-bold text-gray-900">7. Dashboard</h3>
                   <p className="text-sm text-gray-600">Ringkasan monitoring secara keseluruhan</p>
                 </div>
               </div>
@@ -770,7 +995,7 @@ export default function GuidePage() {
                   <Monitor className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">7. Monitor Komputer</h3>
+                  <h3 className="text-xl font-bold text-gray-900">8. Monitor Komputer</h3>
                   <p className="text-sm text-gray-600">Melihat status semua komputer di lab</p>
                 </div>
               </div>
@@ -856,7 +1081,7 @@ export default function GuidePage() {
                   <Globe className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">8. Aktivitas Internet</h3>
+                  <h3 className="text-xl font-bold text-gray-900">9. Aktivitas Internet</h3>
                   <p className="text-sm text-gray-600">Memantau akses internet siswa</p>
                 </div>
               </div>
@@ -949,7 +1174,7 @@ export default function GuidePage() {
                   <AlertTriangle className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">9. Peringatan & Notifikasi</h3>
+                  <h3 className="text-xl font-bold text-gray-900">10. Peringatan & Notifikasi</h3>
                   <p className="text-sm text-gray-600">Memantau alert dari aktivitas siswa</p>
                 </div>
               </div>
@@ -1034,7 +1259,7 @@ export default function GuidePage() {
                   <Network className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">10. Peta Jaringan</h3>
+                  <h3 className="text-xl font-bold text-gray-900">11. Peta Jaringan</h3>
                   <p className="text-sm text-gray-600">Visualisasi topologi jaringan LAN</p>
                 </div>
               </div>
@@ -1089,7 +1314,7 @@ export default function GuidePage() {
                   <Shield className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">11. Kontrol Remote</h3>
+                  <h3 className="text-xl font-bold text-gray-900">12. Kontrol Remote</h3>
                   <p className="text-sm text-gray-600">Mengontrol mouse, keyboard, dan perintah lainnya</p>
                 </div>
               </div>
@@ -1234,7 +1459,7 @@ export default function GuidePage() {
             </div>
           </section>
 
-          {/* 12. Screenshot */}
+          {/* 13. Screenshot */}
           <section id="guide-screenshot" className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
             <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-amber-50 to-yellow-50">
               <div className="flex items-center gap-3">
@@ -1242,7 +1467,7 @@ export default function GuidePage() {
                   <Camera className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">12. Screenshot Dashboard</h3>
+                  <h3 className="text-xl font-bold text-gray-900">13. Screenshot Dashboard</h3>
                   <p className="text-sm text-gray-600">Melihat layar komputer siswa secara real-time</p>
                 </div>
               </div>
@@ -1338,7 +1563,7 @@ export default function GuidePage() {
             </div>
           </section>
 
-          {/* 13. Troubleshooting */}
+          {/* 14. Troubleshooting */}
           <section id="guide-troubleshooting" className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
             <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-amber-50 to-yellow-50">
               <div className="flex items-center gap-3">
@@ -1346,7 +1571,7 @@ export default function GuidePage() {
                   <Wrench className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">13. Troubleshooting</h3>
+                  <h3 className="text-xl font-bold text-gray-900">14. Troubleshooting</h3>
                   <p className="text-sm text-gray-600">Masalah umum dan cara mengatasinya</p>
                 </div>
               </div>
@@ -1410,6 +1635,18 @@ export default function GuidePage() {
                   {
                     q: 'Task Scheduler task ada tapi agent tidak running?',
                     a: 'Buka Task Scheduler, klik kanan "LabMonitor Agent" → Properties. Pastikan: (1) "Run with highest privileges" tercentang, (2) "Run whether user is logged on or not" terpilih, (3) Tab Conditions: uncheck "Start only if on AC power". Jika masih bermasalah, delete task dan create ulang menggunakan installer baru.'
+                  },
+                  {
+                    q: 'Bagaimana cara menyembunyikan window CMD dari siswa?',
+                    a: 'Gunakan fitur Switch Mode. Setelah instalasi dan testing selesai, jalankan "switch-to-silent.bat" sebagai Administrator. Agent akan switch ke SILENT mode tanpa window CMD. Siswa tidak akan bisa melihat atau menutup agent. Jika perlu debugging, jalankan "switch-to-visible.bat" untuk menampilkan kembali window CMD.'
+                  },
+                  {
+                    q: 'Bagaimana cara switch antara VISIBLE dan SILENT mode?',
+                    a: 'Untuk switch ke SILENT mode (tanpa CMD): jalankan "switch-to-silent.bat". Untuk switch ke VISIBLE mode (dengan CMD): jalankan "switch-to-visible.bat". Kedua script harus dijalankan sebagai Administrator. Agent akan tetap running saat switch mode, tidak ada interrupt.'
+                  },
+                  {
+                    q: 'Siswa masih bisa lihat node.exe di Task Manager, bagaimana cara menyembunyikannya?',
+                    a: 'Untuk menyembunyikan agent sepenuhnya: (1) Disable Task Manager via Group Policy, (2) Hide folder agent dengan command "attrib +h C:\\labmonitor-agent", (3) Rename folder agent ke nama yang tidak mencurigakan seperti "C:\\WindowsSystem32". Agent tetap running sebagai SYSTEM sehingga siswa tidak bisa close.'
                   },
                 ].map((faq, idx) => (
                   <div key={idx} className="border border-gray-200 rounded-xl overflow-hidden">
@@ -1554,7 +1791,27 @@ schtasks /query /tn "LabMonitor Agent" /v /fo list
 schtasks /run /tn "LabMonitor Agent"
 
 # Delete task
-schtasks /delete /tn "LabMonitor Agent" /f`}
+schtasks /delete /tn "LabMonitor Agent" /f
+
+# ========================================
+# SWITCH MODE COMMANDS
+# ========================================
+
+# Switch to SILENT mode (no CMD window)
+C:\\labmonitor-agent\\switch-to-silent.bat
+
+# Switch to VISIBLE mode (with CMD window)
+C:\\labmonitor-agent\\switch-to-visible.bat
+
+# Check current mode
+schtasks /query /tn "LabMonitor Agent" /v /fo list | findstr "Task To Run"
+# Output: wscript.exe = SILENT mode, node.exe = VISIBLE mode
+
+# Hide agent folder (optional security)
+attrib +h C:\\labmonitor-agent
+
+# Unhide agent folder
+attrib -h C:\\labmonitor-agent`}
                 </pre>
               </div>
 
