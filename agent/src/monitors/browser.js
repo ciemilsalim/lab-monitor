@@ -254,44 +254,302 @@ class BrowserMonitor {
   }
 
   categorizeUrl(url) {
+    if (!url || url === 'unknown') return 'other';
+    
     const url_lower = url.toLowerCase();
+    const domain = this.extractDomain(url).toLowerCase();
     
-    // Educational sites
-    const educational = ['ruangguru', 'zenius', 'khanacademy', 'stackoverflow', 'github', 'w3schools', 'coursera', 'udemy', 'scholar'];
-    if (educational.some(site => url_lower.includes(site))) {
-      return 'educational';
+    // ========================================
+    // DATABASE KATEGORI WEBSITE (200+ domain)
+    // ========================================
+    
+    const categories = {
+      // PENDIDIKAN (Educational)
+      'educational': {
+        domains: [
+          // Platform Belajar Indonesia
+          'ruangguru.com', 'zenius.net', 'kelas.pintar.co.id', 'akademi.quipper.com',
+          'sekolah.mu', 'belajar.kemdikbud.go.id', 'platform.belajar.id', 'merdeka.belajar.id',
+          
+          // Platform Belajar Internasional
+          'khanacademy.org', 'coursera.org', 'udemy.com', 'edx.org', 'skillshare.com',
+          'codecademy.com', 'freecodecamp.org', 'sololearn.com', 'datacamp.com',
+          
+          // Programming & Tech
+          'github.com', 'stackoverflow.com', 'w3schools.com', 'mdn.mozilla.org',
+          'geeksforgeeks.org', 'tutorialspoint.com', 'leetcode.com', 'hackerrank.com',
+          'codepen.io', 'jsfiddle.net', 'replit.com', 'codesandbox.io',
+          
+          // Academic Resources
+          'scholar.google.com', 'jstor.org', 'researchgate.net', 'academia.edu',
+          'arxiv.org', 'ieee.org', 'springer.com', 'elsevier.com',
+          
+          // Online Courses & Tutorials
+          'lynda.com', 'pluralsight.com', 'linkedin.com/learning', 'youtube.com/education',
+          'ted.com', 'mit.edu', 'stanford.edu', 'harvard.edu',
+          
+          // Dictionary & Reference
+          'dictionary.com', 'thesaurus.com', 'merriam-webster.com', 'britannica.com',
+          'wikipedia.org', 'wikihow.com', 'wolframalpha.com'
+        ],
+        keywords: ['edu', 'learn', 'course', 'tutorial', 'school', 'university', 'college',
+                   'academic', 'study', 'kelas', 'belajar', 'pelajaran', 'materi']
+      },
+      
+      // MEDIA SOSIAL (Social Media)
+      'social-media': {
+        domains: [
+          // Major Social Platforms
+          'facebook.com', 'instagram.com', 'twitter.com', 'x.com', 'tiktok.com',
+          'linkedin.com', 'pinterest.com', 'reddit.com', 'snapchat.com', 'tumblr.com',
+          
+          // Messaging Apps
+          'whatsapp.com', 'telegram.org', 'line.me', 'wechat.com', 'viber.com',
+          'discord.com', 'slack.com', 'skype.com', 'messenger.com',
+          
+          // Indonesian Social Media
+          'sharechat.com', 'bigo.live', 'likee.com', 'kwai.com',
+          
+          // Forums & Communities
+          'quora.com', 'kaskus.co.id', 'flickr.com', 'imgur.com',
+          '9gag.com', 'twitch.tv', 'clubhouse.com', 'threads.net',
+          
+          // Professional Networks
+          'behance.net', 'dribbble.com', 'medium.com', 'dev.to',
+          'hashnode.com', 'producthunt.com'
+        ],
+        keywords: ['social', 'chat', 'message', 'friend', 'follow', 'share', 'post',
+                   'sosmed', 'obrolan', 'teman', 'grup', 'komunitas']
+      },
+      
+      // HIBURAN (Entertainment)
+      'entertainment': {
+        domains: [
+          // Video Streaming
+          'youtube.com', 'netflix.com', 'disneyplus.com', 'hbo.com', 'hbomax.com',
+          'primevideo.com', 'vidio.com', 'we.tv', 'iflix.com', 'viu.com',
+          
+          // Music Streaming
+          'spotify.com', 'apple.com/music', 'joox.com', 'soundcloud.com',
+          'deezer.com', 'tidal.com', 'langitmusik.co.id',
+          
+          // Gaming
+          'steam.com', 'epicgames.com', 'twitch.tv', 'playstation.com',
+          'xbox.com', 'nintendo.com', 'roblox.com', 'minecraft.net',
+          'genshin.hoyoverse.com', 'pubg.com', 'mobilelegends.com',
+          
+          // Anime & Comics
+          'crunchyroll.com', 'funimation.com', 'myanimelist.net',
+          'webtoons.com', 'tapas.io', 'manganelo.com',
+          
+          // Movies & TV
+          'imdb.com', 'rottentomatoes.com', 'tmdb.org', 'justwatch.com',
+          
+          // Fun & Viral Content
+          '9gag.com', 'buzzfeed.com', 'boredpanda.com', 'cheezburger.com',
+          'funnyordie.com', 'collegehumor.com'
+        ],
+        keywords: ['video', 'movie', 'music', 'game', 'play', 'stream', 'watch',
+                   'film', 'musik', 'lagu', 'hiburan', 'nonton', 'main']
+      },
+      
+      // MESIN PENCARI (Search Engine)
+      'search-engine': {
+        domains: [
+          'google.com', 'bing.com', 'yahoo.com', 'duckduckgo.com', 'baidu.com',
+          'yandex.com', 'ask.com', 'aol.com', 'ecosia.org', 'startpage.com',
+          'search.brave.com', 'presearch.org', 'qwant.com'
+        ],
+        keywords: ['search', 'cari', 'pencarian', 'find', 'query']
+      },
+      
+      // BELANJA (Shopping)
+      'shopping': {
+        domains: [
+          // E-commerce Indonesia
+          'tokopedia.com', 'shopee.co.id', 'bukalapak.com', 'blibli.com',
+          'lazada.co.id', 'zalora.co.id', 'jd.id', 'elevenia.co.id',
+          'bhineka.com', 'eraspace.com', 'citilink.co.id',
+          
+          // E-commerce International
+          'amazon.com', 'ebay.com', 'alibaba.com', 'aliexpress.com',
+          'wish.com', 'etsy.com', 'walmart.com', 'target.com',
+          
+          // Fashion & Beauty
+          'zara.com', 'h&m.com', 'uniqlo.com', 'sephora.com',
+          'nyxcosmetics.com', 'sociolla.com',
+          
+          // Electronics
+          'bhineka.com', 'eraspace.com', 'enter.co.id',
+          
+          // Food Delivery
+          'gojek.com', 'grab.com', 'shopee.com/food', 'traveloka.com/eats'
+        ],
+        keywords: ['shop', 'store', 'buy', 'price', 'cart', 'checkout', 'belanja',
+                   'toko', 'harga', 'beli', 'diskon', 'promo', 'sale']
+      },
+      
+      // BERITA (News)
+      'news': {
+        domains: [
+          // News Indonesia
+          'detik.com', 'kompas.com', 'tempo.co', 'cnnindonesia.com',
+          'tribunnews.com', 'liputan6.com', 'merdeka.com', 'kumparan.com',
+          'tirto.id', 'voaindonesia.com', 'bbc.com/indonesia',
+          'antaranews.com', 'beritasatu.com', 'sindonews.com',
+          'jawapos.com', 'suara.com', 'okezone.com', 'inews.id',
+          
+          // News International
+          'cnn.com', 'bbc.com', 'reuters.com', 'nytimes.com', 'washingtonpost.com',
+          'theguardian.com', 'aljazeera.com', 'bloomberg.com', 'ft.com',
+          'wsj.com', 'usatoday.com', 'nbcnews.com', 'abcnews.go.com',
+          
+          // Tech News
+          'techcrunch.com', 'theverge.com', 'wired.com', 'arstechnica.com',
+          'engadget.com', 'gizmodo.com', 'mashable.com',
+          
+          // Business News
+          'forbes.com', 'businessinsider.com', 'entrepreneur.com', 'inc.com'
+        ],
+        keywords: ['news', 'berita', 'artikel', 'headline', 'breaking', 'update',
+                   'terkini', 'terbaru', 'laporan', 'wartawan']
+      },
+      
+      // PRODUKTIVITAS (Productivity)
+      'productivity': {
+        domains: [
+          // Office & Documents
+          'docs.google.com', 'sheets.google.com', 'slides.google.com',
+          'office.com', 'office365.com', 'onedrive.live.com', 'dropbox.com',
+          'box.com', 'drive.google.com',
+          
+          // Project Management
+          'trello.com', 'asana.com', 'notion.so', 'clickup.com', 'monday.com',
+          'basecamp.com', 'jira.atlassian.com', 'github.com/projects',
+          
+          // Communication & Collaboration
+          'zoom.us', 'meet.google.com', 'teams.microsoft.com', 'webex.com',
+          'gotomeeting.com', 'bluejeans.com',
+          
+          // Note Taking
+          'evernote.com', 'onenote.com', 'bear.app', 'simplenote.com',
+          
+          // Calendar & Tasks
+          'calendar.google.com', 'outlook.live.com', 'todoist.com',
+          'any.do', 'ticktick.com'
+        ],
+        keywords: ['docs', 'document', 'sheet', 'slide', 'presentation', 'task',
+                   'project', 'meeting', 'calendar', 'dokumen', 'tugas', 'rapat']
+      },
+      
+      // EMAIL (Email)
+      'email': {
+        domains: [
+          'gmail.com', 'mail.google.com', 'outlook.com', 'outlook.live.com',
+          'hotmail.com', 'yahoo.com/mail', 'zoho.com', 'protonmail.com',
+          'icloud.com/mail', 'aol.com/mail', 'yandex.com/mail',
+          'mail.com', 'gmx.com', 'tutanota.com'
+        ],
+        keywords: ['mail', 'email', 'inbox', 'surat', 'pesan']
+      },
+      
+      // GAME ONLINE (Gaming)
+      'gaming': {
+        domains: [
+          // Game Platforms
+          'steam.com', 'epicgames.com', 'origin.com', 'gog.com',
+          'battle.net', 'ubisoft.com', 'ea.com',
+          
+          // Browser Games
+          'miniclip.com', 'kongregate.com', 'newgrounds.com', 'armor games.com',
+          'crazygames.com', 'poki.com', 'y8.com',
+          
+          // Mobile Games Web
+          'mobilelegends.com', 'pubg.com', 'freefiremobile.com',
+          'genshin.hoyoverse.com', 'honkai.hoyoverse.com',
+          
+          // Game News & Communities
+          'ign.com', 'gamespot.com', 'pcgamer.com', 'polygon.com',
+          'kotaku.com', 'rockpapershotgun.com', 'gamepedia.com'
+        ],
+        keywords: ['game', 'play', 'gaming', 'main', 'permainan']
+      },
+      
+      // KEUANGAN (Finance)
+      'finance': {
+        domains: [
+          // Banking Indonesia
+          'bca.co.id', 'mandiri.co.id', 'bni.co.id', 'bri.co.id',
+          'cimbniaga.co.id', 'danamon.co.id', 'permatabank.com',
+          'bankmega.com', 'ocbc.id', 'hsbc.co.id',
+          
+          // E-Wallet & Payment
+          'gopay.co.id', 'ovo.id', 'dana.id', 'linkaja.com',
+          'shopeepay.co.id', 'jenius.co.id',
+          
+          // Investment & Trading
+          'bibit.id', 'ajaib.co.id', 'bareksa.com', 'ipot.com',
+          'mncsekuritas.com', 'stockbit.com', 'rti.co.id',
+          
+          // Crypto
+          'coinbase.com', 'binance.com', 'indodax.com', 'tokocrypto.com',
+          'crypto.com', 'kraken.com',
+          
+          // Financial News
+          'cnbcindonesia.com', 'kontan.co.id', 'investing.com',
+          'marketwatch.com', 'yahoo.com/finance'
+        ],
+        keywords: ['bank', 'money', 'finance', 'payment', 'transfer', 'investasi',
+                   'saham', 'kripto', 'rekening', 'transaksi']
+      }
+    };
+    
+    // ========================================
+    // ALGORITMA KLASIFIKASI CERDAS
+    // ========================================
+    
+    // 1. Exact domain match (prioritas tertinggi)
+    for (const [category, data] of Object.entries(categories)) {
+      if (data.domains.some(d => domain === d || domain.endsWith('.' + d))) {
+        return category;
+      }
     }
     
-    // Social media
-    const social = ['facebook', 'instagram', 'twitter', 'tiktok', 'linkedin', 'pinterest', 'reddit', 'snapchat'];
-    if (social.some(site => url_lower.includes(site))) {
-      return 'social-media';
+    // 2. Domain contains match
+    for (const [category, data] of Object.entries(categories)) {
+      if (data.domains.some(d => domain.includes(d.replace('.com', '').replace('.co.id', '').replace('.org', '')))) {
+        return category;
+      }
     }
     
-    // Entertainment
-    const entertainment = ['youtube', 'netflix', 'spotify', 'twitch', 'hbo', 'disney', 'prime video'];
-    if (entertainment.some(site => url_lower.includes(site))) {
-      return 'entertainment';
+    // 3. URL path analysis
+    for (const [category, data] of Object.entries(categories)) {
+      if (data.domains.some(d => url_lower.includes(d))) {
+        return category;
+      }
     }
     
-    // Search engines
-    const search = ['google.com/search', 'bing.com/search', 'yahoo.com/search', 'duckduckgo'];
-    if (search.some(site => url_lower.includes(site))) {
+    // 4. Keyword matching
+    for (const [category, data] of Object.entries(categories)) {
+      if (data.keywords && data.keywords.some(keyword => url_lower.includes(keyword))) {
+        return category;
+      }
+    }
+    
+    // 5. Special patterns
+    if (url_lower.includes('google.com') && !url_lower.includes('search')) {
       return 'search-engine';
     }
     
-    // Shopping
-    const shopping = ['tokopedia', 'shopee', 'lazada', 'blibli', 'amazon', 'ebay', 'alibaba'];
-    if (shopping.some(site => url_lower.includes(site))) {
-      return 'shopping';
+    if (url_lower.includes('.edu') || url_lower.includes('.ac.id')) {
+      return 'educational';
     }
     
-    // News
-    const news = ['detik', 'kompas', 'tempo', 'cnn', 'bbc', 'reuters', 'nytimes'];
-    if (news.some(site => url_lower.includes(site))) {
-      return 'news';
+    if (url_lower.includes('.gov') || url_lower.includes('.go.id')) {
+      return 'government';
     }
     
+    // 6. Default category
     return 'other';
   }
 }

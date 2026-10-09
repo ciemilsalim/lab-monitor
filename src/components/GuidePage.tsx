@@ -932,8 +932,13 @@ tasklist | findstr "node.exe cmd.exe"
                     icon: Cpu
                   },
                   {
-                    title: 'Kategori Akses Internet',
-                    items: ['Menampilkan persentase akses berdasarkan kategori', 'Edukasi, Media Sosial, Hiburan, Pencarian', 'Progress bar berwarna untuk setiap kategori'],
+                    title: 'Kategori Akses Internet (ADVANCED!)',
+                    items: [
+                      'Sistem klasifikasi cerdas dengan 200+ domain dalam 10 kategori',
+                      'Kategori: Pendidikan, Media Sosial, Hiburan, Search Engine, Belanja, Berita, Produktivitas, Email, Gaming, Keuangan',
+                      'Algoritma multi-layer: exact domain match → domain contains → URL path → keyword matching',
+                      'Progress bar berwarna untuk setiap kategori dengan persentase real-time'
+                    ],
                     color: 'from-blue-500 to-cyan-600',
                     icon: Globe
                   },
@@ -1092,19 +1097,37 @@ tasklist | findstr "node.exe cmd.exe"
                 memfilter, dan mengekspor data aktivitas.
               </p>
 
-              <h4 className="font-bold text-gray-900 text-lg">Kategori Aktivitas</h4>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <h4 className="font-bold text-gray-900 text-lg">Kategori Aktivitas (10 Kategori Cerdas!)</h4>
+              <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 rounded-r-xl p-5 mb-4">
+                <div className="flex items-start gap-3">
+                  <Info className="w-5 h-5 text-indigo-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-indigo-900">Sistem Klasifikasi Cerdas</p>
+                    <p className="text-indigo-800 text-sm mt-1 leading-relaxed">
+                      Sistem sekarang menggunakan <strong>database 200+ domain</strong> dalam <strong>10 kategori</strong> dengan 
+                      algoritma multi-layer untuk klasifikasi yang akurat. Tidak ada lagi kategori "Lainnya" yang tidak jelas!
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                 {[
-                  { cat: 'Edukasi', color: 'from-green-500 to-emerald-600', examples: 'ruangguru.com, zenius.net, github.com' },
-                  { cat: 'Media Sosial', color: 'from-blue-500 to-cyan-600', examples: 'instagram.com, tiktok.com, twitter.com' },
-                  { cat: 'Hiburan', color: 'from-purple-500 to-pink-600', examples: 'youtube.com, netflix.com, spotify.com' },
-                  { cat: 'Pencarian', color: 'from-yellow-500 to-orange-600', examples: 'google.com, bing.com' },
+                  { cat: '📚 Pendidikan', color: 'from-green-500 to-emerald-600', examples: 'ruangguru, zenius, github, coursera' },
+                  { cat: '👥 Media Sosial', color: 'from-blue-500 to-cyan-600', examples: 'instagram, tiktok, whatsapp, discord' },
+                  { cat: '🎮 Hiburan', color: 'from-purple-500 to-pink-600', examples: 'youtube, netflix, spotify, steam' },
+                  { cat: '🔍 Pencarian', color: 'from-yellow-500 to-orange-600', examples: 'google, bing, duckduckgo' },
+                  { cat: '🛒 Belanja', color: 'from-pink-500 to-rose-600', examples: 'tokopedia, shopee, lazada, amazon' },
+                  { cat: '📰 Berita', color: 'from-red-500 to-orange-600', examples: 'detik, kompas, cnn, bbc' },
+                  { cat: '💼 Produktivitas', color: 'from-indigo-500 to-blue-600', examples: 'docs.google, office, trello, zoom' },
+                  { cat: '📧 Email', color: 'from-teal-500 to-cyan-600', examples: 'gmail, outlook, yahoo mail' },
+                  { cat: '🎯 Gaming', color: 'from-violet-500 to-purple-600', examples: 'steam, epicgames, mobilelegends' },
+                  { cat: '💰 Keuangan', color: 'from-emerald-500 to-green-600', examples: 'bca, mandiri, gopay, bibit' },
                 ].map((item) => (
                   <div key={item.cat} className="rounded-xl overflow-hidden border border-gray-200">
-                    <div className={`bg-gradient-to-r ${item.color} px-4 py-3`}>
-                      <p className="font-bold text-white text-sm">{item.cat}</p>
+                    <div className={`bg-gradient-to-r ${item.color} px-3 py-2`}>
+                      <p className="font-bold text-white text-xs">{item.cat}</p>
                     </div>
-                    <div className="p-3 bg-white">
+                    <div className="p-2 bg-white">
                       <p className="text-xs text-gray-600">{item.examples}</p>
                     </div>
                   </div>
@@ -1266,16 +1289,33 @@ tasklist | findstr "node.exe cmd.exe"
             </div>
             <div className="p-6 space-y-6">
               <p className="text-gray-700 leading-relaxed">
-                Halaman ini menampilkan visualisasi topologi jaringan lab komputer. Anda dapat melihat
-                bagaimana setiap komputer terhubung ke server melalui switch utama.
+                Halaman ini menampilkan visualisasi topologi jaringan lab komputer dengan <strong>IP address real-time</strong>. 
+                Anda dapat melihat bagaimana setiap komputer terhubung ke server melalui switch utama, lengkap dengan 
+                informasi IP address, status, dan resource usage setiap komputer.
               </p>
+
+              <div className="bg-blue-50 border-l-4 border-blue-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <Info className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-blue-900">Fitur Topologi Jaringan (REAL-TIME!)</p>
+                    <ul className="text-blue-800 text-sm mt-2 space-y-1">
+                      <li>✅ <strong>IP Address Real</strong> - Menampilkan IP address yang sebenarnya dari database</li>
+                      <li>✅ <strong>Tooltip Detail</strong> - Hover komputer untuk lihat IP, status, user, CPU, RAM</li>
+                      <li>✅ <strong>Tabel IP Address</strong> - Daftar lengkap semua komputer dengan IP address</li>
+                      <li>✅ <strong>Network Stats</strong> - Server IP, subnet, gateway, active ports</li>
+                      <li>✅ <strong>Real-time Update</strong> - Status dan resource usage update otomatis</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
 
               <h4 className="font-bold text-gray-900 text-lg">Komponen Visualisasi</h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {[
-                  { name: 'Server Monitor', ip: '192.168.100.166', desc: 'Pusat monitoring & data collection', color: 'from-blue-500 to-cyan-600' },
-                  { name: 'Switch Utama', ip: '48-Port Gigabit', desc: 'Penghubung semua komputer', color: 'from-purple-500 to-pink-600' },
-                  { name: 'Client PCs', ip: '192.168.100.100-130', desc: '30 komputer siswa dengan agent', color: 'from-green-500 to-emerald-600' },
+                  { name: 'Server Monitor', ip: '192.168.100.166', desc: 'Pusat monitoring & data collection (IP dari .env)', color: 'from-blue-500 to-cyan-600' },
+                  { name: 'Switch Utama', ip: '48-Port Gigabit', desc: 'Penghubung semua komputer (menampilkan jumlah port aktif)', color: 'from-purple-500 to-pink-600' },
+                  { name: 'Client PCs', ip: 'Auto-detect', desc: 'Komputer siswa dengan IP address real dari database', color: 'from-green-500 to-emerald-600' },
                 ].map((item) => (
                   <div key={item.name} className="rounded-xl border border-gray-200 overflow-hidden">
                     <div className={`bg-gradient-to-r ${item.color} px-4 py-3 text-white`}>
