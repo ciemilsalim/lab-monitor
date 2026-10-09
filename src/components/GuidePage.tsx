@@ -519,9 +519,9 @@ export default function GuidePage() {
                   },
                   {
                     step: 4,
-                    title: 'Setup Auto-Start',
-                    desc: 'Setup agent untuk berjalan otomatis saat boot',
-                    code: '# Jalankan installer sebagai Administrator\n# Right-click install-autostart.bat → Run as administrator\n\n# Installer akan:\n# ✅ Cek Node.js installation\n# ✅ Install dependencies\n# ✅ Create Task Scheduler task\n# ✅ Configure auto-start\n# ✅ Test agent running\n# ✅ Create uninstaller\n\n# Agent akan auto-start setiap kali komputer boot'
+                    title: 'Setup Auto-Start (NEW!)',
+                    desc: 'Setup agent untuk berjalan otomatis saat boot menggunakan Task Scheduler',
+                    code: '# Jalankan installer sebagai Administrator\n# Right-click install-autostart-simple.bat → Run as administrator\n\n# Installer akan:\n# ✅ Cek Node.js installation\n# ✅ Install dependencies\n# ✅ Create Task Scheduler task (simple & reliable)\n# ✅ Configure auto-start\n# ✅ Test agent running\n# ✅ Create uninstaller\n\n# Agent akan auto-start setiap kali komputer boot\n# Menggunakan Task Scheduler (tidak perlu node-windows package)\n\n# Verifikasi auto-start:\n# 1. Restart komputer\n# 2. Tunggu 30-60 detik\n# 3. Cek: tasklist | findstr node\n# 4. Cek log: type C:\\labmonitor-agent\\logs\\agent.log'
                   },
                   {
                     step: 5,
@@ -1365,7 +1365,7 @@ export default function GuidePage() {
                   },
                   {
                     q: 'Agent tidak auto-start saat komputer boot?',
-                    a: 'Jalankan install-autostart.bat sebagai Administrator. Ini akan membuat Task Scheduler task yang otomatis start agent saat boot. Verifikasi di Task Scheduler.'
+                    a: 'Gunakan installer baru install-autostart-simple.bat yang lebih reliable. Jalankan sebagai Administrator, ini akan membuat Task Scheduler task. Verifikasi: buka Task Scheduler (taskschd.msc), cari "LabMonitor Agent", pastikan status "Ready" atau "Running". Jika masih bermasalah, coba setup manual via Task Scheduler atau gunakan command: schtasks /create /tn "LabMonitor Agent" /tr "node.exe C:\\labmonitor-agent\\src\\agent.js" /sc onstart /ru SYSTEM /rl highest /f'
                   },
                   {
                     q: 'Internet diblokir tapi agent tidak bisa connect ke server?',
@@ -1403,6 +1403,14 @@ export default function GuidePage() {
                     q: 'IP server berubah-ubah, agent tidak bisa connect?',
                     a: 'Set IP statis di server atau gunakan DHCP reservation di router. Update BACKEND_URL di .env agent dengan IP baru. Restart agent setelah update.'
                   },
+                  {
+                    q: 'Bagaimana cara setup auto-start yang reliable?',
+                    a: 'Gunakan installer baru install-autostart-simple.bat yang menggunakan Task Scheduler (tidak perlu node-windows package). Jalankan sebagai Administrator di PC siswa. Installer akan otomatis create task, configure auto-start, dan test agent. Setelah install, restart komputer untuk verifikasi agent auto-start.'
+                  },
+                  {
+                    q: 'Task Scheduler task ada tapi agent tidak running?',
+                    a: 'Buka Task Scheduler, klik kanan "LabMonitor Agent" → Properties. Pastikan: (1) "Run with highest privileges" tercentang, (2) "Run whether user is logged on or not" terpilih, (3) Tab Conditions: uncheck "Start only if on AC power". Jika masih bermasalah, delete task dan create ulang menggunakan installer baru.'
+                  },
                 ].map((faq, idx) => (
                   <div key={idx} className="border border-gray-200 rounded-xl overflow-hidden">
                     <button
@@ -1424,6 +1432,58 @@ export default function GuidePage() {
                     )}
                   </div>
                 ))}
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Auto-Start Setup Guide</h4>
+              <div className="bg-gradient-to-r from-teal-50 to-cyan-50 border-l-4 border-teal-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <Terminal className="w-5 h-5 text-teal-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-teal-900">Setup Auto-Start dengan Task Scheduler (NEW!)</p>
+                    <p className="text-teal-800 text-sm mt-2 leading-relaxed">
+                      Installer baru <code className="bg-teal-200 px-1.5 py-0.5 rounded text-xs font-mono">install-autostart-simple.bat</code> menggunakan Task Scheduler yang lebih simple dan reliable. Tidak perlu install <code className="bg-teal-200 px-1.5 py-0.5 rounded text-xs font-mono">node-windows</code> package.
+                    </p>
+                    <div className="mt-3 bg-white/60 rounded-lg p-3 border border-teal-200">
+                      <p className="text-xs font-bold text-teal-900 mb-1">📋 Langkah Setup:</p>
+                      <ol className="text-xs text-teal-800 space-y-1 list-decimal list-inside">
+                        <li>Copy <code className="bg-teal-200 px-1 rounded">install-autostart-simple.bat</code> ke PC siswa</li>
+                        <li>Right-click → Run as administrator</li>
+                        <li>Tunggu installer selesai (1-2 menit)</li>
+                        <li>Restart komputer untuk test auto-start</li>
+                        <li>Verifikasi: <code className="bg-teal-200 px-1 rounded">tasklist | findstr node</code></li>
+                      </ol>
+                    </div>
+                    <div className="mt-3 bg-white/60 rounded-lg p-3 border border-teal-200">
+                      <p className="text-xs font-bold text-teal-900 mb-1">🔧 Manual Setup (jika installer error):</p>
+                      <div className="bg-gray-900 rounded p-2 mt-2">
+                        <pre className="text-green-400 text-xs font-mono">{`# Create task via command line
+schtasks /create /tn "LabMonitor Agent" \\
+  /tr "node.exe C:\\labmonitor-agent\\src\\agent.js" \\
+  /sc onstart /ru SYSTEM /rl highest /delay 0000:30 /f
+
+# Configure task
+schtasks /change /tn "LabMonitor Agent" /ru SYSTEM
+schtasks /change /tn "LabMonitor Agent" /ri 1 /k
+
+# Test task
+schtasks /run /tn "LabMonitor Agent"
+
+# Verify
+tasklist | findstr node`}</pre>
+                      </div>
+                    </div>
+                    <div className="mt-3 bg-white/60 rounded-lg p-3 border border-teal-200">
+                      <p className="text-xs font-bold text-teal-900 mb-1">✅ Verifikasi Auto-Start:</p>
+                      <ul className="text-xs text-teal-800 space-y-1">
+                        <li>• Buka Task Scheduler: <code className="bg-teal-200 px-1 rounded">taskschd.msc</code></li>
+                        <li>• Cari "LabMonitor Agent"</li>
+                        <li>• Status harus: "Ready" atau "Running"</li>
+                        <li>• Trigger: "At startup"</li>
+                        <li>• Run as: "SYSTEM"</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <h4 className="font-bold text-gray-900 text-lg">Emergency Recovery</h4>
@@ -1478,11 +1538,23 @@ curl http://localhost:3001/api/connected-agents
 # Manual unblock internet (emergency)
 C:\\labmonitor-agent\\manual-unblock-internet.bat
 
-# Setup auto-start
+# Setup auto-start (RECOMMENDED - Task Scheduler)
+C:\\labmonitor-agent\\install-autostart-simple.bat
+
+# Setup auto-start (legacy - node-windows)
 C:\\labmonitor-agent\\install-autostart.bat
 
 # Uninstall auto-start
-C:\\labmonitor-agent\\uninstall-autostart.bat`}
+C:\\labmonitor-agent\\uninstall-autostart.bat
+
+# Check Task Scheduler task
+schtasks /query /tn "LabMonitor Agent" /v /fo list
+
+# Run task manually
+schtasks /run /tn "LabMonitor Agent"
+
+# Delete task
+schtasks /delete /tn "LabMonitor Agent" /f`}
                 </pre>
               </div>
 
