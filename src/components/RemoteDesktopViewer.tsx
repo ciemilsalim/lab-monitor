@@ -533,77 +533,33 @@ export default function RemoteDesktopViewer({ computer, onClose }: RemoteDesktop
             )}
           </div>
         ) : (
-          /* Control Mode - Simulated Desktop */
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900">
-            {/* Simulated Desktop Elements */}
-            <div className="absolute inset-0 p-8">
-              {/* Taskbar */}
-              <div className="absolute bottom-0 left-0 right-0 h-12 bg-gray-900/80 backdrop-blur-sm border-t border-gray-700 flex items-center px-4 gap-3">
-                <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">W</span>
-                </div>
-                <div className="w-8 h-8 bg-gray-700 rounded flex items-center justify-center">
-                  <span className="text-white text-xs">📁</span>
-                </div>
-                <div className="w-8 h-8 bg-gray-700 rounded flex items-center justify-center">
-                  <span className="text-white text-xs">🌐</span>
-                </div>
-                <div className="flex-1" />
-                <span className="text-white text-xs font-mono">
-                  {new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
-                </span>
-              </div>
-
-              {/* Desktop Icons */}
-              <div className="grid grid-cols-6 gap-4">
-                {['This PC', 'Documents', 'Chrome', 'VS Code', 'Terminal', 'Recycle Bin'].map((icon, i) => (
-                  <div key={i} className="flex flex-col items-center gap-1 p-2 rounded hover:bg-white/10 cursor-pointer">
-                    <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center text-2xl">
-                      {['💻', '📄', '🌐', '💻', '⬛', '🗑️'][i]}
-                    </div>
-                    <span className="text-white text-xs text-center">{icon}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Active Window Simulation */}
-              <div className="absolute top-20 left-20 right-20 bottom-20 bg-white rounded-lg shadow-2xl overflow-hidden">
-                <div className="bg-gray-100 border-b border-gray-300 px-3 py-2 flex items-center gap-2">
-                  <div className="flex gap-1.5">
-                    <div className="w-3 h-3 rounded-full bg-red-500" />
-                    <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                    <div className="w-3 h-3 rounded-full bg-green-500" />
-                  </div>
-                  <span className="text-xs text-gray-600 ml-2">{computer.currentApp} - {computer.studentName}</span>
-                </div>
-                <div className="p-6">
-                  <div className="space-y-3">
-                    <div className="h-4 bg-gray-200 rounded w-3/4" />
-                    <div className="h-4 bg-gray-200 rounded w-1/2" />
-                    <div className="h-4 bg-gray-200 rounded w-5/6" />
-                    <div className="h-20 bg-gray-100 rounded mt-4" />
-                    <div className="h-4 bg-gray-200 rounded w-2/3" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Remote Cursor - Enhanced */}
-            {session.mouseControl && (
+          /* Control Mode - Real Screenshot with Control Overlay */
+          <div className="absolute inset-0 bg-black flex items-center justify-center">
+            {currentScreenshot ? (
               <>
-                <div
-                  className="absolute pointer-events-none transition-all duration-75 z-50"
-                  style={{ left: `${mousePosition.x}%`, top: `${mousePosition.y}%` }}
-                >
-                  <svg width="24" height="24" viewBox="0 0 20 20" className="drop-shadow-lg">
-                    <path d="M0,0 L0,16 L4,12 L7,18 L9,17 L6,11 L12,11 Z" fill="#3b82f6" stroke="white" strokeWidth="1.5" />
-                  </svg>
-                  <div className="absolute -top-8 left-6 bg-blue-600 text-white text-xs px-2 py-1 rounded whitespace-nowrap shadow-lg">
-                    Admin Remote
-                  </div>
-                </div>
+                {/* Real Screenshot Display */}
+                <img 
+                  src={currentScreenshot} 
+                  alt="Live Screen" 
+                  className="max-w-full max-h-full object-contain"
+                />
                 
-                {/* Control Mode Indicator */}
+                {/* Admin Cursor Overlay */}
+                {session.mouseControl && (
+                  <div
+                    className="absolute pointer-events-none transition-all duration-75 z-50"
+                    style={{ left: `${mousePosition.x}%`, top: `${mousePosition.y}%` }}
+                  >
+                    <svg width="28" height="28" viewBox="0 0 20 20" className="drop-shadow-2xl">
+                      <path d="M0,0 L0,16 L4,12 L7,18 L9,17 L6,11 L12,11 Z" fill="#3b82f6" stroke="white" strokeWidth="2" />
+                    </svg>
+                    <div className="absolute -top-8 left-6 bg-blue-600 text-white text-xs px-2 py-1 rounded whitespace-nowrap shadow-lg font-semibold">
+                      Admin Remote
+                    </div>
+                  </div>
+                )}
+                
+                {/* Control Mode Badge */}
                 <div className="absolute top-4 left-4 bg-green-600/90 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-lg">
                   <MousePointer className="w-5 h-5" />
                   <Keyboard className="w-5 h-5" />
@@ -611,35 +567,87 @@ export default function RemoteDesktopViewer({ computer, onClose }: RemoteDesktop
                 </div>
 
                 {/* Mouse Position Indicator */}
-                <div className="absolute top-4 right-4 bg-black/70 text-white px-3 py-1.5 rounded-lg text-xs font-mono">
-                  X: {Math.round(mousePosition.x)}% Y: {Math.round(mousePosition.y)}%
-                </div>
+                {session.mouseControl && (
+                  <div className="absolute top-4 right-4 bg-black/70 text-white px-3 py-1.5 rounded-lg text-xs font-mono">
+                    X: {Math.round(mousePosition.x)}% Y: {Math.round(mousePosition.y)}%
+                  </div>
+                )}
+
+                {/* Typing Indicator */}
+                {isTyping && session.keyboardControl && (
+                  <div className="absolute top-16 right-4 bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 animate-pulse shadow-lg">
+                    <Keyboard className="w-3 h-3" />
+                    Mengetik: {typedText.slice(-20)}
+                  </div>
+                )}
+
+                {/* Loading Indicator */}
+                {isCapturing && (
+                  <div className="absolute bottom-20 right-4 bg-blue-600/90 text-white px-4 py-2 rounded-lg flex items-center gap-2 animate-pulse">
+                    <Camera className="w-4 h-4" />
+                    <span className="text-sm font-medium">Mengambil screenshot...</span>
+                  </div>
+                )}
+
+                {/* Last Capture Info */}
+                {lastCaptureTime && (
+                  <div className="absolute bottom-4 left-4 bg-black/70 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+                    <Eye className="w-4 h-4 text-green-400" />
+                    <span className="text-xs">
+                      Terakhir: {lastCaptureTime.toLocaleTimeString('id-ID', { 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        second: '2-digit' 
+                      })}
+                    </span>
+                    {autoCaptureEnabled && (
+                      <span className="text-xs text-green-400 ml-2">
+                        • Auto-refresh setiap {captureInterval / 1000}s
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {/* Control Instructions */}
+                {session.mouseControl && (
+                  <div className="absolute bottom-4 right-4 bg-black/70 text-white px-4 py-2 rounded-lg text-xs space-y-1">
+                    <p className="font-semibold mb-1">🖱️ Kontrol Mouse:</p>
+                    <p>• Gerakkan mouse untuk menggerakkan cursor</p>
+                    <p>• Klik kiri/kanan untuk klik</p>
+                    <p>• Scroll untuk scroll</p>
+                  </div>
+                )}
+
+                {session.keyboardControl && (
+                  <div className="absolute bottom-20 right-4 bg-black/70 text-white px-4 py-2 rounded-lg text-xs space-y-1">
+                    <p className="font-semibold mb-1">⌨️ Kontrol Keyboard:</p>
+                    <p>• Ketik untuk mengirim teks</p>
+                    <p>• Gunakan tombol shortcut di toolbar</p>
+                  </div>
+                )}
               </>
-            )}
-
-            {/* Typing Indicator - Enhanced */}
-            {isTyping && session.keyboardControl && (
-              <div className="absolute top-16 right-4 bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 animate-pulse shadow-lg">
-                <Keyboard className="w-3 h-3" />
-                Mengetik: {typedText.slice(-20)}
-              </div>
-            )}
-
-            {/* Control Instructions */}
-            {session.mouseControl && (
-              <div className="absolute bottom-4 left-4 bg-black/70 text-white px-4 py-2 rounded-lg text-xs space-y-1">
-                <p className="font-semibold mb-1">🖱️ Kontrol Mouse:</p>
-                <p>• Gerakkan mouse untuk menggerakkan cursor</p>
-                <p>• Klik kiri/kanan untuk klik</p>
-                <p>• Scroll untuk scroll</p>
-              </div>
-            )}
-
-            {session.keyboardControl && (
-              <div className="absolute bottom-4 right-4 bg-black/70 text-white px-4 py-2 rounded-lg text-xs space-y-1">
-                <p className="font-semibold mb-1">⌨️ Kontrol Keyboard:</p>
-                <p>• Ketik untuk mengirim teks</p>
-                <p>• Gunakan tombol shortcut di toolbar</p>
+            ) : (
+              /* No Screenshot Yet */
+              <div className="text-center">
+                {isCapturing ? (
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                    <p className="text-white text-lg">Mengambil screenshot pertama...</p>
+                    <p className="text-gray-400 text-sm">Mohon tunggu beberapa detik</p>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-4">
+                    <Camera className="w-16 h-16 text-gray-600" />
+                    <p className="text-white text-lg">Belum ada screenshot</p>
+                    <button
+                      onClick={requestScreenshot}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-colors"
+                    >
+                      <Camera className="w-5 h-5" />
+                      <span className="font-medium">Ambil Screenshot</span>
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
