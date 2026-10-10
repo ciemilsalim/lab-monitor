@@ -10,6 +10,7 @@ import NetworkMap from './components/NetworkMap';
 import GuidePage from './components/GuidePage';
 import LoginPage from './components/LoginPage';
 import ScreenshotViewer from './components/ScreenshotViewer';
+import CleanupPanel from './components/CleanupPanel';
 import { computers as mockComputers, activities as mockActivities, alerts as mockAlerts } from './data/mockData';
 import { computersAPI, activitiesAPI, alertsAPI } from './services/api';
 import socketService from './services/socket';
@@ -353,6 +354,8 @@ function App() {
         return <NetworkMap computers={computers} />;
       case 'guide':
         return <GuidePage />;
+      case 'cleanup':
+        return <CleanupPanel />;
       default:
         return <Dashboard computers={computers} activities={activities} alerts={alerts} />;
     }
