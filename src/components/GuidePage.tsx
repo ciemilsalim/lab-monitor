@@ -1167,6 +1167,60 @@ tasklist | findstr "node.exe cmd.exe"
                 </div>
               </div>
 
+              <h4 className="font-bold text-gray-900 text-lg">🧠 Algoritma Klasifikasi Multi-Layer</h4>
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-l-4 border-purple-500 rounded-r-xl p-5">
+                <p className="text-gray-700 text-sm mb-4">
+                  Sistem menggunakan <strong>5 layer klasifikasi</strong> untuk akurasi maksimal:
+                </p>
+                <div className="space-y-3">
+                  {[
+                    { layer: 'Layer 1', title: 'Exact Domain Match', desc: 'github.com → educational', priority: 'Tertinggi' },
+                    { layer: 'Layer 2', title: 'Domain Contains', desc: 'learn.github.com → educational', priority: 'Tinggi' },
+                    { layer: 'Layer 3', title: 'URL Path Analysis', desc: 'youtube.com/education → entertainment', priority: 'Sedang' },
+                    { layer: 'Layer 4', title: 'Keyword Matching', desc: '"belajar online" → educational', priority: 'Rendah' },
+                    { layer: 'Layer 5', title: 'Special Patterns', desc: 'harvard.edu → educational', priority: 'Terakhir' },
+                  ].map((item, idx) => (
+                    <div key={idx} className="flex items-start gap-3 bg-white/70 rounded-lg p-3 border border-purple-200">
+                      <div className="w-16 shrink-0">
+                        <span className="text-xs font-bold text-purple-600">{item.layer}</span>
+                        <span className="text-xs text-gray-500 block">{item.priority}</span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-gray-900">{item.title}</p>
+                        <p className="text-xs text-gray-600 mt-0.5">Contoh: {item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-600 mt-4 italic">
+                  💡 Jika tidak ada layer yang match, website akan dikategorikan sebagai "other"
+                </p>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">🔧 Kustomisasi Kategori Website</h4>
+              <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border-l-4 border-amber-500 rounded-r-xl p-5">
+                <p className="text-gray-700 text-sm mb-3">
+                  Anda dapat menambahkan domain baru ke database klasifikasi di file:
+                </p>
+                <div className="bg-gray-900 rounded-xl p-4 overflow-x-auto mb-3">
+                  <pre className="text-green-400 text-xs font-mono whitespace-pre">{`agent/src/monitors/browser.js`}</pre>
+                </div>
+                <p className="text-gray-700 text-sm mb-3">Contoh menambahkan domain educational:</p>
+                <div className="bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                  <pre className="text-green-400 text-xs font-mono whitespace-pre">{`'educational': {
+  domains: [
+    // ... existing domains
+    'new-edu-site.com',  // Tambahkan domain baru
+    'my-school.edu',
+  ],
+  keywords: ['belajar', 'tutorial', 'course']
+}`}</pre>
+                </div>
+                <p className="text-xs text-gray-600 mt-3 italic">
+                  💡 Setelah update file, restart agent di PC siswa
+                </p>
+              </div>
+
               <h4 className="font-bold text-gray-900 text-lg">Cara Menggunakan</h4>
               <div className="space-y-3">
                 {[
@@ -1329,6 +1383,58 @@ tasklist | findstr "node.exe cmd.exe"
                 ))}
               </div>
 
+              <h4 className="font-bold text-gray-900 text-lg">Tooltip Detail (Hover Komputer)</h4>
+              <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 rounded-r-xl p-5">
+                <p className="text-gray-700 text-sm mb-3">
+                  Hover pada komputer di diagram topologi untuk melihat informasi detail:
+                </p>
+                <div className="bg-gray-900 rounded-xl p-4 text-white font-mono text-xs">
+                  <div className="space-y-1">
+                    <p>┌────────────────────────┐</p>
+                    <p>│ 🖥️ <span className="text-blue-400">PC-13</span>               │</p>
+                    <p>│ 🌐 IP: <span className="text-green-400">192.168.100.113</span> │</p>
+                    <p>│ 📊 Status: <span className="text-green-400">ONLINE</span>      │</p>
+                    <p>│ 👤 User: <span className="text-yellow-400">Siswa Lab 13</span>  │</p>
+                    <p>│ 💻 CPU: <span className="text-orange-400">45%</span>            │</p>
+                    <p>│ 🧠 RAM: <span className="text-purple-400">62%</span>            │</p>
+                    <p>└────────────────────────┘</p>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Tabel IP Address</h4>
+              <div className="bg-gradient-to-r from-cyan-50 to-blue-50 border-l-4 border-cyan-500 rounded-r-xl p-5">
+                <p className="text-gray-700 text-sm mb-3">
+                  Tabel lengkap yang menampilkan semua komputer dengan informasi:
+                </p>
+                <ul className="text-sm text-gray-700 space-y-2">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-cyan-600 mt-0.5 shrink-0" />
+                    <span><strong>ID Komputer</strong> - Dengan status indicator berwarna</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-cyan-600 mt-0.5 shrink-0" />
+                    <span><strong>IP Address</strong> - Highlighted dengan background biru</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-cyan-600 mt-0.5 shrink-0" />
+                    <span><strong>Status</strong> - Badge berwarna (ONLINE/IDLE/OFFLINE/LOCKED)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-cyan-600 mt-0.5 shrink-0" />
+                    <span><strong>Pengguna</strong> - Nama siswa yang menggunakan</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-cyan-600 mt-0.5 shrink-0" />
+                    <span><strong>CPU Usage</strong> - Progress bar dengan persentase</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-cyan-600 mt-0.5 shrink-0" />
+                    <span><strong>RAM Usage</strong> - Progress bar dengan persentase</span>
+                  </li>
+                </ul>
+              </div>
+
               <h4 className="font-bold text-gray-900 text-lg">Statistik Jaringan</h4>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
@@ -1342,6 +1448,23 @@ tasklist | findstr "node.exe cmd.exe"
                     <p className="text-xs text-gray-600 mt-1">{stat.label}</p>
                   </div>
                 ))}
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Konfigurasi Network</h4>
+              <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
+                <p className="text-sm text-gray-700 mb-3">
+                  Konfigurasi IP address server dan subnet di file <code className="bg-gray-200 px-2 py-0.5 rounded text-xs font-mono">.env</code>:
+                </p>
+                <div className="bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                  <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# Server IP Address (untuk topologi)
+VITE_SERVER_IP=192.168.100.166
+
+# Network Subnet
+VITE_SUBNET=192.168.100.0/24`}</pre>
+                </div>
+                <p className="text-xs text-gray-600 mt-3 italic">
+                  💡 IP address komputer siswa diambil otomatis dari database
+                </p>
               </div>
             </div>
           </section>
@@ -1687,6 +1810,18 @@ tasklist | findstr "node.exe cmd.exe"
                   {
                     q: 'Siswa masih bisa lihat node.exe di Task Manager, bagaimana cara menyembunyikannya?',
                     a: 'Untuk menyembunyikan agent sepenuhnya: (1) Disable Task Manager via Group Policy, (2) Hide folder agent dengan command "attrib +h C:\\labmonitor-agent", (3) Rename folder agent ke nama yang tidak mencurigakan seperti "C:\\WindowsSystem32". Agent tetap running sebagai SYSTEM sehingga siswa tidak bisa close.'
+                  },
+                  {
+                    q: 'Bagaimana cara menambah domain baru ke sistem klasifikasi website?',
+                    a: 'Edit file agent/src/monitors/browser.js, tambahkan domain ke array categories sesuai kategori. Contoh: tambahkan "new-site.com" ke array "educational" domains. Setelah update, restart agent di PC siswa. Sistem akan otomatis mengklasifikasi website tersebut dengan benar.'
+                  },
+                  {
+                    q: 'Website masih masuk kategori "other", bagaimana cara memperbaikinya?',
+                    a: 'Website masuk "other" karena tidak ada di database 200+ domain. Solusi: (1) Tambahkan domain ke file browser.js di kategori yang sesuai, (2) Tambahkan keywords yang relevan, (3) Restart agent. Sistem akan otomatis mengklasifikasi dengan benar setelah update.'
+                  },
+                  {
+                    q: 'IP address di topologi jaringan tidak muncul atau salah?',
+                    a: 'IP address diambil dari database MySQL. Pastikan: (1) Field ip_address di tabel computers terisi dengan benar, (2) Backend sudah restart setelah update database, (3) VITE_SERVER_IP di file .env sesuai dengan IP server Anda. Refresh halaman topologi untuk melihat update.'
                   },
                 ].map((faq, idx) => (
                   <div key={idx} className="border border-gray-200 rounded-xl overflow-hidden">
