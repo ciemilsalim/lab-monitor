@@ -10,6 +10,7 @@ import NetworkMap from './components/NetworkMap';
 import GuidePage from './components/GuidePage';
 import LoginPage from './components/LoginPage';
 import ScreenshotViewer from './components/ScreenshotViewer';
+import CleanupPanel from './components/CleanupPanel';
 import { computers as mockComputers, activities as mockActivities, alerts as mockAlerts } from './data/mockData';
 import { computersAPI, activitiesAPI, alertsAPI } from './services/api';
 import socketService from './services/socket';
@@ -306,6 +307,26 @@ function App() {
       setCurrentScreenshot(newScreenshot);
     });
 
+    // 🚨 Listen for NEW ALERTS from Alert Engine (REAL-TIME!)
+    socketService.onNewAlert((data: any) => {
+      console.log('🚨 New alert received:', data);
+      
+      const newAlert: Alert = {
+        id: data.id?.toString() || Date.now().toString(),
+        type: data.type || 'info',
+        message: data.message || 'Unknown alert',
+        timestamp: new Date(data.timestamp || Date.now()),
+        computerId: data.computer_id || data.computerId || '',
+        studentName: data.student_name || data.studentName || 'Unknown',
+        is_read: false,
+      };
+      
+      // Add new alert to the beginning of alerts array
+      setAlerts(prev => [newAlert, ...prev].slice(0, 100)); // Keep last 100 alerts
+      
+      console.log('✅ Alert added to state:', newAlert.message);
+    });
+
     // Check socket connection
     const checkSocket = setInterval(() => {
       setSocketConnected(socketService.isConnected());
@@ -353,6 +374,8 @@ function App() {
         return <NetworkMap computers={computers} />;
       case 'guide':
         return <GuidePage />;
+      case 'cleanup':
+        return <CleanupPanel />;
       default:
         return <Dashboard computers={computers} activities={activities} alerts={alerts} />;
     }
