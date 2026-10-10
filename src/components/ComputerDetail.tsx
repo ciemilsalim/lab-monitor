@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { X, Power, RotateCcw, Lock, Eye, Monitor, Terminal, Shield, Check, MousePointer } from 'lucide-react';
 import { Computer, BrowsingActivity } from '../types';
 import RemoteDesktopViewer from './RemoteDesktopViewer';
+import socketService from '../services/socket';
 
 interface ComputerDetailProps {
   computer: Computer;
@@ -17,7 +18,33 @@ export default function ComputerDetail({ computer, activities, onClose }: Comput
   const computerActivities = activities.filter(a => a.computerId === computer.id).slice(0, 20);
 
   const handleAction = (action: string) => {
-    setActionFeedback(`Perintah "${action}" berhasil dikirim`);
+    console.log('🎮 Sending remote command from ComputerDetail:', { action, computerId: computer.id });
+    
+    // Special handling for screenshot/view action
+    if (action === 'view' || action === 'screenshot') {
+      console.log('📸 Requesting screenshot from:', computer.id);
+      
+      // Emit screenshot request
+      socketService.emitScreenshotRequest({
+        computerId: computer.id,
+        computerName: computer.name,
+        studentName: computer.studentName,
+        timestamp: new Date().toISOString()
+      });
+      
+      setActionFeedback(`📸 Meminta screenshot dari ${computer.id}...`);
+      setTimeout(() => setActionFeedback(null), 3000);
+      return;
+    }
+    
+    // Emit command ke backend via socket
+    socketService.emitRemoteCommand({
+      action,
+      computerId: computer.id,
+      timestamp: new Date().toISOString()
+    });
+    
+    setActionFeedback(`Perintah "${action}" berhasil dikirim ke ${computer.id}`);
     setTimeout(() => setActionFeedback(null), 3000);
   };
 

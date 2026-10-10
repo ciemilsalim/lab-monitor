@@ -5,6 +5,7 @@ import {
   Wifi, Zap
 } from 'lucide-react';
 import { Computer, RemoteControlSession } from '../types';
+import socketService from '../services/socket';
 
 interface RemoteDesktopViewerProps {
   computer: Computer;
@@ -29,6 +30,13 @@ export default function RemoteDesktopViewer({ computer, onClose }: RemoteDesktop
   const [isTyping, setIsTyping] = useState(false);
   const [typedText, setTypedText] = useState('');
   const [connectionQuality, setConnectionQuality] = useState<'excellent' | 'good' | 'poor'>('excellent');
+  
+  // View Only mode states
+  const [currentScreenshot, setCurrentScreenshot] = useState<string | null>(null);
+  const [isCapturing, setIsCapturing] = useState(false);
+  const [lastCaptureTime, setLastCaptureTime] = useState<Date | null>(null);
+  const [autoCaptureEnabled, setAutoCaptureEnabled] = useState(true);
+  const [captureInterval, setCaptureInterval] = useState(3000); // 3 seconds default
 
   // Simulasi koneksi quality
   useEffect(() => {
@@ -38,6 +46,56 @@ export default function RemoteDesktopViewer({ computer, onClose }: RemoteDesktop
     }, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  // Auto-capture screenshot saat mode "Lihat Saja" aktif
+  useEffect(() => {
+    if (!session.viewOnly || !autoCaptureEnabled) return;
+
+    // Request screenshot pertama kali
+    requestScreenshot();
+
+    // Setup interval untuk auto-capture
+    const interval = setInterval(() => {
+      if (session.viewOnly && autoCaptureEnabled) {
+        requestScreenshot();
+      }
+    }, captureInterval);
+
+    return () => clearInterval(interval);
+  }, [session.viewOnly, autoCaptureEnabled, captureInterval]);
+
+  // Listen untuk screenshot dari backend
+  useEffect(() => {
+    const handleScreenshot = (data: any) => {
+      if (data.computerId === computer.id && data.image) {
+        console.log('📸 Screenshot received for view-only mode');
+        setCurrentScreenshot(data.image);
+        setLastCaptureTime(new Date());
+        setIsCapturing(false);
+      }
+    };
+
+    socketService.on('screenshot-captured', handleScreenshot);
+
+    return () => {
+      socketService.off('screenshot-captured', handleScreenshot);
+    };
+  }, [computer.id]);
+
+  // Fungsi untuk request screenshot
+  const requestScreenshot = () => {
+    if (isCapturing) return; // Jangan request jika sedang capture
+    
+    setIsCapturing(true);
+    console.log('📸 Requesting screenshot for view-only mode');
+    
+    socketService.emitScreenshotRequest({
+      computerId: computer.id,
+      computerName: computer.name,
+      studentName: computer.studentName,
+      timestamp: new Date().toISOString()
+    });
+  };
 
   const notify = (msg: string) => {
     setNotificationMsg(msg);
@@ -81,14 +139,73 @@ export default function RemoteDesktopViewer({ computer, onClose }: RemoteDesktop
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
     setMousePosition({ x, y });
+    
+    // Send mouse move to agent
+    socketService.emitRemoteCommand({
+      action: 'mouse_move',
+      computerId: computer.id,
+      x: x,
+      y: y,
+      timestamp: new Date().toISOString()
+    });
+  };
+
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!session.mouseControl) return;
+    e.preventDefault();
+    
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    
+    // Determine button
+    const button = e.button === 0 ? 'left' : e.button === 2 ? 'right' : 'middle';
+    
+    // Send mouse click to agent
+    socketService.emitRemoteCommand({
+      action: 'mouse_click',
+      computerId: computer.id,
+      button: button,
+      x: x,
+      y: y,
+      timestamp: new Date().toISOString()
+    });
+    
+    notify(`🖱️ ${button.charAt(0).toUpperCase() + button.slice(1)} click at (${Math.round(x)}%, ${Math.round(y)}%)`);
+  };
+
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    if (!session.mouseControl) return;
+    e.preventDefault();
+    
+    const direction = e.deltaY < 0 ? 'up' : 'down';
+    const amount = Math.abs(Math.round(e.deltaY / 100));
+    
+    // Send scroll to agent
+    socketService.emitRemoteCommand({
+      action: 'mouse_scroll',
+      computerId: computer.id,
+      direction: direction,
+      amount: amount,
+      timestamp: new Date().toISOString()
+    });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!session.keyboardControl) return;
     e.preventDefault();
+    
     setIsTyping(true);
     setTypedText(prev => prev + e.key);
     setTimeout(() => setIsTyping(false), 500);
+    
+    // Send key press to agent
+    socketService.emitRemoteCommand({
+      action: 'press_key',
+      computerId: computer.id,
+      key: e.key,
+      timestamp: new Date().toISOString()
+    });
   };
 
   const sendKeyCombination = (combo: string) => {
@@ -96,7 +213,31 @@ export default function RemoteDesktopViewer({ computer, onClose }: RemoteDesktop
       notify('⚠️ Aktifkan kontrol keyboard terlebih dahulu');
       return;
     }
+    
+    // Emit command ke backend via socket
+    console.log('🎮 Sending key combination:', combo);
+    socketService.emitRemoteCommand({
+      action: 'key_combination',
+      computerId: computer.id,
+      keys: combo,
+      timestamp: new Date().toISOString()
+    });
+    
     notify(`⌨️ Kombinasi tombol "${combo}" dikirim ke ${computer.id}`);
+  };
+
+  // Fungsi untuk mengirim command remote control
+  const sendRemoteCommand = (action: string, params: Record<string, any> = {}) => {
+    console.log('🎮 Sending remote command:', { action, computerId: computer.id, ...params });
+    
+    socketService.emitRemoteCommand({
+      action,
+      computerId: computer.id,
+      ...params,
+      timestamp: new Date().toISOString()
+    });
+    
+    notify(`✅ Perintah "${action}" dikirim ke ${computer.id}`);
   };
 
   const getConnectionColor = () => {
@@ -225,14 +366,14 @@ export default function RemoteDesktopViewer({ computer, onClose }: RemoteDesktop
         <div className="flex items-center gap-2">
           {/* Quick Actions */}
           <button
-            onClick={() => notify(`📸 Screenshot disimpan dari ${computer.id}`)}
+            onClick={() => sendRemoteCommand('screenshot')}
             className="flex items-center gap-2 px-3 py-2 bg-gray-700 text-gray-300 rounded-lg text-sm hover:bg-gray-600 transition-colors"
           >
             <Camera className="w-4 h-4" />
             Screenshot
           </button>
           <button
-            onClick={() => notify(`🔊 Audio dimatikan di ${computer.id}`)}
+            onClick={() => sendRemoteCommand('mute_audio')}
             className="flex items-center gap-2 px-3 py-2 bg-gray-700 text-gray-300 rounded-lg text-sm hover:bg-gray-600 transition-colors"
           >
             <VolumeX className="w-4 h-4" />
@@ -241,7 +382,7 @@ export default function RemoteDesktopViewer({ computer, onClose }: RemoteDesktop
           <button
             onClick={() => {
               const msg = prompt('Masukkan pesan untuk siswa:');
-              if (msg) notify(`💬 Pesan dikirim ke ${computer.id}: "${msg}"`);
+              if (msg) sendRemoteCommand('message', { message: msg });
             }}
             className="flex items-center gap-2 px-3 py-2 bg-gray-700 text-gray-300 rounded-lg text-sm hover:bg-gray-600 transition-colors"
           >
@@ -279,95 +420,236 @@ export default function RemoteDesktopViewer({ computer, onClose }: RemoteDesktop
       <div
         className="flex-1 relative overflow-hidden bg-gray-950"
         onMouseMove={handleMouseMove}
+        onMouseDown={handleMouseDown}
+        onWheel={handleWheel}
         onKeyDown={handleKeyDown}
         tabIndex={0}
+        onContextMenu={(e) => {
+          if (session.mouseControl) {
+            e.preventDefault();
+            handleMouseDown({ ...e, button: 2 } as any);
+          }
+        }}
       >
-        {/* Simulated Desktop Screen */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900">
-          {/* Simulated Desktop Elements */}
-          <div className="absolute inset-0 p-8">
-            {/* Taskbar */}
-            <div className="absolute bottom-0 left-0 right-0 h-12 bg-gray-900/80 backdrop-blur-sm border-t border-gray-700 flex items-center px-4 gap-3">
-              <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
-                <span className="text-white text-xs font-bold">W</span>
-              </div>
-              <div className="w-8 h-8 bg-gray-700 rounded flex items-center justify-center">
-                <span className="text-white text-xs">📁</span>
-              </div>
-              <div className="w-8 h-8 bg-gray-700 rounded flex items-center justify-center">
-                <span className="text-white text-xs">🌐</span>
-              </div>
-              <div className="flex-1" />
-              <span className="text-white text-xs font-mono">
-                {new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
-              </span>
-            </div>
-
-            {/* Desktop Icons */}
-            <div className="grid grid-cols-6 gap-4">
-              {['This PC', 'Documents', 'Chrome', 'VS Code', 'Terminal', 'Recycle Bin'].map((icon, i) => (
-                <div key={i} className="flex flex-col items-center gap-1 p-2 rounded hover:bg-white/10 cursor-pointer">
-                  <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center text-2xl">
-                    {['💻', '📄', '🌐', '💻', '⬛', '🗑️'][i]}
+        {/* View Only Mode - Tampilkan Screenshot */}
+        {session.viewOnly ? (
+          <div className="absolute inset-0 bg-black flex items-center justify-center">
+            {currentScreenshot ? (
+              <>
+                {/* Screenshot Display */}
+                <img 
+                  src={currentScreenshot} 
+                  alt="Live Screen" 
+                  className="max-w-full max-h-full object-contain"
+                />
+                
+                {/* Loading Indicator */}
+                {isCapturing && (
+                  <div className="absolute top-4 right-4 bg-blue-600/90 text-white px-4 py-2 rounded-lg flex items-center gap-2 animate-pulse">
+                    <Camera className="w-4 h-4" />
+                    <span className="text-sm font-medium">Mengambil screenshot...</span>
                   </div>
-                  <span className="text-white text-xs text-center">{icon}</span>
-                </div>
-              ))}
-            </div>
+                )}
 
-            {/* Active Window Simulation */}
-            <div className="absolute top-20 left-20 right-20 bottom-20 bg-white rounded-lg shadow-2xl overflow-hidden">
-              <div className="bg-gray-100 border-b border-gray-300 px-3 py-2 flex items-center gap-2">
-                <div className="flex gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-red-500" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                  <div className="w-3 h-3 rounded-full bg-green-500" />
+                {/* Last Capture Info */}
+                {lastCaptureTime && (
+                  <div className="absolute bottom-4 left-4 bg-black/70 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+                    <Eye className="w-4 h-4 text-green-400" />
+                    <span className="text-xs">
+                      Terakhir: {lastCaptureTime.toLocaleTimeString('id-ID', { 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        second: '2-digit' 
+                      })}
+                    </span>
+                    {autoCaptureEnabled && (
+                      <span className="text-xs text-green-400 ml-2">
+                        • Auto-refresh setiap {captureInterval / 1000}s
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {/* View Only Controls */}
+                <div className="absolute bottom-4 right-4 flex items-center gap-2">
+                  <button
+                    onClick={requestScreenshot}
+                    disabled={isCapturing}
+                    className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+                  >
+                    <Camera className="w-4 h-4" />
+                    <span className="text-sm font-medium">Refresh</span>
+                  </button>
+                  <button
+                    onClick={() => setAutoCaptureEnabled(!autoCaptureEnabled)}
+                    className={`${autoCaptureEnabled ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-600 hover:bg-gray-700'} text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors`}
+                  >
+                    <span className="text-sm font-medium">
+                      {autoCaptureEnabled ? '⏸️ Pause' : '▶️ Auto'}
+                    </span>
+                  </button>
+                  <select
+                    value={captureInterval}
+                    onChange={(e) => setCaptureInterval(Number(e.target.value))}
+                    className="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm"
+                  >
+                    <option value={1000}>1 detik</option>
+                    <option value={2000}>2 detik</option>
+                    <option value={3000}>3 detik</option>
+                    <option value={5000}>5 detik</option>
+                    <option value={10000}>10 detik</option>
+                  </select>
                 </div>
-                <span className="text-xs text-gray-600 ml-2">{computer.currentApp} - {computer.studentName}</span>
-              </div>
-              <div className="p-6">
-                <div className="space-y-3">
-                  <div className="h-4 bg-gray-200 rounded w-3/4" />
-                  <div className="h-4 bg-gray-200 rounded w-1/2" />
-                  <div className="h-4 bg-gray-200 rounded w-5/6" />
-                  <div className="h-20 bg-gray-100 rounded mt-4" />
-                  <div className="h-4 bg-gray-200 rounded w-2/3" />
+
+                {/* View Only Badge */}
+                <div className="absolute top-4 left-4 bg-blue-600/90 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+                  <Eye className="w-5 h-5" />
+                  <span className="font-medium">Mode Lihat Saja</span>
                 </div>
+              </>
+            ) : (
+              /* No Screenshot Yet */
+              <div className="text-center">
+                {isCapturing ? (
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                    <p className="text-white text-lg">Mengambil screenshot pertama...</p>
+                    <p className="text-gray-400 text-sm">Mohon tunggu beberapa detik</p>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-4">
+                    <Camera className="w-16 h-16 text-gray-600" />
+                    <p className="text-white text-lg">Belum ada screenshot</p>
+                    <button
+                      onClick={requestScreenshot}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-colors"
+                    >
+                      <Camera className="w-5 h-5" />
+                      <span className="font-medium">Ambil Screenshot</span>
+                    </button>
+                  </div>
+                )}
               </div>
-            </div>
+            )}
           </div>
+        ) : (
+          /* Control Mode - Real Screenshot with Control Overlay */
+          <div className="absolute inset-0 bg-black flex items-center justify-center">
+            {currentScreenshot ? (
+              <>
+                {/* Real Screenshot Display */}
+                <img 
+                  src={currentScreenshot} 
+                  alt="Live Screen" 
+                  className="max-w-full max-h-full object-contain"
+                />
+                
+                {/* Admin Cursor Overlay */}
+                {session.mouseControl && (
+                  <div
+                    className="absolute pointer-events-none transition-all duration-75 z-50"
+                    style={{ left: `${mousePosition.x}%`, top: `${mousePosition.y}%` }}
+                  >
+                    <svg width="28" height="28" viewBox="0 0 20 20" className="drop-shadow-2xl">
+                      <path d="M0,0 L0,16 L4,12 L7,18 L9,17 L6,11 L12,11 Z" fill="#3b82f6" stroke="white" strokeWidth="2" />
+                    </svg>
+                    <div className="absolute -top-8 left-6 bg-blue-600 text-white text-xs px-2 py-1 rounded whitespace-nowrap shadow-lg font-semibold">
+                      Admin Remote
+                    </div>
+                  </div>
+                )}
+                
+                {/* Control Mode Badge */}
+                <div className="absolute top-4 left-4 bg-green-600/90 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-lg">
+                  <MousePointer className="w-5 h-5" />
+                  <Keyboard className="w-5 h-5" />
+                  <span className="font-medium">Mode Kontrol Aktif</span>
+                </div>
 
-          {/* Remote Cursor */}
-          {session.mouseControl && (
-            <div
-              className="absolute pointer-events-none transition-all duration-75"
-              style={{ left: `${mousePosition.x}%`, top: `${mousePosition.y}%` }}
-            >
-              <svg width="20" height="20" viewBox="0 0 20 20" className="drop-shadow-lg">
-                <path d="M0,0 L0,16 L4,12 L7,18 L9,17 L6,11 L12,11 Z" fill="white" stroke="black" strokeWidth="1" />
-              </svg>
-              <div className="absolute -top-6 left-4 bg-black/80 text-white text-xs px-2 py-0.5 rounded whitespace-nowrap">
-                Admin Remote
+                {/* Mouse Position Indicator */}
+                {session.mouseControl && (
+                  <div className="absolute top-4 right-4 bg-black/70 text-white px-3 py-1.5 rounded-lg text-xs font-mono">
+                    X: {Math.round(mousePosition.x)}% Y: {Math.round(mousePosition.y)}%
+                  </div>
+                )}
+
+                {/* Typing Indicator */}
+                {isTyping && session.keyboardControl && (
+                  <div className="absolute top-16 right-4 bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 animate-pulse shadow-lg">
+                    <Keyboard className="w-3 h-3" />
+                    Mengetik: {typedText.slice(-20)}
+                  </div>
+                )}
+
+                {/* Loading Indicator */}
+                {isCapturing && (
+                  <div className="absolute bottom-20 right-4 bg-blue-600/90 text-white px-4 py-2 rounded-lg flex items-center gap-2 animate-pulse">
+                    <Camera className="w-4 h-4" />
+                    <span className="text-sm font-medium">Mengambil screenshot...</span>
+                  </div>
+                )}
+
+                {/* Last Capture Info */}
+                {lastCaptureTime && (
+                  <div className="absolute bottom-4 left-4 bg-black/70 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+                    <Eye className="w-4 h-4 text-green-400" />
+                    <span className="text-xs">
+                      Terakhir: {lastCaptureTime.toLocaleTimeString('id-ID', { 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        second: '2-digit' 
+                      })}
+                    </span>
+                    {autoCaptureEnabled && (
+                      <span className="text-xs text-green-400 ml-2">
+                        • Auto-refresh setiap {captureInterval / 1000}s
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {/* Control Instructions */}
+                {session.mouseControl && (
+                  <div className="absolute bottom-4 right-4 bg-black/70 text-white px-4 py-2 rounded-lg text-xs space-y-1">
+                    <p className="font-semibold mb-1">🖱️ Kontrol Mouse:</p>
+                    <p>• Gerakkan mouse untuk menggerakkan cursor</p>
+                    <p>• Klik kiri/kanan untuk klik</p>
+                    <p>• Scroll untuk scroll</p>
+                  </div>
+                )}
+
+                {session.keyboardControl && (
+                  <div className="absolute bottom-20 right-4 bg-black/70 text-white px-4 py-2 rounded-lg text-xs space-y-1">
+                    <p className="font-semibold mb-1">⌨️ Kontrol Keyboard:</p>
+                    <p>• Ketik untuk mengirim teks</p>
+                    <p>• Gunakan tombol shortcut di toolbar</p>
+                  </div>
+                )}
+              </>
+            ) : (
+              /* No Screenshot Yet */
+              <div className="text-center">
+                {isCapturing ? (
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                    <p className="text-white text-lg">Mengambil screenshot pertama...</p>
+                    <p className="text-gray-400 text-sm">Mohon tunggu beberapa detik</p>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-4">
+                    <Camera className="w-16 h-16 text-gray-600" />
+                    <p className="text-white text-lg">Belum ada screenshot</p>
+                    <button
+                      onClick={requestScreenshot}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-colors"
+                    >
+                      <Camera className="w-5 h-5" />
+                      <span className="font-medium">Ambil Screenshot</span>
+                    </button>
+                  </div>
+                )}
               </div>
-            </div>
-          )}
-
-          {/* Typing Indicator */}
-          {isTyping && session.keyboardControl && (
-            <div className="absolute top-4 right-4 bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 animate-pulse">
-              <Keyboard className="w-3 h-3" />
-              Mengetik...
-            </div>
-          )}
-        </div>
-
-        {/* View Only Overlay */}
-        {session.viewOnly && (
-          <div className="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none">
-            <div className="bg-black/70 text-white px-6 py-3 rounded-xl flex items-center gap-3">
-              <Eye className="w-5 h-5" />
-              <span className="font-medium">Mode Lihat Saja - Kontrol Dinonaktifkan</span>
-            </div>
+            )}
           </div>
         )}
       </div>

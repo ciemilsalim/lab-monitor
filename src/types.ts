@@ -41,6 +41,19 @@ export interface Computer {
   row: number;
   col: number;
   screenCapture?: string;
+  isConnected?: boolean; // Real-time connection status
+  lastHeartbeat?: string | Date; // Last time agent sent data
+}
+
+export interface Screenshot {
+  id: string;
+  computerId: string;
+  computerName: string;
+  studentName: string;
+  image: string; // base64 encoded image
+  timestamp: Date;
+  size: number;
+  path?: string;
 }
 
 export interface RemoteControlSession {

@@ -86,6 +86,48 @@ class SocketService {
     this.registerListener('new-alert', callback);
   }
 
+  // Screenshot events
+  onScreenshotCaptured(callback: (data: any) => void): void {
+    this.registerListener('screenshot-captured', callback);
+  }
+
+  emitScreenshotRequest(data: any): void {
+    this.socket?.emit('request-screenshot', data);
+  }
+
+  // Computer list sync
+  onComputerList(callback: (data: any) => void): void {
+    this.registerListener('computer-list', callback);
+  }
+
+  requestComputerList(): void {
+    this.socket?.emit('request-computer-list');
+  }
+
+  // Generic event listener
+  on(event: string, callback: (data: any) => void): void {
+    this.registerListener(event, callback);
+  }
+
+  // Generic event unlistener
+  off(event: string, callback: Function): void {
+    if (this.socket) {
+      this.socket.off(event, callback as any);
+    }
+    
+    // Remove from listeners map
+    const callbacks = this.listeners.get(event);
+    if (callbacks) {
+      const index = callbacks.indexOf(callback);
+      if (index > -1) {
+        callbacks.splice(index, 1);
+      }
+      if (callbacks.length === 0) {
+        this.listeners.delete(event);
+      }
+    }
+  }
+
   // Generic listener registration
   private registerListener(event: string, callback: Function): void {
     if (!this.listeners.has(event)) {

@@ -3,21 +3,24 @@ import {
   BookOpen, Monitor, LogIn, LayoutDashboard, Globe, AlertTriangle,
   Network, Shield, Download, Server, ChevronRight, ChevronDown,
   CheckCircle2, Info, Lightbulb, Wrench, Terminal, Users, Cpu,
-  Eye, Lock, Power, RotateCcw, Search, Filter,
-  Bell, MousePointer, Keyboard, Zap, HelpCircle
+  Eye, Search, Filter, Bell, MousePointer, Keyboard, Zap, HelpCircle,
+  Camera, Lock, Power, RotateCcw
 } from 'lucide-react';
 
 type GuideSection =
   | 'overview'
   | 'installation'
   | 'backend-setup'
+  | 'agent-setup'
+  | 'switch-mode'
   | 'login'
   | 'dashboard'
   | 'computers'
   | 'activity'
   | 'alerts'
   | 'network'
-  | 'controls'
+  | 'remote-control'
+  | 'screenshot'
   | 'troubleshooting';
 
 interface SectionItem {
@@ -31,13 +34,16 @@ const sections: SectionItem[] = [
   { id: 'overview', label: 'Ikhtisar Aplikasi', icon: BookOpen, sub: 'Tentang LabMonitor' },
   { id: 'installation', label: 'Instalasi & Persiapan', icon: Download, sub: 'Cara memasang' },
   { id: 'backend-setup', label: 'Setup Backend', icon: Server, sub: 'Node.js + Express + Socket.io' },
+  { id: 'agent-setup', label: 'Setup Agent', icon: Terminal, sub: 'Agent monitoring PC siswa' },
+  { id: 'switch-mode', label: 'Switch Mode', icon: Eye, sub: 'Visible ↔ Silent mode' },
   { id: 'login', label: 'Login & Akun', icon: LogIn, sub: 'Masuk ke sistem' },
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, sub: 'Ringkasan monitoring' },
   { id: 'computers', label: 'Monitor Komputer', icon: Monitor, sub: 'Lihat semua PC' },
   { id: 'activity', label: 'Aktivitas Internet', icon: Globe, sub: 'Pantau browsing' },
   { id: 'alerts', label: 'Peringatan', icon: AlertTriangle, sub: 'Notifikasi & alert' },
   { id: 'network', label: 'Peta Jaringan', icon: Network, sub: 'Topologi LAN' },
-  { id: 'controls', label: 'Kontrol Remote', icon: Shield, sub: 'Remote control PC' },
+  { id: 'remote-control', label: 'Kontrol Remote', icon: Shield, sub: 'Mouse & keyboard control' },
+  { id: 'screenshot', label: 'Screenshot Dashboard', icon: Camera, sub: 'Lihat layar siswa' },
   { id: 'troubleshooting', label: 'Troubleshooting', icon: Wrench, sub: 'Masalah & solusi' },
 ];
 
@@ -69,7 +75,7 @@ export default function GuidePage() {
               </div>
               <div>
                 <h2 className="text-3xl font-bold">Panduan Penggunaan</h2>
-                <p className="text-blue-100 text-sm mt-1">LabMonitor - Sistem Monitoring Lab Komputer</p>
+                <p className="text-blue-100 text-sm mt-1">LabMonitor - Sistem Monitoring Lab Komputer v1.2.0</p>
               </div>
             </div>
             <p className="text-blue-100 max-w-2xl mt-4 leading-relaxed">
@@ -79,7 +85,7 @@ export default function GuidePage() {
           </div>
           <div className="hidden lg:flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2 border border-white/20">
             <Info className="w-4 h-4" />
-            <span className="text-sm font-medium">Versi 1.0.0</span>
+            <span className="text-sm font-medium">Versi 1.2.0</span>
           </div>
         </div>
       </div>
@@ -150,7 +156,8 @@ export default function GuidePage() {
                     <p className="font-semibold text-blue-900">Apa itu LabMonitor?</p>
                     <p className="text-blue-800 text-sm mt-1 leading-relaxed">
                       LabMonitor adalah sistem monitoring real-time untuk laboratorium komputer yang memungkinkan admin/guru
-                      memantau aktivitas siswa, mengontrol komputer dari jarak jauh, dan mengelola jaringan LAN secara terpusat.
+                      memantau aktivitas siswa, mengontrol komputer dari jarak jauh (mouse & keyboard), melihat screenshot layar,
+                      dan mengelola jaringan LAN secara terpusat.
                     </p>
                   </div>
                 </div>
@@ -160,11 +167,13 @@ export default function GuidePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
                   { icon: Monitor, title: 'Monitoring Real-time', desc: 'Pantau status CPU, RAM, dan jaringan setiap komputer secara langsung', color: 'from-green-500 to-emerald-600' },
-                  { icon: Globe, title: 'Monitoring Browsing', desc: 'Lihat aktivitas internet siswa dengan kategori otomatis', color: 'from-blue-500 to-cyan-600' },
-                  { icon: Shield, title: 'Remote Control', desc: 'Shutdown, restart, lock screen, dan blokir internet dari jarak jauh', color: 'from-purple-500 to-pink-600' },
-                  { icon: AlertTriangle, title: 'Sistem Alert', desc: 'Notifikasi otomatis untuk aktivitas mencurigakan', color: 'from-orange-500 to-red-600' },
+                  { icon: Globe, title: 'Monitoring Browsing', desc: 'Lihat aktivitas internet siswa dengan kategori otomatis & semua tab browser', color: 'from-blue-500 to-cyan-600' },
+                  { icon: MousePointer, title: 'Remote Control', desc: 'Ambil alih mouse & keyboard komputer siswa secara real-time', color: 'from-purple-500 to-pink-600' },
+                  { icon: Camera, title: 'Screenshot Dashboard', desc: 'Lihat screenshot layar siswa secara real-time di dashboard', color: 'from-orange-500 to-red-600' },
+                  { icon: AlertTriangle, title: 'Sistem Alert', desc: 'Notifikasi otomatis untuk aktivitas mencurigakan', color: 'from-red-500 to-rose-600' },
                   { icon: Network, title: 'Peta Jaringan', desc: 'Visualisasi topologi jaringan LAN lab komputer', color: 'from-indigo-500 to-blue-600' },
-                  { icon: Users, title: 'Multi-User', desc: 'Dukungan untuk admin, guru, dan viewer dengan hak akses berbeda', color: 'from-teal-500 to-cyan-600' },
+                  { icon: Lock, title: 'Internet Control', desc: 'Blokir internet siswa dengan whitelist server', color: 'from-yellow-500 to-amber-600' },
+                  { icon: Terminal, title: 'Agent Auto-Start', desc: 'Agent otomatis berjalan saat komputer boot', color: 'from-teal-500 to-cyan-600' },
                 ].map((feature, idx) => {
                   const Icon = feature.icon;
                   return (
@@ -185,19 +194,25 @@ export default function GuidePage() {
               <div className="bg-gray-900 rounded-xl p-6 text-white">
                 <div className="flex flex-col items-center gap-4">
                   <div className="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl px-6 py-3 text-center">
-                    <p className="font-bold">🖥️ Server Monitor</p>
-                    <p className="text-xs text-blue-100">192.168.1.1</p>
+                    <p className="font-bold">🖥️ Frontend React</p>
+                    <p className="text-xs text-blue-100">Port 3000 - Dashboard UI</p>
                   </div>
-                  <div className="w-0.5 h-6 bg-gray-600" />
+                  <div className="text-gray-400 text-sm">↕️ HTTP + WebSocket</div>
                   <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl px-6 py-3 text-center">
-                    <p className="font-bold">📡 Switch Utama (48-Port)</p>
-                    <p className="text-xs text-purple-100">Gigabit Ethernet</p>
+                    <p className="font-bold">⚡ Backend Node.js + Express + Socket.io</p>
+                    <p className="text-xs text-purple-100">Port 3001 - API Server</p>
                   </div>
-                  <div className="w-0.5 h-6 bg-gray-600" />
+                  <div className="text-gray-400 text-sm">↕️ SQL Queries</div>
+                  <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl px-6 py-3 text-center">
+                    <p className="font-bold">🗄️ MySQL (via Laragon)</p>
+                    <p className="text-xs text-green-100">Port 3306 - Database</p>
+                  </div>
+                  <div className="text-gray-400 text-sm">↕️ Agent Communication</div>
                   <div className="grid grid-cols-5 gap-2">
-                    {Array.from({ length: 10 }).map((_, i) => (
-                      <div key={i} className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg p-2 text-center">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <div key={i} className="bg-gradient-to-br from-orange-500 to-red-600 rounded-lg p-2 text-center">
                         <p className="text-xs font-bold">PC-{String(i + 1).padStart(2, '0')}</p>
+                        <p className="text-xs">Agent</p>
                       </div>
                     ))}
                   </div>
@@ -231,9 +246,10 @@ export default function GuidePage() {
                   <ul className="space-y-2 text-sm text-gray-700">
                     <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> OS: Windows 10/11 atau Linux</li>
                     <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> RAM: Minimal 4 GB</li>
-                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Browser: Chrome/Firefox/Edge terbaru</li>
-                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Koneksi: LAN stabil ke semua PC</li>
-                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Resolusi: Minimal 1366x768</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Node.js v18+ (LTS)</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Laragon (untuk MySQL)</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Koneksi: LAN stabil</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> IP Statis direkomendasikan</li>
                   </ul>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
@@ -243,10 +259,11 @@ export default function GuidePage() {
                   </div>
                   <ul className="space-y-2 text-sm text-gray-700">
                     <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> OS: Windows 10/11</li>
-                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Agent LabMonitor terinstal</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Node.js v18+ (untuk agent)</li>
                     <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Terhubung ke jaringan LAN</li>
                     <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> IP statis atau DHCP reserved</li>
-                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Firewall mengizinkan port 8080</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Firewall mengizinkan port 3001</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Admin privilege untuk agent</li>
                   </ul>
                 </div>
               </div>
@@ -257,32 +274,26 @@ export default function GuidePage() {
                   {
                     step: 1,
                     title: 'Persiapan Jaringan',
-                    desc: 'Pastikan semua komputer terhubung ke jaringan LAN yang sama. Atur IP address statis atau DHCP reservation untuk setiap PC.',
-                    code: '# Contoh konfigurasi IP statis\nIP: 192.168.1.100 - 192.168.1.130\nSubnet: 255.255.255.0\nGateway: 192.168.1.1\nDNS: 8.8.8.8'
+                    desc: 'Pastikan semua komputer terhubung ke jaringan LAN yang sama. Atur IP address statis untuk server.',
+                    code: '# Konfigurasi IP statis di server\nIP: 192.168.100.166\nSubnet: 255.255.255.0\nGateway: 192.168.100.1\nDNS: 8.8.8.8'
                   },
                   {
                     step: 2,
-                    title: 'Instalasi Agent di PC Client',
-                    desc: 'Download dan instal LabMonitor Agent di setiap komputer siswa. Agent akan berjalan di background dan mengirim data ke server.',
-                    code: '# Download agent dari server\nwget http://192.168.1.1/agent/installer.exe\n\n# Jalankan installer\ninstaller.exe --server=192.168.1.1 --port=8080'
+                    title: 'Install Node.js',
+                    desc: 'Download dan install Node.js LTS dari nodejs.org di server dan semua PC siswa.',
+                    code: '# Download dari: https://nodejs.org/\n# Pilih versi LTS (Long Term Support)\n\n# Verifikasi:\nnode --version\nnpm --version'
                   },
                   {
                     step: 3,
-                    title: 'Konfigurasi Server',
-                    desc: 'Buka browser di komputer admin dan akses alamat server. Login dengan kredensial yang telah dibuat.',
-                    code: '# Akses via browser\nhttp://192.168.1.1:3000\n\n# Atau gunakan hostname\nhttp://labmonitor.local'
+                    title: 'Setup Laragon (MySQL)',
+                    desc: 'Install Laragon untuk MySQL database. Matikan Apache, hanya gunakan MySQL.',
+                    code: '# Download Laragon dari: https://laragon.org/\n# Install dan start MySQL saja\n# Matikan Apache (tidak diperlukan)\n\n# Akses phpMyAdmin:\nhttp://localhost/phpmyadmin'
                   },
                   {
                     step: 4,
-                    title: 'Verifikasi Koneksi',
-                    desc: 'Pastikan semua komputer muncul di dashboard dengan status "Online". Agent akan otomatis terhubung ke server.',
-                    code: '# Cek status agent di client\nlabmonitor-agent --status\n\n# Output yang diharapkan:\n# Status: Connected\n# Server: 192.168.1.1:8080\n# Last heartbeat: 2 seconds ago'
-                  },
-                  {
-                    step: 5,
-                    title: 'Konfigurasi Auto-Start (Penting!)',
-                    desc: 'Agar agent otomatis berjalan setiap kali komputer di-restart, aktifkan service agent. Tanpa langkah ini, agent harus dijalankan manual setiap kali komputer menyala.',
-                    code: '# Windows - Daftarkan sebagai Service (otomatis start)\nlabmonitor-agent --install-service\n\n# Verifikasi service terdaftar\nsc query LabMonitorAgent\n\n# Aktifkan auto-start\nsc config LabMonitorAgent start= auto\n\n# Untuk Linux (systemd)\nsudo systemctl enable labmonitor-agent\nsudo systemctl start labmonitor-agent\n\n# Cek status service\nsudo systemctl status labmonitor-agent'
+                    title: 'Setup Backend & Frontend',
+                    desc: 'Ikuti panduan Setup Backend dan Setup Agent di section berikutnya.',
+                    code: '# Backend:\ncd D:\\labmonitor-backend\nnpm install\nnpm run dev\n\n# Frontend:\ncd D:\\labmonitor-frontend\nnpm install\nnpm run dev'
                   },
                 ].map((item) => (
                   <div key={item.step} className="flex gap-4">
@@ -290,7 +301,7 @@ export default function GuidePage() {
                       <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
                         {item.step}
                       </div>
-                      {item.step < 5 && <div className="w-0.5 flex-1 bg-green-200 mt-2" />}
+                      {item.step < 4 && <div className="w-0.5 flex-1 bg-green-200 mt-2" />}
                     </div>
                     <div className="flex-1 pb-4">
                       <p className="font-bold text-gray-900">{item.title}</p>
@@ -309,45 +320,12 @@ export default function GuidePage() {
                   <div>
                     <p className="font-semibold text-yellow-900">Tips Instalasi</p>
                     <ul className="text-yellow-800 text-sm mt-2 space-y-1">
-                      <li>• Gunakan IP statis untuk menghindari perubahan alamat</li>
+                      <li>• Gunakan IP statis untuk server agar tidak berubah</li>
                       <li>• Matikan firewall sementara saat instalasi agent</li>
                       <li>• Restart komputer setelah instalasi agent selesai</li>
                       <li>• Pastikan waktu (NTP) sinkron di semua komputer</li>
+                      <li>• Backup database secara berkala</li>
                     </ul>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-green-50 border-l-4 border-green-500 rounded-r-xl p-5">
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
-                  <div>
-                    <p className="font-semibold text-green-900">Auto-Start Setelah Restart</p>
-                    <p className="text-green-800 text-sm mt-2 leading-relaxed">
-                      Setelah menjalankan perintah <code className="bg-green-200 px-1.5 py-0.5 rounded text-xs font-mono">labmonitor-agent --install-service</code>, 
-                      agent akan <strong>otomatis berjalan setiap kali komputer di-restart</strong> tanpa perlu login atau intervensi manual. 
-                      Agent berjalan sebagai <em>Windows Service</em> (di Windows) atau <em>systemd service</em> (di Linux) yang dimulai sebelum user login.
-                    </p>
-                    <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div className="bg-white/60 rounded-lg p-3 border border-green-200">
-                        <p className="text-xs font-bold text-green-900 mb-1">✅ Setelah Auto-Start Aktif:</p>
-                        <ul className="text-xs text-green-800 space-y-1">
-                          <li>• Agent start otomatis saat boot</li>
-                          <li>• Berjalan di background (tanpa window)</li>
-                          <li>• Auto-reconnect jika koneksi putus</li>
-                          <li>• Tidak perlu login user</li>
-                        </ul>
-                      </div>
-                      <div className="bg-white/60 rounded-lg p-3 border border-green-200">
-                        <p className="text-xs font-bold text-green-900 mb-1">⚙️ Cara Verifikasi:</p>
-                        <ul className="text-xs text-green-800 space-y-1">
-                          <li>• Buka Task Manager → Services</li>
-                          <li>• Cari "LabMonitorAgent"</li>
-                          <li>• Status harus "Running"</li>
-                          <li>• Startup Type: "Automatic"</li>
-                        </ul>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -381,772 +359,76 @@ export default function GuidePage() {
                 </div>
               </div>
 
-              <div className="bg-gray-900 rounded-xl p-6 text-white">
-                <h4 className="font-bold text-lg mb-4">Diagram Arsitektur Backend</h4>
-                <div className="flex flex-col items-center gap-4">
-                  <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl px-6 py-3 text-center">
-                    <p className="font-bold">🖥️ Frontend React</p>
-                    <p className="text-xs text-green-100">Port 5173 (dev) / Static Build</p>
-                  </div>
-                  <div className="text-gray-400 text-sm">↕️ HTTP + WebSocket</div>
-                  <div className="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl px-6 py-3 text-center">
-                    <p className="font-bold">⚡ Node.js + Express + Socket.io</p>
-                    <p className="text-xs text-blue-100">Port 3001 - Backend API Server</p>
-                  </div>
-                  <div className="text-gray-400 text-sm">↕️ SQL Queries</div>
-                  <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl px-6 py-3 text-center">
-                    <p className="font-bold">🗄️ MySQL (via Laragon)</p>
-                    <p className="text-xs text-purple-100">Port 3306 - Database</p>
-                  </div>
-                  <div className="text-gray-400 text-sm">↕️ Agent Communication</div>
-                  <div className="bg-gradient-to-r from-orange-600 to-red-600 rounded-xl px-6 py-3 text-center">
-                    <p className="font-bold">🤖 Agent di PC Siswa</p>
-                    <p className="text-xs text-orange-100">Kirim data monitoring</p>
-                  </div>
-                </div>
-              </div>
-
-              <h4 className="font-bold text-gray-900 text-lg">Persyaratan Sistem</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Server className="w-5 h-5 text-purple-600" />
-                    <p className="font-bold text-gray-900">Software yang Diperlukan</p>
-                  </div>
-                  <ul className="space-y-2 text-sm text-gray-700">
-                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>Laragon</strong> (untuk MySQL)</li>
-                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>Node.js</strong> v18+ (LTS)</li>
-                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>npm</strong> atau <strong>yarn</strong></li>
-                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>Git</strong> (opsional)</li>
-                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>Code Editor</strong> (VS Code recommended)</li>
-                  </ul>
-                </div>
-                <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Monitor className="w-5 h-5 text-blue-600" />
-                    <p className="font-bold text-gray-900">Port yang Digunakan</p>
-                  </div>
-                  <ul className="space-y-2 text-sm text-gray-700">
-                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>3001</strong> - Backend API Server</li>
-                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>3306</strong> - MySQL (Laragon)</li>
-                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>5173</strong> - Frontend dev server</li>
-                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>8080</strong> - Agent communication</li>
-                  </ul>
-                </div>
-              </div>
-
-              <h4 className="font-bold text-gray-900 text-lg">Langkah 1: Install Node.js</h4>
-              <div className="space-y-3">
-                <div className="flex gap-4">
-                  <div className="flex flex-col items-center">
-                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
-                      1
+              <h4 className="font-bold text-gray-900 text-lg">Langkah Setup Backend</h4>
+              <div className="space-y-4">
+                {[
+                  {
+                    step: 1,
+                    title: 'Create Backend Project',
+                    desc: 'Buat folder backend dan install dependencies',
+                    code: 'mkdir D:\\labmonitor-backend\ncd D:\\labmonitor-backend\nnpm init -y\n\n# Install dependencies\nnpm install express socket.io mysql2 cors dotenv bcryptjs jsonwebtoken\nnpm install --save-dev nodemon'
+                  },
+                  {
+                    step: 2,
+                    title: 'Setup Database',
+                    desc: 'Buat database di phpMyAdmin dan jalankan schema SQL',
+                    code: '-- Buka phpMyAdmin: http://localhost/phpmyadmin\n-- Buat database:\nCREATE DATABASE labmonitor CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;\n\n-- Buat tabel: students, computers, activities, browser_tabs, alerts, users\n-- (Lihat dokumentasi lengkap untuk SQL schema)'
+                  },
+                  {
+                    step: 3,
+                    title: 'Configure Environment',
+                    desc: 'Setup file .env dengan konfigurasi database dan server',
+                    code: '# D:\\labmonitor-backend\\.env\n\nPORT=3001\nHOST=0.0.0.0\nNODE_ENV=development\n\nDB_HOST=localhost\nDB_PORT=3306\nDB_USER=root\nDB_PASSWORD=\nDB_NAME=labmonitor\n\nJWT_SECRET=your-secret-key-here\nCORS_ORIGIN=http://localhost:3000\nCORS_ORIGIN_NETWORK=http://192.168.100.166:3000'
+                  },
+                  {
+                    step: 4,
+                    title: 'Create Server Files',
+                    desc: 'Buat struktur folder dan file server.js, routes, controllers',
+                    code: '# Struktur folder:\nD:\\labmonitor-backend\\\n├── src\\\n│   ├── config\\database.js\n│   ├── routes\\ (computers, students, activities, alerts)\n│   ├── controllers\\\n│   ├── middleware\\\n│   └── server.js\n├── .env\n└── package.json'
+                  },
+                  {
+                    step: 5,
+                    title: 'Start Backend Server',
+                    desc: 'Jalankan backend server',
+                    code: 'cd D:\\labmonitor-backend\nnpm run dev\n\n# Output yang diharapkan:\n# 🚀 LabMonitor Backend Server v1.2.0\n# ✅ Socket.io ready for connections\n# ✅ Real-time connection tracking ENABLED\n# ✅ Auto-offline on disconnect ENABLED'
+                  },
+                ].map((item) => (
+                  <div key={item.step} className="flex gap-4">
+                    <div className="flex flex-col items-center">
+                      <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
+                        {item.step}
+                      </div>
+                      {item.step < 5 && <div className="w-0.5 flex-1 bg-purple-200 mt-2" />}
                     </div>
-                    <div className="w-0.5 flex-1 bg-purple-200 mt-2" />
-                  </div>
-                  <div className="flex-1 pb-4">
-                    <p className="font-bold text-gray-900">Download & Install Node.js</p>
-                    <p className="text-sm text-gray-600 mt-1">Download Node.js versi LTS dari website resmi</p>
-                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
-                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# Download dari:
-https://nodejs.org/
-
-# Pilih versi LTS (Long Term Support)
-# Saat ini: Node.js 20.x LTS
-
-# Setelah install, verifikasi:
-node --version
-# Output: v20.x.x
-
-npm --version
-# Output: 10.x.x`}</pre>
+                    <div className="flex-1 pb-4">
+                      <p className="font-bold text-gray-900">{item.title}</p>
+                      <p className="text-sm text-gray-600 mt-1">{item.desc}</p>
+                      <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                        <pre className="text-green-400 text-xs font-mono whitespace-pre">{item.code}</pre>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-
-              <h4 className="font-bold text-gray-900 text-lg">Langkah 2: Setup Laragon untuk MySQL</h4>
-              <div className="space-y-3">
-                <div className="flex gap-4">
-                  <div className="flex flex-col items-center">
-                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
-                      2
-                    </div>
-                    <div className="w-0.5 flex-1 bg-purple-200 mt-2" />
-                  </div>
-                  <div className="flex-1 pb-4">
-                    <p className="font-bold text-gray-900">Konfigurasi Laragon (MySQL Only)</p>
-                    <p className="text-sm text-gray-600 mt-1">Start hanya MySQL, matikan Apache (tidak diperlukan)</p>
-                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
-                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# 1. Buka Laragon
-# 2. Klik "Start All" atau start MySQL saja
-# 3. Matikan Apache (klik kanan → Stop → Apache)
-# 4. Pastikan MySQL running (indikator hijau)
-
-# Akses phpMyAdmin untuk manage database:
-http://localhost/phpmyadmin
-
-# Login default:
-Username: root
-Password: (kosong)`}</pre>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <h4 className="font-bold text-gray-900 text-lg">Langkah 3: Create Database</h4>
-              <div className="space-y-3">
-                <div className="flex gap-4">
-                  <div className="flex flex-col items-center">
-                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
-                      3
-                    </div>
-                    <div className="w-0.5 flex-1 bg-purple-200 mt-2" />
-                  </div>
-                  <div className="flex-1 pb-4">
-                    <p className="font-bold text-gray-900">Buat Database di MySQL</p>
-                    <p className="text-sm text-gray-600 mt-1">Buka phpMyAdmin dan buat database baru</p>
-                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
-                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`-- Buka phpMyAdmin: http://localhost/phpmyadmin
--- Klik tab "SQL" dan jalankan:
-
-CREATE DATABASE labmonitor CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- Verifikasi database sudah dibuat:
-SHOW DATABASES;
-
--- Output harus ada:
--- labmonitor`}</pre>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <h4 className="font-bold text-gray-900 text-lg">Langkah 4: Setup Backend Project</h4>
-              <div className="space-y-3">
-                <div className="flex gap-4">
-                  <div className="flex flex-col items-center">
-                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
-                      4
-                    </div>
-                    <div className="w-0.5 flex-1 bg-purple-200 mt-2" />
-                  </div>
-                  <div className="flex-1 pb-4">
-                    <p className="font-bold text-gray-900">Create Backend Project Structure</p>
-                    <p className="text-sm text-gray-600 mt-1">Buat folder backend dan install dependencies</p>
-                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
-                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# Buat folder untuk backend
-mkdir C:\\labmonitor-backend
-cd C:\\labmonitor-backend
-
-# Initialize npm project
-npm init -y
-
-# Install dependencies
-npm install express socket.io mysql2 cors dotenv bcryptjs jsonwebtoken
-
-# Install dev dependencies
-npm install --save-dev nodemon @types/node @types/express @types/cors
-
-# Struktur folder yang akan dibuat:
-C:\\labmonitor-backend\\
-├── node_modules\\
-├── src\\
-│   ├── config\\
-│   │   └── database.js
-│   ├── models\\
-│   │   ├── Computer.js
-│   │   ├── Student.js
-│   │   └── Activity.js
-│   ├── routes\\
-│   │   ├── computers.js
-│   │   ├── students.js
-│   │   └── activities.js
-│   ├── controllers\\
-│   │   ├── computerController.js
-│   │   ├── studentController.js
-│   │   └── activityController.js
-│   ├── socket\\
-│   │   └── socketHandler.js
-│   ├── middleware\\
-│   │   └── auth.js
-│   ├── utils\\
-│   │   └── helpers.js
-│   ├── app.js
-│   └── server.js
-├── .env
-├── .gitignore
-└── package.json`}</pre>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <h4 className="font-bold text-gray-900 text-lg">Langkah 5: Konfigurasi Environment</h4>
-              <div className="space-y-3">
-                <div className="flex gap-4">
-                  <div className="flex flex-col items-center">
-                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
-                      5
-                    </div>
-                    <div className="w-0.5 flex-1 bg-purple-200 mt-2" />
-                  </div>
-                  <div className="flex-1 pb-4">
-                    <p className="font-bold text-gray-900">Setup File .env</p>
-                    <p className="text-sm text-gray-600 mt-1">Konfigurasi database dan server settings</p>
-                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
-                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# Buat file .env di root folder backend
-# C:\\labmonitor-backend\\.env
-
-# Server Configuration
-PORT=3001
-NODE_ENV=development
-
-# Database Configuration (Laragon MySQL)
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=
-DB_NAME=labmonitor
-
-# JWT Secret (ganti dengan random string yang panjang)
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-
-# CORS Origin (frontend URL)
-CORS_ORIGIN=http://localhost:5173
-
-# Socket.io Configuration
-SOCKET_PING_INTERVAL=25000
-SOCKET_PING_TIMEOUT=60000`}</pre>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <h4 className="font-bold text-gray-900 text-lg">Langkah 6: Database Schema</h4>
-              <div className="space-y-3">
-                <div className="flex gap-4">
-                  <div className="flex flex-col items-center">
-                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
-                      6
-                    </div>
-                    <div className="w-0.5 flex-1 bg-purple-200 mt-2" />
-                  </div>
-                  <div className="flex-1 pb-4">
-                    <p className="font-bold text-gray-900">Buat Tabel Database</p>
-                    <p className="text-sm text-gray-600 mt-1">Jalankan SQL berikut di phpMyAdmin</p>
-                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
-                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`-- Tabel Users (Admin/Guru/Viewer)
-CREATE TABLE users (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  email VARCHAR(255) UNIQUE NOT NULL,
-  password VARCHAR(255) NOT NULL,
-  name VARCHAR(255) NOT NULL,
-  role ENUM('admin', 'guru', 'viewer') DEFAULT 'viewer',
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
--- Tabel Computers
-CREATE TABLE computers (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  computer_id VARCHAR(50) UNIQUE NOT NULL,
-  name VARCHAR(255) NOT NULL,
-  ip_address VARCHAR(50) NOT NULL,
-  mac_address VARCHAR(50),
-  status ENUM('online', 'offline', 'idle', 'locked') DEFAULT 'offline',
-  student_id INT,
-  cpu_usage DECIMAL(5,2) DEFAULT 0,
-  ram_usage DECIMAL(5,2) DEFAULT 0,
-  network_speed DECIMAL(10,2) DEFAULT 0,
-  os VARCHAR(100),
-  uptime INT DEFAULT 0,
-  current_app VARCHAR(255),
-  current_url TEXT,
-  last_heartbeat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE SET NULL
-);
-
--- Tabel Students
-CREATE TABLE students (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  student_id VARCHAR(50) UNIQUE NOT NULL,
-  name VARCHAR(255) NOT NULL,
-  class VARCHAR(50),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
--- Tabel Activities (Browsing History)
-CREATE TABLE activities (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  computer_id INT NOT NULL,
-  student_id INT,
-  url TEXT NOT NULL,
-  domain VARCHAR(255) NOT NULL,
-  category ENUM('educational', 'social-media', 'entertainment', 'search-engine', 'shopping', 'news', 'other') DEFAULT 'other',
-  duration INT DEFAULT 0,
-  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (computer_id) REFERENCES computers(id) ON DELETE CASCADE,
-  FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE SET NULL
-);
-
--- Tabel Browser Tabs (untuk monitoring semua tab)
-CREATE TABLE browser_tabs (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  activity_id INT NOT NULL,
-  url TEXT NOT NULL,
-  domain VARCHAR(255) NOT NULL,
-  title VARCHAR(500),
-  category ENUM('educational', 'social-media', 'entertainment', 'search-engine', 'shopping', 'news', 'other') DEFAULT 'other',
-  is_active BOOLEAN DEFAULT FALSE,
-  open_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  duration INT DEFAULT 0,
-  FOREIGN KEY (activity_id) REFERENCES activities(id) ON DELETE CASCADE
-);
-
--- Tabel Alerts
-CREATE TABLE alerts (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  computer_id INT NOT NULL,
-  student_id INT,
-  type ENUM('warning', 'danger', 'info') NOT NULL,
-  message TEXT NOT NULL,
-  is_read BOOLEAN DEFAULT FALSE,
-  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (computer_id) REFERENCES computers(id) ON DELETE CASCADE,
-  FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE SET NULL
-);
-
--- Insert default admin user
--- Password: admin123 (hash bcrypt)
-INSERT INTO users (email, password, name, role) VALUES
-('admin@labmonitor.local', '$2b$10$YourHashedPasswordHere', 'Admin Lab', 'admin');
-
--- Insert sample students
-INSERT INTO students (student_id, name, class) VALUES
-('STD2024001', 'Ahmad Rizki', 'XII-RPL1'),
-('STD2024002', 'Siti Nurhaliza', 'XII-RPL1'),
-('STD2024003', 'Budi Santoso', 'XII-RPL1');
-
--- Insert sample computers
-INSERT INTO computers (computer_id, name, ip_address, mac_address, student_id) VALUES
-('PC-01', 'Komputer 1', '192.168.1.100', 'AA:BB:CC:DD:EE:01', 1),
-('PC-02', 'Komputer 2', '192.168.1.101', 'AA:BB:CC:DD:EE:02', 2),
-('PC-03', 'Komputer 3', '192.168.1.102', 'AA:BB:CC:DD:EE:03', 3);`}</pre>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <h4 className="font-bold text-gray-900 text-lg">Langkah 7: Create Main Server File</h4>
-              <div className="space-y-3">
-                <div className="flex gap-4">
-                  <div className="flex flex-col items-center">
-                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
-                      7
-                    </div>
-                    <div className="w-0.5 flex-1 bg-purple-200 mt-2" />
-                  </div>
-                  <div className="flex-1 pb-4">
-                    <p className="font-bold text-gray-900">Buat File server.js</p>
-                    <p className="text-sm text-gray-600 mt-1">File utama untuk menjalankan backend server</p>
-                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
-                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`// C:\\labmonitor-backend\\src\\server.js
-
-const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const db = require('./config/database');
-
-// Load environment variables
-dotenv.config();
-
-const app = express();
-const server = http.createServer(app);
-
-// Socket.io setup
-const io = socketIo(server, {
-  cors: {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
-    methods: ['GET', 'POST'],
-    credentials: true
-  },
-  pingInterval: parseInt(process.env.SOCKET_PING_INTERVAL) || 25000,
-  pingTimeout: parseInt(process.env.SOCKET_PING_TIMEOUT) || 60000
-});
-
-// Middleware
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
-  credentials: true
-}));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Routes
-app.use('/api/computers', require('./routes/computers'));
-app.use('/api/students', require('./routes/students'));
-app.use('/api/activities', require('./routes/activities'));
-app.use('/api/auth', require('./routes/auth'));
-
-// Health check
-app.get('/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
-});
-
-// Socket.io connection handler
-io.on('connection', (socket) => {
-  console.log('Client connected:', socket.id);
-  
-  // Handle agent connection
-  socket.on('agent-connect', (data) => {
-    console.log('Agent connected:', data.computerId);
-    socket.join('agents');
-  });
-  
-  // Handle computer status update
-  socket.on('computer-update', (data) => {
-    console.log('Computer update received:', data.computerId);
-    // Update database
-    db.query(
-      'UPDATE computers SET status = ?, cpu_usage = ?, ram_usage = ?, network_speed = ?, current_app = ?, current_url = ?, last_heartbeat = NOW() WHERE computer_id = ?',
-      [data.status, data.cpu, data.ram, data.networkSpeed, data.currentApp, data.currentUrl, data.computerId],
-      (err, results) => {
-        if (err) {
-          console.error('Error updating computer:', err);
-          return;
-        }
-        // Broadcast to all connected clients
-        io.emit('computer-updated', data);
-      }
-    );
-  });
-  
-  // Handle browsing activity
-  socket.on('activity-log', (data) => {
-    console.log('Activity log received:', data);
-    // Insert to database
-    db.query(
-      'INSERT INTO activities (computer_id, student_id, url, domain, category, duration) VALUES (?, ?, ?, ?, ?, ?)',
-      [data.computerId, data.studentId, data.url, data.domain, data.category, data.duration],
-      (err, results) => {
-        if (err) {
-          console.error('Error inserting activity:', err);
-          return;
-        }
-        // Broadcast to all connected clients
-        io.emit('new-activity', data);
-      }
-    );
-  });
-  
-  // Handle remote control commands
-  socket.on('remote-command', (data) => {
-    console.log('Remote command:', data);
-    // Send command to specific agent
-    io.to('agents').emit('execute-command', data);
-  });
-  
-  socket.on('disconnect', () => {
-    console.log('Client disconnected:', socket.id);
-  });
-});
-
-// Start server
-const PORT = process.env.PORT || 3001;
-server.listen(PORT, () => {
-  console.log(\`🚀 Backend server running on port \${PORT}\`);
-  console.log(\`📡 Socket.io ready for connections\`);
-  console.log(\`🗄️ MySQL connected to \${process.env.DB_HOST}:\${process.env.DB_PORT}\`);
-});
-
-// Handle errors
-process.on('unhandledRejection', (err) => {
-  console.error('Unhandled Rejection:', err);
-  server.close(() => process.exit(1));
-});`}</pre>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <h4 className="font-bold text-gray-900 text-lg">Langkah 8: Database Connection</h4>
-              <div className="space-y-3">
-                <div className="flex gap-4">
-                  <div className="flex flex-col items-center">
-                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
-                      8
-                    </div>
-                    <div className="w-0.5 flex-1 bg-purple-200 mt-2" />
-                  </div>
-                  <div className="flex-1 pb-4">
-                    <p className="font-bold text-gray-900">Setup Database Connection</p>
-                    <p className="text-sm text-gray-600 mt-1">File konfigurasi koneksi MySQL</p>
-                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
-                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`// C:\\labmonitor-backend\\src\\config\\database.js
-
-const mysql = require('mysql2');
-const dotenv = require('dotenv');
-
-dotenv.config();
-
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 3306,
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'labmonitor',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-  enableKeepAlive: true,
-  keepAliveInitialDelay: 0
-});
-
-// Test connection
-pool.getConnection((err, connection) => {
-  if (err) {
-    console.error('❌ Error connecting to MySQL:', err.message);
-    return;
-  }
-  console.log('✅ MySQL Connected successfully');
-  connection.release();
-});
-
-// Promise wrapper for async/await
-const promisePool = pool.promise();
-
-module.exports = promisePool;`}</pre>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <h4 className="font-bold text-gray-900 text-lg">Langkah 9: Create API Routes</h4>
-              <div className="space-y-3">
-                <div className="flex gap-4">
-                  <div className="flex flex-col items-center">
-                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
-                      9
-                    </div>
-                    <div className="w-0.5 flex-1 bg-purple-200 mt-2" />
-                  </div>
-                  <div className="flex-1 pb-4">
-                    <p className="font-bold text-gray-900">Buat API Endpoints</p>
-                    <p className="text-sm text-gray-600 mt-1">Contoh route untuk computers</p>
-                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
-                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`// C:\\labmonitor-backend\\src\\routes\\computers.js
-
-const express = require('express');
-const router = express.Router();
-const db = require('../config/database');
-
-// Get all computers
-router.get('/', async (req, res) => {
-  try {
-    const [computers] = await db.query(
-      'SELECT c.*, s.name as student_name, s.student_id FROM computers c LEFT JOIN students s ON c.student_id = s.id ORDER BY c.computer_id'
-    );
-    res.json({ success: true, data: computers });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
-
-// Get computer by ID
-router.get('/:id', async (req, res) => {
-  try {
-    const [computers] = await db.query(
-      'SELECT c.*, s.name as student_name, s.student_id FROM computers c LEFT JOIN students s ON c.student_id = s.id WHERE c.id = ?',
-      [req.params.id]
-    );
-    
-    if (computers.length === 0) {
-      return res.status(404).json({ success: false, error: 'Computer not found' });
-    }
-    
-    res.json({ success: true, data: computers[0] });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
-
-// Update computer status
-router.put('/:id/status', async (req, res) => {
-  try {
-    const { status, cpu, ram, networkSpeed, currentApp, currentUrl } = req.body;
-    
-    await db.query(
-      'UPDATE computers SET status = ?, cpu_usage = ?, ram_usage = ?, network_speed = ?, current_app = ?, current_url = ?, last_heartbeat = NOW() WHERE id = ?',
-      [status, cpu, ram, networkSpeed, currentApp, currentUrl, req.params.id]
-    );
-    
-    res.json({ success: true, message: 'Computer status updated' });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
-
-module.exports = router;`}</pre>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <h4 className="font-bold text-gray-900 text-lg">Langkah 10: Update Package.json Scripts</h4>
-              <div className="space-y-3">
-                <div className="flex gap-4">
-                  <div className="flex flex-col items-center">
-                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
-                      10
-                    </div>
-                    <div className="w-0.5 flex-1 bg-purple-200 mt-2" />
-                  </div>
-                  <div className="flex-1 pb-4">
-                    <p className="font-bold text-gray-900">Setup NPM Scripts</p>
-                    <p className="text-sm text-gray-600 mt-1">Tambahkan scripts untuk development dan production</p>
-                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
-                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`// C:\\labmonitor-backend\\package.json
-
-{
-  "name": "labmonitor-backend",
-  "version": "1.0.0",
-  "description": "Backend API for LabMonitor",
-  "main": "src/server.js",
-  "scripts": {
-    "start": "node src/server.js",
-    "dev": "nodemon src/server.js",
-    "test": "echo \\"Error: no test specified\\" && exit 1"
-  },
-  "keywords": ["labmonitor", "api", "socket.io"],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "jsonwebtoken": "^9.0.2",
-    "mysql2": "^3.6.5",
-    "socket.io": "^4.7.2"
-  },
-  "devDependencies": {
-    "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
-    "@types/node": "^20.10.6",
-    "nodemon": "^3.0.2"
-  }
-}`}</pre>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <h4 className="font-bold text-gray-900 text-lg">Langkah 11: Start Backend Server</h4>
-              <div className="space-y-3">
-                <div className="flex gap-4">
-                  <div className="flex flex-col items-center">
-                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
-                      ✓
-                    </div>
-                  </div>
-                  <div className="flex-1 pb-4">
-                    <p className="font-bold text-gray-900">Jalankan Backend Server</p>
-                    <p className="text-sm text-gray-600 mt-1">Start server untuk development</p>
-                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
-                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# Di folder backend
-cd C:\\labmonitor-backend
-
-# Development mode (auto-restart saat ada perubahan)
-npm run dev
-
-# Production mode
-npm start
-
-# Output yang diharapkan:
-# ✅ MySQL Connected successfully
-# 🚀 Backend server running on port 3001
-# 📡 Socket.io ready for connections
-# 🗄️ MySQL connected to localhost:3306`}</pre>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <h4 className="font-bold text-gray-900 text-lg">Langkah 12: Update Frontend untuk Connect ke Backend</h4>
-              <div className="space-y-3">
-                <div className="flex gap-4">
-                  <div className="flex flex-col items-center">
-                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
-                      ✓
-                    </div>
-                  </div>
-                  <div className="flex-1 pb-4">
-                    <p className="font-bold text-gray-900">Konfigurasi Frontend React</p>
-                    <p className="text-sm text-gray-600 mt-1">Update frontend untuk connect ke backend API</p>
-                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
-                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# Install socket.io-client di frontend
-cd C:\\labmonitor-frontend
-npm install socket.io-client axios
-
-# Buat file .env di frontend
-# C:\\labmonitor-frontend\\.env
-
-VITE_API_URL=http://localhost:3001
-VITE_SOCKET_URL=http://localhost:3001
-
-# Contoh penggunaan di React component:
-import { io } from 'socket.io-client';
-import axios from 'axios';
-
-const socket = io(import.meta.env.VITE_SOCKET_URL);
-const API_URL = import.meta.env.VITE_API_URL;
-
-// Fetch computers from API
-const fetchComputers = async () => {
-  const response = await axios.get(\`\${API_URL}/api/computers\`);
-  return response.data.data;
-};
-
-// Listen for real-time updates
-socket.on('computer-updated', (data) => {
-  console.log('Computer updated:', data);
-  // Update UI
-});
-
-socket.on('new-activity', (data) => {
-  console.log('New activity:', data);
-  // Update UI
-});`}</pre>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
 
               <div className="bg-green-50 border-l-4 border-green-500 rounded-r-xl p-5">
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
                   <div>
-                    <p className="font-semibold text-green-900">Setup Backend Selesai!</p>
+                    <p className="font-semibold text-green-900">Backend Setup Selesai!</p>
                     <p className="text-green-800 text-sm mt-2 leading-relaxed">
                       Backend Node.js + Express + Socket.io sudah siap digunakan dengan Laragon MySQL.
                       Server berjalan di port <strong>3001</strong> dan terhubung ke database MySQL di port <strong>3306</strong>.
                     </p>
                     <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div className="bg-white/60 rounded-lg p-3 border border-green-200">
-                        <p className="text-xs font-bold text-green-900 mb-1">✅ Yang Sudah Berjalan:</p>
+                        <p className="text-xs font-bold text-green-900 mb-1">✅ Fitur Backend:</p>
                         <ul className="text-xs text-green-800 space-y-1">
-                          <li>• Express API server (port 3001)</li>
-                          <li>• Socket.io real-time communication</li>
-                          <li>• MySQL database connection</li>
                           <li>• REST API endpoints</li>
+                          <li>• Socket.io real-time</li>
+                          <li>• Database integration</li>
+                          <li>• Connection tracking</li>
+                          <li>• Auto-offline detection</li>
                         </ul>
                       </div>
                       <div className="bg-white/60 rounded-lg p-3 border border-green-200">
@@ -1154,12 +436,341 @@ socket.on('new-activity', (data) => {
                         <ul className="text-xs text-green-800 space-y-1">
                           <li>• API: http://localhost:3001</li>
                           <li>• Health: http://localhost:3001/health</li>
+                          <li>• Agents: http://localhost:3001/api/connected-agents</li>
                           <li>• phpMyAdmin: http://localhost/phpmyadmin</li>
-                          <li>• Frontend: http://localhost:5173</li>
                         </ul>
                       </div>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* 4. Agent Setup */}
+          <section id="guide-agent-setup" className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
+            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-teal-50 to-cyan-50">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Terminal className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">4. Setup Agent Monitoring</h3>
+                  <p className="text-sm text-gray-600">Install agent di PC siswa untuk monitoring real-time</p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6 space-y-6">
+              <div className="bg-blue-50 border-l-4 border-blue-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <Info className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-blue-900">Apa itu Agent?</p>
+                    <p className="text-blue-800 text-sm mt-1 leading-relaxed">
+                      Agent adalah program kecil yang diinstall di <strong>setiap PC siswa</strong>. Agent berjalan di background dan mengirim data monitoring (CPU, RAM, browser tabs) ke server secara real-time. Agent juga menerima perintah remote dari admin (shutdown, lock, block internet, mouse/keyboard control, dll).
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Fitur Agent</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  { icon: Cpu, title: 'System Monitoring', desc: 'CPU, RAM, Network speed real-time', color: 'from-blue-500 to-cyan-600' },
+                  { icon: Globe, title: 'Browser Monitoring', desc: 'Deteksi semua tab browser yang terbuka', color: 'from-green-500 to-emerald-600' },
+                  { icon: MousePointer, title: 'Remote Control', desc: 'Terima kontrol mouse & keyboard dari admin', color: 'from-purple-500 to-pink-600' },
+                  { icon: Camera, title: 'Screenshot Capture', desc: 'Ambil screenshot layar dan kirim ke dashboard', color: 'from-orange-500 to-red-600' },
+                  { icon: Power, title: 'Auto-start', desc: 'Berjalan otomatis saat komputer boot', color: 'from-red-500 to-rose-600' },
+                  { icon: Shield, title: 'Internet Control', desc: 'Block/unblock internet dengan whitelist', color: 'from-yellow-500 to-amber-600' },
+                ].map((feature, idx) => {
+                  const Icon = feature.icon;
+                  return (
+                    <div key={idx} className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                      <div className={`w-10 h-10 bg-gradient-to-br ${feature.color} rounded-lg flex items-center justify-center shrink-0`}>
+                        <Icon className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-gray-900 text-sm">{feature.title}</p>
+                        <p className="text-xs text-gray-600 mt-1">{feature.desc}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Langkah Instalasi Agent</h4>
+              <div className="space-y-4">
+                {[
+                  {
+                    step: 1,
+                    title: 'Copy Agent ke PC Siswa',
+                    desc: 'Copy folder agent dari server ke setiap PC siswa',
+                    code: '# Dari server admin, copy ke PC siswa via network share\n# Atau copy manual via USB flash drive\n\n# Contoh lokasi di PC siswa:\nC:\\labmonitor-agent\\\n├── src\\\n│   ├── agent.js\n│   ├── monitors\\\n│   ├── controllers\\\n│   ├── services\\\n│   └── utils\\\n├── package.json\n├── .env\n└── install-autostart.bat'
+                  },
+                  {
+                    step: 2,
+                    title: 'Install Dependencies',
+                    desc: 'Install Node.js dependencies di PC siswa',
+                    code: 'cd C:\\labmonitor-agent\nnpm install\n\n# Dependencies yang diinstall:\n# - socket.io-client (real-time communication)\n# - systeminformation (CPU, RAM monitoring)\n# - active-win (active window detection)\n# - node-windows (Windows Service)\n# - winston (logging)'
+                  },
+                  {
+                    step: 3,
+                    title: 'Konfigurasi Agent',
+                    desc: 'Edit file .env dengan konfigurasi yang sesuai',
+                    code: '# C:\\labmonitor-agent\\.env\n\n# Backend Server URL\nBACKEND_URL=http://192.168.100.166:3001\n\n# Computer ID (harus sama dengan database)\nCOMPUTER_ID=PC-13\n\n# Student ID\nSTUDENT_ID=LAB13\n\n# Monitoring intervals (milidetik)\nSYSTEM_MONITOR_INTERVAL=5000\nBROWSER_MONITOR_INTERVAL=10000\n\n# Logging\nLOG_LEVEL=info\nLOG_FILE=logs/agent.log'
+                  },
+                  {
+                    step: 4,
+                    title: 'Setup Auto-Start (NEW!)',
+                    desc: 'Setup agent untuk berjalan otomatis saat boot menggunakan Task Scheduler',
+                    code: '# Jalankan installer sebagai Administrator\n# Right-click install-autostart-simple.bat → Run as administrator\n\n# Installer akan:\n# ✅ Cek Node.js installation\n# ✅ Install dependencies\n# ✅ Create Task Scheduler task (simple & reliable)\n# ✅ Configure auto-start\n# ✅ Test agent running\n# ✅ Create uninstaller\n\n# Agent akan auto-start setiap kali komputer boot\n# Menggunakan Task Scheduler (tidak perlu node-windows package)\n\n# Verifikasi auto-start:\n# 1. Restart komputer\n# 2. Tunggu 30-60 detik\n# 3. Cek: tasklist | findstr node\n# 4. Cek log: type C:\\labmonitor-agent\\logs\\agent.log'
+                  },
+                  {
+                    step: 5,
+                    title: 'Test Agent',
+                    desc: 'Jalankan agent dan verifikasi koneksi',
+                    code: 'cd C:\\labmonitor-agent\nnpm start\n\n# Output yang diharapkan:\n# 🚀 LabMonitor Agent Starting...\n# 🚀 Computer ID: PC-13\n# ✅ Connected to backend\n# ✅ Agent started successfully\n# ✅ Monitoring started\n# ✅ Remote command listener active\n# ✅ Screenshot listener active'
+                  },
+                ].map((item) => (
+                  <div key={item.step} className="flex gap-4">
+                    <div className="flex flex-col items-center">
+                      <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
+                        {item.step}
+                      </div>
+                      {item.step < 5 && <div className="w-0.5 flex-1 bg-teal-200 mt-2" />}
+                    </div>
+                    <div className="flex-1 pb-4">
+                      <p className="font-bold text-gray-900">{item.title}</p>
+                      <p className="text-sm text-gray-600 mt-1">{item.desc}</p>
+                      <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                        <pre className="text-green-400 text-xs font-mono whitespace-pre">{item.code}</pre>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="bg-green-50 border-l-4 border-green-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-green-900">Agent Setup Selesai!</p>
+                    <p className="text-green-800 text-sm mt-2 leading-relaxed">
+                      Agent sekarang berjalan di background dan mengirim data monitoring ke server secara real-time.
+                      Agent akan otomatis start setiap kali komputer boot.
+                    </p>
+                    <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="bg-white/60 rounded-lg p-3 border border-green-200">
+                        <p className="text-xs font-bold text-green-900 mb-1">✅ Data yang Dikirim:</p>
+                        <ul className="text-xs text-green-800 space-y-1">
+                          <li>• CPU & RAM usage (5 detik)</li>
+                          <li>• Network speed (5 detik)</li>
+                          <li>• Active application (5 detik)</li>
+                          <li>• Browser tabs (10 detik)</li>
+                          <li>• Screenshot (saat diminta)</li>
+                        </ul>
+                      </div>
+                      <div className="bg-white/60 rounded-lg p-3 border border-green-200">
+                        <p className="text-xs font-bold text-green-900 mb-1">🎮 Remote Commands:</p>
+                        <ul className="text-xs text-green-800 space-y-1">
+                          <li>• Mouse control (move, click, scroll)</li>
+                          <li>• Keyboard control (type, press keys)</li>
+                          <li>• Shutdown / Restart</li>
+                          <li>• Lock screen</li>
+                          <li>• Block/unblock internet</li>
+                          <li>• Screenshot capture</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* 5. Switch Mode */}
+          <section id="guide-switch-mode" className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
+            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-violet-50 to-purple-50">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Eye className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">5. Switch Mode (Visible ↔ Silent)</h3>
+                  <p className="text-sm text-gray-600">Kontrol tampilan window CMD agent</p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6 space-y-6">
+              <div className="bg-violet-50 border-l-4 border-violet-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <Info className="w-5 h-5 text-violet-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-violet-900">Apa itu Switch Mode?</p>
+                    <p className="text-violet-800 text-sm mt-1 leading-relaxed">
+                      Fitur <strong>Switch Mode</strong> memungkinkan Anda untuk mengubah tampilan agent antara <strong>VISIBLE mode</strong> (dengan window CMD) 
+                      dan <strong>SILENT mode</strong> (tanpa window CMD). Siswa tidak akan bisa melihat atau menutup agent saat dalam SILENT mode.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Perbandingan Mode</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-blue-50 rounded-xl p-5 border border-blue-200">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                      <Eye className="w-5 h-5 text-white" />
+                    </div>
+                    <p className="font-bold text-blue-900">VISIBLE Mode</p>
+                  </div>
+                  <ul className="space-y-2 text-sm text-blue-800">
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" /> Window CMD terlihat</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" /> Bisa lihat log real-time</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" /> Cocok untuk debugging</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" /> Siswa bisa lihat agent</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" /> Siswa bisa close (Ctrl+C)</li>
+                  </ul>
+                  <p className="text-xs text-blue-700 mt-3 font-semibold">📌 Gunakan saat: Instalasi, Testing, Debugging</p>
+                </div>
+
+                <div className="bg-green-50 rounded-xl p-5 border border-green-200">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                      <Lock className="w-5 h-5 text-white" />
+                    </div>
+                    <p className="font-bold text-green-900">SILENT Mode</p>
+                  </div>
+                  <ul className="space-y-2 text-sm text-green-800">
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 shrink-0" /> Window CMD <strong>TIDAK</strong> terlihat</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 shrink-0" /> Agent berjalan di background</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 shrink-0" /> Cocok untuk production</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 shrink-0" /> Siswa <strong>TIDAK</strong> bisa lihat</li>
+                    <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 shrink-0" /> Siswa <strong>TIDAK</strong> bisa close</li>
+                  </ul>
+                  <p className="text-xs text-green-700 mt-3 font-semibold">📌 Gunakan saat: Production, Daily Operation, Ujian</p>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Workflow yang Direkomendasikan</h4>
+              <div className="space-y-4">
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
+                      1
+                    </div>
+                    <div className="w-0.5 flex-1 bg-blue-200 mt-2" />
+                  </div>
+                  <div className="flex-1 pb-4">
+                    <p className="font-bold text-gray-900">Phase 1: Instalasi (VISIBLE Mode)</p>
+                    <p className="text-sm text-gray-600 mt-1">Install agent dengan window CMD terlihat untuk melihat progress</p>
+                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# Di PC siswa
+cd C:\\labmonitor-agent
+
+# Jalankan installer (VISIBLE mode)
+install-autostart-simple.bat
+
+# Expected:
+# ✅ CMD window terlihat
+# ✅ Bisa lihat progress instalasi
+# ✅ Agent running dengan CMD window`}</pre>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
+                      2
+                    </div>
+                    <div className="w-0.5 flex-1 bg-green-200 mt-2" />
+                  </div>
+                  <div className="flex-1 pb-4">
+                    <p className="font-bold text-gray-900">Phase 2: Testing (VISIBLE Mode)</p>
+                    <p className="text-sm text-gray-600 mt-1">Test semua fitur dengan CMD window terlihat untuk debugging</p>
+                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# Test semua fitur:
+# ✅ Monitoring CPU/RAM
+# ✅ Screenshot
+# ✅ Mouse/Keyboard control
+# ✅ Block/Unblock internet
+
+# Jika semua berjalan normal, lanjut ke Phase 3`}</pre>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg shrink-0">
+                      3
+                    </div>
+                  </div>
+                  <div className="flex-1 pb-4">
+                    <p className="font-bold text-gray-900">Phase 3: Production (SILENT Mode)</p>
+                    <p className="text-sm text-gray-600 mt-1">Switch ke SILENT mode agar siswa tidak bisa lihat/close agent</p>
+                    <div className="mt-3 bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                      <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# Di PC siswa
+cd C:\\labmonitor-agent
+
+# Switch ke SILENT mode
+switch-to-silent.bat
+
+# Expected:
+# ✅ CMD window HILANG
+# ✅ Agent masih running di background
+# ✅ Siswa tidak bisa lihat agent
+# ✅ Siswa tidak bisa close agent`}</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Cara Switch Mode</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl p-5 text-white">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Eye className="w-6 h-6" />
+                    <p className="font-bold text-lg">Switch ke VISIBLE</p>
+                  </div>
+                  <p className="text-sm text-blue-100 mb-3">Untuk debugging atau monitoring</p>
+                  <div className="bg-black/30 rounded-lg p-3">
+                    <code className="text-xs text-green-300 font-mono">switch-to-visible.bat</code>
+                  </div>
+                  <p className="text-xs text-blue-100 mt-3">📌 CMD window akan MUNCUL</p>
+                </div>
+
+                <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl p-5 text-white">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Lock className="w-6 h-6" />
+                    <p className="font-bold text-lg">Switch ke SILENT</p>
+                  </div>
+                  <p className="text-sm text-green-100 mb-3">Untuk production/deployment</p>
+                  <div className="bg-black/30 rounded-lg p-3">
+                    <code className="text-xs text-green-300 font-mono">switch-to-silent.bat</code>
+                  </div>
+                  <p className="text-xs text-green-100 mt-3">📌 CMD window akan HILANG</p>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Cara Cek Mode Saat Ini</h4>
+              <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
+                <p className="text-sm text-gray-700 mb-3">Jalankan command ini untuk cek mode agent:</p>
+                <div className="bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                  <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# Cek command yang digunakan
+schtasks /query /tn "LabMonitor Agent" /v /fo list | findstr "Task To Run"
+
+# Jika output:
+# - wscript.exe "run-agent.vbs" → SILENT mode ✅
+# - node.exe "src\\agent.js"     → VISIBLE mode ✅
+
+# Cek process
+tasklist | findstr "node.exe cmd.exe"
+
+# Jika output:
+# - Hanya node.exe              → SILENT mode ✅
+# - node.exe DAN cmd.exe        → VISIBLE mode ✅`}</pre>
                 </div>
               </div>
 
@@ -1167,14 +778,32 @@ socket.on('new-activity', (data) => {
                 <div className="flex items-start gap-3">
                   <Lightbulb className="w-5 h-5 text-yellow-600 mt-0.5 shrink-0" />
                   <div>
-                    <p className="font-semibold text-yellow-900">Tips Setup Backend</p>
+                    <p className="font-semibold text-yellow-900">Tips Switch Mode</p>
                     <ul className="text-yellow-800 text-sm mt-2 space-y-1">
-                      <li>• Gunakan <code className="bg-yellow-200 px-1.5 py-0.5 rounded text-xs font-mono">npm run dev</code> saat development untuk auto-restart</li>
-                      <li>• Pastikan Laragon MySQL running sebelum start backend</li>
-                      <li>• Cek port 3001 tidak digunakan aplikasi lain</li>
-                      <li>• Gunakan <code className="bg-yellow-200 px-1.5 py-0.5 rounded text-xs font-mono">nodemon</code> untuk development</li>
-                      <li>• Untuk production, gunakan <code className="bg-yellow-200 px-1.5 py-0.5 rounded text-xs font-mono">pm2</code> untuk process management</li>
-                      <li>• Setup firewall untuk mengizinkan port 3001 dan 3306</li>
+                      <li>• <strong>Install dulu dengan VISIBLE mode</strong> untuk melihat progress</li>
+                      <li>• <strong>Test semua fitur</strong> dalam VISIBLE mode</li>
+                      <li>• <strong>Switch ke SILENT</strong> setelah yakin semua berjalan</li>
+                      <li>• <strong>Switch ke VISIBLE</strong> jika perlu debugging</li>
+                      <li>• <strong>Switch balik ke SILENT</strong> setelah selesai debugging</li>
+                      <li>• <strong>Agent tetap running</strong> saat switch mode (tidak interrupt)</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-red-50 border-l-4 border-red-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-red-900">Catatan Keamanan</p>
+                    <p className="text-red-800 text-sm mt-1 leading-relaxed">
+                      Meskipun dalam SILENT mode, siswa masih bisa melihat <code className="bg-red-200 px-1 rounded text-xs font-mono">node.exe</code> di Task Manager. 
+                      Untuk keamanan maksimal, pertimbangkan untuk:
+                    </p>
+                    <ul className="text-red-800 text-sm mt-2 space-y-1">
+                      <li>• Disable Task Manager via Group Policy</li>
+                      <li>• Hide folder agent: <code className="bg-red-200 px-1 rounded text-xs font-mono">attrib +h C:\labmonitor-agent</code></li>
+                      <li>• Rename folder agent ke nama yang tidak mencurigakan</li>
                     </ul>
                   </div>
                 </div>
@@ -1182,7 +811,7 @@ socket.on('new-activity', (data) => {
             </div>
           </section>
 
-          {/* 4. Login */}
+          {/* 6. Login */}
           <section id="guide-login" className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
             <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-cyan-50">
               <div className="flex items-center gap-3">
@@ -1190,7 +819,7 @@ socket.on('new-activity', (data) => {
                   <LogIn className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">4. Login & Akun</h3>
+                  <h3 className="text-xl font-bold text-gray-900">6. Login & Akun</h3>
                   <p className="text-sm text-gray-600">Masuk ke sistem dengan akun yang sesuai</p>
                 </div>
               </div>
@@ -1244,7 +873,7 @@ socket.on('new-activity', (data) => {
               <h4 className="font-bold text-gray-900 text-lg">Langkah Login</h4>
               <div className="space-y-3">
                 {[
-                  'Buka browser dan akses alamat server (misal: http://192.168.1.1:3000)',
+                  'Buka browser dan akses alamat server (misal: http://localhost:3000)',
                   'Masukkan email sesuai role Anda pada kolom "Email"',
                   'Masukkan password pada kolom "Password"',
                   'Klik tombol "Masuk" untuk masuk ke dashboard',
@@ -1274,7 +903,7 @@ socket.on('new-activity', (data) => {
             </div>
           </section>
 
-          {/* 4. Dashboard */}
+          {/* 7. Dashboard */}
           <section id="guide-dashboard" className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
             <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
               <div className="flex items-center gap-3">
@@ -1282,7 +911,7 @@ socket.on('new-activity', (data) => {
                   <LayoutDashboard className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">5. Dashboard</h3>
+                  <h3 className="text-xl font-bold text-gray-900">7. Dashboard</h3>
                   <p className="text-sm text-gray-600">Ringkasan monitoring secara keseluruhan</p>
                 </div>
               </div>
@@ -1298,19 +927,24 @@ socket.on('new-activity', (data) => {
                 {[
                   {
                     title: 'Kartu Statistik (4 Cards)',
-                    items: ['Komputer Online - Jumlah PC yang aktif', 'Siswa Aktif - Total siswa yang sedang menggunakan', 'Avg CPU Usage - Rata-rata penggunaan prosesor', 'Total Bandwidth - Penggunaan jaringan total'],
+                    items: ['Komputer Online - Jumlah PC yang aktif (real-time)', 'Siswa Aktif - Total siswa yang sedang menggunakan', 'Avg CPU Usage - Rata-rata penggunaan prosesor', 'Total Bandwidth - Penggunaan jaringan total'],
                     color: 'from-green-500 to-emerald-600',
                     icon: Cpu
                   },
                   {
-                    title: 'Kategori Akses Internet',
-                    items: ['Menampilkan persentase akses berdasarkan kategori', 'Edukasi, Media Sosial, Hiburan, Pencarian', 'Progress bar berwarna untuk setiap kategori'],
+                    title: 'Kategori Akses Internet (ADVANCED!)',
+                    items: [
+                      'Sistem klasifikasi cerdas dengan 200+ domain dalam 10 kategori',
+                      'Kategori: Pendidikan, Media Sosial, Hiburan, Search Engine, Belanja, Berita, Produktivitas, Email, Gaming, Keuangan',
+                      'Algoritma multi-layer: exact domain match → domain contains → URL path → keyword matching',
+                      'Progress bar berwarna untuk setiap kategori dengan persentase real-time'
+                    ],
                     color: 'from-blue-500 to-cyan-600',
                     icon: Globe
                   },
                   {
                     title: 'Tabel Aktivitas Terbaru',
-                    items: ['8 aktivitas browsing terakhir', 'Menampilkan waktu, siswa, website, dan kategori', 'Update otomatis secara real-time'],
+                    items: ['8 aktivitas browsing terakhir', 'Menampilkan waktu, siswa, website, dan kategori', 'Update otomatis secara real-time via Socket.io'],
                     color: 'from-orange-500 to-red-600',
                     icon: Eye
                   },
@@ -1342,10 +976,23 @@ socket.on('new-activity', (data) => {
                   );
                 })}
               </div>
+
+              <div className="bg-blue-50 border-l-4 border-blue-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <Info className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-blue-900">Real-time Updates</p>
+                    <p className="text-blue-800 text-sm mt-1">
+                      Dashboard ter-update secara real-time via Socket.io. Data komputer, aktivitas, dan peringatan
+                      akan otomatis refresh tanpa perlu manual refresh. Indicator "🟢 Live" di header menunjukkan koneksi aktif.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
 
-          {/* 5. Computers */}
+          {/* 7. Computers */}
           <section id="guide-computers" className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
             <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-teal-50 to-cyan-50">
               <div className="flex items-center gap-3">
@@ -1353,7 +1000,7 @@ socket.on('new-activity', (data) => {
                   <Monitor className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">6. Monitor Komputer</h3>
+                  <h3 className="text-xl font-bold text-gray-900">8. Monitor Komputer</h3>
                   <p className="text-sm text-gray-600">Melihat status semua komputer di lab</p>
                 </div>
               </div>
@@ -1361,16 +1008,16 @@ socket.on('new-activity', (data) => {
             <div className="p-6 space-y-6">
               <p className="text-gray-700 leading-relaxed">
                 Halaman Monitor Komputer menampilkan semua PC dalam bentuk grid. Setiap kartu menunjukkan status,
-                penggunaan CPU, RAM, dan informasi siswa yang menggunakan.
+                penggunaan CPU, RAM, dan informasi siswa yang menggunakan. Status ter-update secara real-time.
               </p>
 
-              <h4 className="font-bold text-gray-900 text-lg">Status Indikator</h4>
+              <h4 className="font-bold text-gray-900 text-lg">Status Indikator (Real-time)</h4>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
-                  { status: 'Online', color: 'bg-green-500', bg: 'bg-green-50 border-green-200', desc: 'Aktif digunakan' },
+                  { status: 'Online', color: 'bg-green-500', bg: 'bg-green-50 border-green-200', desc: 'Aktif digunakan, agent connected' },
                   { status: 'Idle', color: 'bg-yellow-500', bg: 'bg-yellow-50 border-yellow-200', desc: 'Tidak ada aktivitas' },
-                  { status: 'Offline', color: 'bg-gray-400', bg: 'bg-gray-50 border-gray-200', desc: 'Tidak terhubung' },
-                  { status: 'Locked', color: 'bg-red-500', bg: 'bg-red-50 border-red-200', desc: 'Terkunci' },
+                  { status: 'Offline', color: 'bg-gray-400', bg: 'bg-gray-50 border-gray-200', desc: 'Tidak terhubung, agent disconnect' },
+                  { status: 'Locked', color: 'bg-red-500', bg: 'bg-red-50 border-red-200', desc: 'Terkunci oleh admin' },
                 ].map((item) => (
                   <div key={item.status} className={`rounded-xl p-4 border ${item.bg}`}>
                     <div className="flex items-center gap-2 mb-2">
@@ -1380,6 +1027,20 @@ socket.on('new-activity', (data) => {
                     <p className="text-xs text-gray-600">{item.desc}</p>
                   </div>
                 ))}
+              </div>
+
+              <div className="bg-blue-50 border-l-4 border-blue-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <Info className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-blue-900">Real-time Connection Tracking</p>
+                    <p className="text-blue-800 text-sm mt-1">
+                      Status komputer ter-update secara real-time berdasarkan koneksi agent. Saat agent disconnect,
+                      status otomatis berubah ke "offline" dalam 2-3 detik. Heartbeat timeout detection (60 detik)
+                      memastikan status selalu akurat.
+                    </p>
+                  </div>
+                </div>
               </div>
 
               <h4 className="font-bold text-gray-900 text-lg">Filter Komputer</h4>
@@ -1401,8 +1062,8 @@ socket.on('new-activity', (data) => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {[
                   { tab: 'Informasi', desc: 'IP, MAC, OS, uptime, CPU, RAM', icon: Eye },
-                  { tab: 'Aktivitas', desc: 'Riwayat browsing siswa', icon: Globe },
-                  { tab: 'Kontrol', desc: 'Remote control & perintah', icon: Shield },
+                  { tab: 'Aktivitas', desc: 'Riwayat browsing dengan semua tab', icon: Globe },
+                  { tab: 'Kontrol', desc: 'Remote control, screenshot, mouse/keyboard', icon: Shield },
                 ].map((t) => {
                   const Icon = t.icon;
                   return (
@@ -1417,7 +1078,7 @@ socket.on('new-activity', (data) => {
             </div>
           </section>
 
-          {/* 6. Activity */}
+          {/* 8. Activity */}
           <section id="guide-activity" className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
             <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-orange-50 to-amber-50">
               <div className="flex items-center gap-3">
@@ -1425,7 +1086,7 @@ socket.on('new-activity', (data) => {
                   <Globe className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">7. Aktivitas Internet</h3>
+                  <h3 className="text-xl font-bold text-gray-900">9. Aktivitas Internet</h3>
                   <p className="text-sm text-gray-600">Memantau akses internet siswa</p>
                 </div>
               </div>
@@ -1436,43 +1097,41 @@ socket.on('new-activity', (data) => {
                 memfilter, dan mengekspor data aktivitas.
               </p>
 
-              <h4 className="font-bold text-gray-900 text-lg">Kategori Aktivitas</h4>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <h4 className="font-bold text-gray-900 text-lg">Kategori Aktivitas (10 Kategori Cerdas!)</h4>
+              <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 rounded-r-xl p-5 mb-4">
+                <div className="flex items-start gap-3">
+                  <Info className="w-5 h-5 text-indigo-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-indigo-900">Sistem Klasifikasi Cerdas</p>
+                    <p className="text-indigo-800 text-sm mt-1 leading-relaxed">
+                      Sistem sekarang menggunakan <strong>database 200+ domain</strong> dalam <strong>10 kategori</strong> dengan 
+                      algoritma multi-layer untuk klasifikasi yang akurat. Tidak ada lagi kategori "Lainnya" yang tidak jelas!
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                 {[
-                  { cat: 'Edukasi', color: 'from-green-500 to-emerald-600', examples: 'ruangguru.com, zenius.net, github.com' },
-                  { cat: 'Media Sosial', color: 'from-blue-500 to-cyan-600', examples: 'instagram.com, tiktok.com, twitter.com' },
-                  { cat: 'Hiburan', color: 'from-purple-500 to-pink-600', examples: 'youtube.com, netflix.com, spotify.com' },
-                  { cat: 'Pencarian', color: 'from-yellow-500 to-orange-600', examples: 'google.com, bing.com' },
+                  { cat: '📚 Pendidikan', color: 'from-green-500 to-emerald-600', examples: 'ruangguru, zenius, github, coursera' },
+                  { cat: '👥 Media Sosial', color: 'from-blue-500 to-cyan-600', examples: 'instagram, tiktok, whatsapp, discord' },
+                  { cat: '🎮 Hiburan', color: 'from-purple-500 to-pink-600', examples: 'youtube, netflix, spotify, steam' },
+                  { cat: '🔍 Pencarian', color: 'from-yellow-500 to-orange-600', examples: 'google, bing, duckduckgo' },
+                  { cat: '🛒 Belanja', color: 'from-pink-500 to-rose-600', examples: 'tokopedia, shopee, lazada, amazon' },
+                  { cat: '📰 Berita', color: 'from-red-500 to-orange-600', examples: 'detik, kompas, cnn, bbc' },
+                  { cat: '💼 Produktivitas', color: 'from-indigo-500 to-blue-600', examples: 'docs.google, office, trello, zoom' },
+                  { cat: '📧 Email', color: 'from-teal-500 to-cyan-600', examples: 'gmail, outlook, yahoo mail' },
+                  { cat: '🎯 Gaming', color: 'from-violet-500 to-purple-600', examples: 'steam, epicgames, mobilelegends' },
+                  { cat: '💰 Keuangan', color: 'from-emerald-500 to-green-600', examples: 'bca, mandiri, gopay, bibit' },
                 ].map((item) => (
                   <div key={item.cat} className="rounded-xl overflow-hidden border border-gray-200">
-                    <div className={`bg-gradient-to-r ${item.color} px-4 py-3`}>
-                      <p className="font-bold text-white text-sm">{item.cat}</p>
+                    <div className={`bg-gradient-to-r ${item.color} px-3 py-2`}>
+                      <p className="font-bold text-white text-xs">{item.cat}</p>
                     </div>
-                    <div className="p-3 bg-white">
+                    <div className="p-2 bg-white">
                       <p className="text-xs text-gray-600">{item.examples}</p>
                     </div>
                   </div>
                 ))}
-              </div>
-
-              <h4 className="font-bold text-gray-900 text-lg">Cara Menggunakan</h4>
-              <div className="space-y-3">
-                {[
-                  { icon: Search, text: 'Gunakan kolom pencarian untuk mencari nama siswa atau website' },
-                  { icon: Filter, text: 'Pilih filter kategori untuk menyaring berdasarkan jenis akses' },
-                  { icon: Download, text: 'Klik tombol "Export Log" untuk mengunduh data aktivitas' },
-                  { icon: MousePointer, text: 'Klik baris tabel untuk melihat detail aktivitas' },
-                ].map((item, idx) => {
-                  const Icon = item.icon;
-                  return (
-                    <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                      <div className="w-9 h-9 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
-                        <Icon className="w-4 h-4 text-blue-600" />
-                      </div>
-                      <p className="text-sm text-gray-700">{item.text}</p>
-                    </div>
-                  );
-                })}
               </div>
 
               <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 rounded-r-xl p-5">
@@ -1507,10 +1166,84 @@ socket.on('new-activity', (data) => {
                   </div>
                 </div>
               </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">🧠 Algoritma Klasifikasi Multi-Layer</h4>
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-l-4 border-purple-500 rounded-r-xl p-5">
+                <p className="text-gray-700 text-sm mb-4">
+                  Sistem menggunakan <strong>5 layer klasifikasi</strong> untuk akurasi maksimal:
+                </p>
+                <div className="space-y-3">
+                  {[
+                    { layer: 'Layer 1', title: 'Exact Domain Match', desc: 'github.com → educational', priority: 'Tertinggi' },
+                    { layer: 'Layer 2', title: 'Domain Contains', desc: 'learn.github.com → educational', priority: 'Tinggi' },
+                    { layer: 'Layer 3', title: 'URL Path Analysis', desc: 'youtube.com/education → entertainment', priority: 'Sedang' },
+                    { layer: 'Layer 4', title: 'Keyword Matching', desc: '"belajar online" → educational', priority: 'Rendah' },
+                    { layer: 'Layer 5', title: 'Special Patterns', desc: 'harvard.edu → educational', priority: 'Terakhir' },
+                  ].map((item, idx) => (
+                    <div key={idx} className="flex items-start gap-3 bg-white/70 rounded-lg p-3 border border-purple-200">
+                      <div className="w-16 shrink-0">
+                        <span className="text-xs font-bold text-purple-600">{item.layer}</span>
+                        <span className="text-xs text-gray-500 block">{item.priority}</span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-gray-900">{item.title}</p>
+                        <p className="text-xs text-gray-600 mt-0.5">Contoh: {item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-600 mt-4 italic">
+                  💡 Jika tidak ada layer yang match, website akan dikategorikan sebagai "other"
+                </p>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">🔧 Kustomisasi Kategori Website</h4>
+              <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border-l-4 border-amber-500 rounded-r-xl p-5">
+                <p className="text-gray-700 text-sm mb-3">
+                  Anda dapat menambahkan domain baru ke database klasifikasi di file:
+                </p>
+                <div className="bg-gray-900 rounded-xl p-4 overflow-x-auto mb-3">
+                  <pre className="text-green-400 text-xs font-mono whitespace-pre">{`agent/src/monitors/browser.js`}</pre>
+                </div>
+                <p className="text-gray-700 text-sm mb-3">Contoh menambahkan domain educational:</p>
+                <div className="bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                  <pre className="text-green-400 text-xs font-mono whitespace-pre">{`'educational': {
+  domains: [
+    // ... existing domains
+    'new-edu-site.com',  // Tambahkan domain baru
+    'my-school.edu',
+  ],
+  keywords: ['belajar', 'tutorial', 'course']
+}`}</pre>
+                </div>
+                <p className="text-xs text-gray-600 mt-3 italic">
+                  💡 Setelah update file, restart agent di PC siswa
+                </p>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Cara Menggunakan</h4>
+              <div className="space-y-3">
+                {[
+                  { icon: Search, text: 'Gunakan kolom pencarian untuk mencari nama siswa atau website' },
+                  { icon: Filter, text: 'Pilih filter kategori untuk menyaring berdasarkan jenis akses' },
+                  { icon: Download, text: 'Klik tombol "Export Log" untuk mengunduh data aktivitas' },
+                  { icon: Eye, text: 'Klik baris tabel untuk melihat detail aktivitas dengan semua tab' },
+                ].map((item, idx) => {
+                  const Icon = item.icon;
+                  return (
+                    <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                      <div className="w-9 h-9 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
+                        <Icon className="w-4 h-4 text-blue-600" />
+                      </div>
+                      <p className="text-sm text-gray-700">{item.text}</p>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </section>
 
-          {/* 7. Alerts */}
+          {/* 9. Alerts */}
           <section id="guide-alerts" className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
             <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-red-50 to-rose-50">
               <div className="flex items-center gap-3">
@@ -1518,7 +1251,7 @@ socket.on('new-activity', (data) => {
                   <AlertTriangle className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">8. Peringatan & Notifikasi</h3>
+                  <h3 className="text-xl font-bold text-gray-900">10. Peringatan & Notifikasi</h3>
                   <p className="text-sm text-gray-600">Memantau alert dari aktivitas siswa</p>
                 </div>
               </div>
@@ -1535,21 +1268,18 @@ socket.on('new-activity', (data) => {
                   {
                     level: 'KRITIS (Danger)',
                     color: 'bg-red-100 border-red-300 text-red-900',
-                    iconColor: 'text-red-600',
                     examples: ['Mencoba mengakses situs yang diblokir', 'Mencoba menginstal software tidak sah'],
                     action: 'Tindakan segera diperlukan'
                   },
                   {
                     level: 'PERINGATAN (Warning)',
                     color: 'bg-yellow-100 border-yellow-300 text-yellow-900',
-                    iconColor: 'text-yellow-600',
                     examples: ['Mengakses situs non-edukasi', 'Bandwidth usage tinggi'],
                     action: 'Perlu dipantau'
                   },
                   {
                     level: 'INFO',
                     color: 'bg-blue-100 border-blue-300 text-blue-900',
-                    iconColor: 'text-blue-600',
                     examples: ['Tidak aktif lebih dari 15 menit'],
                     action: 'Informasi saja'
                   },
@@ -1598,7 +1328,7 @@ socket.on('new-activity', (data) => {
             </div>
           </section>
 
-          {/* 8. Network */}
+          {/* 10. Network */}
           <section id="guide-network" className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
             <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-indigo-50 to-blue-50">
               <div className="flex items-center gap-3">
@@ -1606,23 +1336,40 @@ socket.on('new-activity', (data) => {
                   <Network className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">9. Peta Jaringan</h3>
+                  <h3 className="text-xl font-bold text-gray-900">11. Peta Jaringan</h3>
                   <p className="text-sm text-gray-600">Visualisasi topologi jaringan LAN</p>
                 </div>
               </div>
             </div>
             <div className="p-6 space-y-6">
               <p className="text-gray-700 leading-relaxed">
-                Halaman ini menampilkan visualisasi topologi jaringan lab komputer. Anda dapat melihat
-                bagaimana setiap komputer terhubung ke server melalui switch utama.
+                Halaman ini menampilkan visualisasi topologi jaringan lab komputer dengan <strong>IP address real-time</strong>. 
+                Anda dapat melihat bagaimana setiap komputer terhubung ke server melalui switch utama, lengkap dengan 
+                informasi IP address, status, dan resource usage setiap komputer.
               </p>
+
+              <div className="bg-blue-50 border-l-4 border-blue-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <Info className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-blue-900">Fitur Topologi Jaringan (REAL-TIME!)</p>
+                    <ul className="text-blue-800 text-sm mt-2 space-y-1">
+                      <li>✅ <strong>IP Address Real</strong> - Menampilkan IP address yang sebenarnya dari database</li>
+                      <li>✅ <strong>Tooltip Detail</strong> - Hover komputer untuk lihat IP, status, user, CPU, RAM</li>
+                      <li>✅ <strong>Tabel IP Address</strong> - Daftar lengkap semua komputer dengan IP address</li>
+                      <li>✅ <strong>Network Stats</strong> - Server IP, subnet, gateway, active ports</li>
+                      <li>✅ <strong>Real-time Update</strong> - Status dan resource usage update otomatis</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
 
               <h4 className="font-bold text-gray-900 text-lg">Komponen Visualisasi</h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {[
-                  { name: 'Server Monitor', ip: '192.168.1.1', desc: 'Pusat monitoring & data collection', color: 'from-blue-500 to-cyan-600' },
-                  { name: 'Switch Utama', ip: '48-Port Gigabit', desc: 'Penghubung semua komputer', color: 'from-purple-500 to-pink-600' },
-                  { name: 'Client PCs', ip: '192.168.1.100-130', desc: '30 komputer siswa', color: 'from-green-500 to-emerald-600' },
+                  { name: 'Server Monitor', ip: '192.168.100.166', desc: 'Pusat monitoring & data collection (IP dari .env)', color: 'from-blue-500 to-cyan-600' },
+                  { name: 'Switch Utama', ip: '48-Port Gigabit', desc: 'Penghubung semua komputer (menampilkan jumlah port aktif)', color: 'from-purple-500 to-pink-600' },
+                  { name: 'Client PCs', ip: 'Auto-detect', desc: 'Komputer siswa dengan IP address real dari database', color: 'from-green-500 to-emerald-600' },
                 ].map((item) => (
                   <div key={item.name} className="rounded-xl border border-gray-200 overflow-hidden">
                     <div className={`bg-gradient-to-r ${item.color} px-4 py-3 text-white`}>
@@ -1634,6 +1381,58 @@ socket.on('new-activity', (data) => {
                     </div>
                   </div>
                 ))}
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Tooltip Detail (Hover Komputer)</h4>
+              <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 rounded-r-xl p-5">
+                <p className="text-gray-700 text-sm mb-3">
+                  Hover pada komputer di diagram topologi untuk melihat informasi detail:
+                </p>
+                <div className="bg-gray-900 rounded-xl p-4 text-white font-mono text-xs">
+                  <div className="space-y-1">
+                    <p>┌────────────────────────┐</p>
+                    <p>│ 🖥️ <span className="text-blue-400">PC-13</span>               │</p>
+                    <p>│ 🌐 IP: <span className="text-green-400">192.168.100.113</span> │</p>
+                    <p>│ 📊 Status: <span className="text-green-400">ONLINE</span>      │</p>
+                    <p>│ 👤 User: <span className="text-yellow-400">Siswa Lab 13</span>  │</p>
+                    <p>│ 💻 CPU: <span className="text-orange-400">45%</span>            │</p>
+                    <p>│ 🧠 RAM: <span className="text-purple-400">62%</span>            │</p>
+                    <p>└────────────────────────┘</p>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Tabel IP Address</h4>
+              <div className="bg-gradient-to-r from-cyan-50 to-blue-50 border-l-4 border-cyan-500 rounded-r-xl p-5">
+                <p className="text-gray-700 text-sm mb-3">
+                  Tabel lengkap yang menampilkan semua komputer dengan informasi:
+                </p>
+                <ul className="text-sm text-gray-700 space-y-2">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-cyan-600 mt-0.5 shrink-0" />
+                    <span><strong>ID Komputer</strong> - Dengan status indicator berwarna</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-cyan-600 mt-0.5 shrink-0" />
+                    <span><strong>IP Address</strong> - Highlighted dengan background biru</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-cyan-600 mt-0.5 shrink-0" />
+                    <span><strong>Status</strong> - Badge berwarna (ONLINE/IDLE/OFFLINE/LOCKED)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-cyan-600 mt-0.5 shrink-0" />
+                    <span><strong>Pengguna</strong> - Nama siswa yang menggunakan</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-cyan-600 mt-0.5 shrink-0" />
+                    <span><strong>CPU Usage</strong> - Progress bar dengan persentase</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-cyan-600 mt-0.5 shrink-0" />
+                    <span><strong>RAM Usage</strong> - Progress bar dengan persentase</span>
+                  </li>
+                </ul>
               </div>
 
               <h4 className="font-bold text-gray-900 text-lg">Statistik Jaringan</h4>
@@ -1650,19 +1449,36 @@ socket.on('new-activity', (data) => {
                   </div>
                 ))}
               </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Konfigurasi Network</h4>
+              <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
+                <p className="text-sm text-gray-700 mb-3">
+                  Konfigurasi IP address server dan subnet di file <code className="bg-gray-200 px-2 py-0.5 rounded text-xs font-mono">.env</code>:
+                </p>
+                <div className="bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                  <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# Server IP Address (untuk topologi)
+VITE_SERVER_IP=192.168.100.166
+
+# Network Subnet
+VITE_SUBNET=192.168.100.0/24`}</pre>
+                </div>
+                <p className="text-xs text-gray-600 mt-3 italic">
+                  💡 IP address komputer siswa diambil otomatis dari database
+                </p>
+              </div>
             </div>
           </section>
 
-          {/* 9. Controls */}
-          <section id="guide-controls" className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
+          {/* 11. Remote Control */}
+          <section id="guide-remote-control" className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
             <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-rose-50 to-pink-50">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
                   <Shield className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">10. Kontrol Remote</h3>
-                  <p className="text-sm text-gray-600">Mengontrol komputer dari jarak jauh</p>
+                  <h3 className="text-xl font-bold text-gray-900">12. Kontrol Remote</h3>
+                  <p className="text-sm text-gray-600">Mengontrol mouse, keyboard, dan perintah lainnya</p>
                 </div>
               </div>
             </div>
@@ -1674,55 +1490,120 @@ socket.on('new-activity', (data) => {
                     <p className="font-semibold text-red-900">Perhatian!</p>
                     <p className="text-red-800 text-sm mt-1">
                       Fitur kontrol remote hanya tersedia untuk role <strong>Admin</strong> dan <strong>Guru</strong>.
-                      Gunakan dengan bijak dan bertanggung jawab.
+                      Gunakan dengan bijak dan bertanggung jawab. Agent harus running sebagai Administrator untuk full functionality.
                     </p>
                   </div>
                 </div>
               </div>
 
-              <h4 className="font-bold text-gray-900 text-lg">Perintah yang Tersedia</h4>
-              
-              {/* Remote Desktop Control - Featured */}
-              <div className="mb-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-2xl p-6 text-white shadow-xl">
+              <h4 className="font-bold text-gray-900 text-lg">🎮 Remote Desktop Control</h4>
+              <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-2xl p-6 text-white shadow-xl">
                 <div className="flex items-start gap-4">
                   <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30 shrink-0">
                     <MousePointer className="w-8 h-8" />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <p className="font-bold text-xl">🎮 Remote Desktop Control</p>
+                      <p className="font-bold text-xl">Remote Desktop Control</p>
                       <span className="px-2 py-1 bg-white/20 rounded-lg text-xs font-bold">BARU!</span>
                     </div>
                     <p className="text-white/90 text-sm leading-relaxed">
                       Fitur canggih untuk <strong>mengambil alih mouse cursor dan keyboard</strong> komputer siswa secara real-time. 
                       Guru dapat langsung mengontrol komputer siswa untuk membantu, memberikan contoh, atau mengawasi aktivitas.
                     </p>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
-                      <div className="bg-white/10 rounded-lg p-3 border border-white/20">
-                        <p className="font-bold text-sm mb-1">🖱️ Kontrol Mouse</p>
-                        <p className="text-xs text-white/80">Gerakkan cursor, klik, drag & drop</p>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Mode "Lihat Saja" (View Only)</h4>
+              <div className="bg-blue-50 border-l-4 border-blue-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <Eye className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-blue-900">Auto-Screenshot Real-time</p>
+                    <p className="text-blue-800 text-sm mt-1 leading-relaxed">
+                      Mode "Lihat Saja" sekarang menampilkan <strong>screenshot real-time</strong> dari layar komputer siswa.
+                      Screenshot otomatis diambil setiap X detik (default: 3 detik) dan ditampilkan di dashboard.
+                    </p>
+                    <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="bg-white/60 rounded-lg p-3 border border-blue-200">
+                        <p className="text-xs font-bold text-blue-900 mb-1">✅ Fitur:</p>
+                        <ul className="text-xs text-blue-800 space-y-1">
+                          <li>• Auto-screenshot setiap X detik</li>
+                          <li>• Manual refresh button</li>
+                          <li>• Pause/resume auto-capture</li>
+                          <li>• Adjustable interval (1-10 detik)</li>
+                        </ul>
                       </div>
-                      <div className="bg-white/10 rounded-lg p-3 border border-white/20">
-                        <p className="font-bold text-sm mb-1">⌨️ Kontrol Keyboard</p>
-                        <p className="text-xs text-white/80">Ketik teks, kirim shortcut keys</p>
-                      </div>
-                      <div className="bg-white/10 rounded-lg p-3 border border-white/20">
-                        <p className="font-bold text-sm mb-1">👁️ Lihat Saja</p>
-                        <p className="text-xs text-white/80">Monitor tanpa mengontrol</p>
+                      <div className="bg-white/60 rounded-lg p-3 border border-blue-200">
+                        <p className="text-xs font-bold text-blue-900 mb-1">🎮 Kontrol:</p>
+                        <ul className="text-xs text-blue-800 space-y-1">
+                          <li>• Tombol Refresh (manual capture)</li>
+                          <li>• Tombol Pause/Auto</li>
+                          <li>• Dropdown interval</li>
+                          <li>• Last capture time display</li>
+                        </ul>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
+              <h4 className="font-bold text-gray-900 text-lg">Mode "Kontrol" (Mouse & Keyboard)</h4>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
+                    <div className="flex items-center gap-2 mb-3">
+                      <MousePointer className="w-5 h-5 text-purple-600" />
+                      <p className="font-bold text-gray-900">🖱️ Mouse Control</p>
+                    </div>
+                    <ul className="space-y-2 text-sm text-gray-700">
+                      <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>Move Mouse</strong> - Gerakkan cursor di komputer siswa</li>
+                      <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>Click</strong> - Klik kiri/kanan/tengah</li>
+                      <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>Scroll</strong> - Scroll halaman</li>
+                      <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>Visual Feedback</strong> - Custom cursor dengan label</li>
+                    </ul>
+                  </div>
+                  <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Keyboard className="w-5 h-5 text-blue-600" />
+                      <p className="font-bold text-gray-900">⌨️ Keyboard Control</p>
+                    </div>
+                    <ul className="space-y-2 text-sm text-gray-700">
+                      <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>Type Text</strong> - Ketik teks di komputer siswa</li>
+                      <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>Press Keys</strong> - Enter, Tab, Escape, dll</li>
+                      <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>Key Combinations</strong> - Ctrl+C, Alt+Tab, dll</li>
+                      <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> <strong>Visual Feedback</strong> - Typing indicator</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded-r-xl p-5">
+                  <div className="flex items-start gap-3">
+                    <Lightbulb className="w-5 h-5 text-yellow-600 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="font-semibold text-yellow-900">Cara Menggunakan</p>
+                      <ol className="text-yellow-800 text-sm mt-2 space-y-1 list-decimal list-inside">
+                        <li>Klik komputer siswa → Tab "Kontrol" → "Remote Desktop Control"</li>
+                        <li>Klik tombol "Mode Kontrol" (bukan "Lihat Saja")</li>
+                        <li>Aktifkan "Mouse ON" dan/atau "Keyboard ON"</li>
+                        <li>Gerakkan mouse atau ketik di area layar</li>
+                        <li>Input akan terkirim ke komputer siswa secara real-time</li>
+                      </ol>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Perintah Lainnya</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
-                  { icon: Power, label: 'Shutdown', desc: 'Mematikan komputer secara remote', color: 'from-red-500 to-rose-600', warning: 'Data yang belum disimpan akan hilang' },
-                  { icon: RotateCcw, label: 'Restart', desc: 'Memuat ulang sistem operasi', color: 'from-orange-500 to-amber-600', warning: 'Sama seperti restart manual' },
-                  { icon: Lock, label: 'Lock Screen', desc: 'Mengunci layar komputer', color: 'from-yellow-500 to-amber-600', warning: 'Siswa harus memasukkan password' },
-                  { icon: Eye, label: 'Lihat Layar', desc: 'Melihat tampilan layar siswa', color: 'from-blue-500 to-cyan-600', warning: 'Real-time screen viewing' },
-                  { icon: Terminal, label: 'Kirim Pesan', desc: 'Mengirim pesan ke layar siswa', color: 'from-green-500 to-emerald-600', warning: 'Pesan muncul sebagai notifikasi' },
-                  { icon: Shield, label: 'Blokir Internet', desc: 'Memutus akses internet komputer', color: 'from-purple-500 to-pink-600', warning: 'Hanya internet, LAN tetap aktif' },
+                  { icon: Power, label: 'Shutdown', desc: 'Mematikan komputer secara remote', color: 'from-red-500 to-rose-600' },
+                  { icon: RotateCcw, label: 'Restart', desc: 'Memuat ulang sistem operasi', color: 'from-orange-500 to-amber-600' },
+                  { icon: Lock, label: 'Lock Screen', desc: 'Mengunci layar komputer', color: 'from-yellow-500 to-amber-600' },
+                  { icon: Camera, label: 'Screenshot', desc: 'Ambil screenshot layar siswa', color: 'from-blue-500 to-cyan-600' },
+                  { icon: Terminal, label: 'Kirim Pesan', desc: 'Mengirim pesan ke layar siswa', color: 'from-green-500 to-emerald-600' },
+                  { icon: Shield, label: 'Blokir Internet', desc: 'Memutus akses internet (dengan whitelist)', color: 'from-purple-500 to-pink-600' },
                 ].map((cmd) => {
                   const Icon = cmd.icon;
                   return (
@@ -1733,56 +1614,119 @@ socket.on('new-activity', (data) => {
                       </div>
                       <div className="p-4">
                         <p className="text-sm text-gray-700">{cmd.desc}</p>
-                        <p className="text-xs text-gray-500 mt-2 italic">⚠️ {cmd.warning}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+
+          {/* 13. Screenshot */}
+          <section id="guide-screenshot" className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
+            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-amber-50 to-yellow-50">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Camera className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">13. Screenshot Dashboard</h3>
+                  <p className="text-sm text-gray-600">Melihat layar komputer siswa secara real-time</p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6 space-y-6">
+              <div className="bg-blue-50 border-l-4 border-blue-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <Info className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-blue-900">Fitur Screenshot Dashboard</p>
+                    <p className="text-blue-800 text-sm mt-1 leading-relaxed">
+                      Fitur screenshot memungkinkan admin untuk <strong>melihat layar komputer siswa secara real-time</strong> langsung dari dashboard,
+                      tanpa harus datang ke komputer siswa. Screenshot otomatis diambil dan ditampilkan di modal viewer.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Cara Menggunakan</h4>
+              <div className="space-y-3">
+                {[
+                  'Buka dashboard admin (http://localhost:3000)',
+                  'Klik komputer siswa yang ingin dilihat layarnya',
+                  'Tab "Kontrol" → Klik "Lihat Layar" atau "Screenshot"',
+                  'Tunggu 2-5 detik untuk screenshot pertama',
+                  'Screenshot akan muncul otomatis di modal viewer',
+                ].map((step, idx) => (
+                  <div key={idx} className="flex items-center gap-3 p-3 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border border-amber-100">
+                    <div className="w-7 h-7 bg-gradient-to-br from-amber-600 to-yellow-600 text-white rounded-full flex items-center justify-center text-xs font-bold shrink-0">
+                      {idx + 1}
+                    </div>
+                    <p className="text-sm text-gray-700">{step}</p>
+                  </div>
+                ))}
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Fitur Screenshot Viewer</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  { icon: Camera, title: 'Auto-Capture', desc: 'Screenshot otomatis setiap X detik', color: 'from-blue-500 to-cyan-600' },
+                  { icon: Download, title: 'Download', desc: 'Simpan screenshot ke komputer admin', color: 'from-green-500 to-emerald-600' },
+                  { icon: Monitor, title: 'Fullscreen', desc: 'Lihat screenshot dalam layar penuh', color: 'from-purple-500 to-pink-600' },
+                  { icon: Info, title: 'Info Lengkap', desc: 'Nama komputer, siswa, timestamp, ukuran', color: 'from-orange-500 to-red-600' },
+                ].map((feature, idx) => {
+                  const Icon = feature.icon;
+                  return (
+                    <div key={idx} className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                      <div className={`w-10 h-10 bg-gradient-to-br ${feature.color} rounded-lg flex items-center justify-center shrink-0`}>
+                        <Icon className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-gray-900 text-sm">{feature.title}</p>
+                        <p className="text-xs text-gray-600 mt-1">{feature.desc}</p>
                       </div>
                     </div>
                   );
                 })}
               </div>
 
-              <h4 className="font-bold text-gray-900 text-lg">Cara Menggunakan Remote Desktop Control</h4>
-              <div className="space-y-3 mb-6">
-                {[
-                  'Buka halaman "Komputer" dari sidebar',
-                  'Klik pada komputer siswa yang ingin dikontrol',
-                  'Pilih tab "Kontrol" pada panel detail',
-                  'Klik tombol besar "🎮 Remote Desktop Control"',
-                  'Pilih mode: "Lihat Saja" atau "Mode Kontrol"',
-                  'Jika Mode Kontrol: aktifkan Mouse dan/atau Keyboard',
-                  'Gunakan mouse untuk menggerakkan cursor di layar siswa',
-                  'Gunakan keyboard untuk mengetik atau kirim shortcut keys',
-                ].map((step, idx) => (
-                  <div key={idx} className="flex items-center gap-3 p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100">
-                    <div className="w-7 h-7 bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-full flex items-center justify-center text-xs font-bold shrink-0">
-                      {idx + 1}
+              <div className="bg-green-50 border-l-4 border-green-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-green-900">Alur Data Screenshot</p>
+                    <div className="text-green-800 text-sm mt-2 leading-relaxed space-y-2">
+                      <p>1. Admin klik "Lihat Layar" di dashboard</p>
+                      <p>2. Frontend emit <code className="bg-green-200 px-1 rounded text-xs">request-screenshot</code> via Socket.io</p>
+                      <p>3. Backend terima & broadcast ke agent</p>
+                      <p>4. Agent ambil screenshot → convert ke base64</p>
+                      <p>5. Agent emit <code className="bg-green-200 px-1 rounded text-xs">screenshot-captured</code> ke backend</p>
+                      <p>6. Backend broadcast ke frontend</p>
+                      <p>7. Frontend terima & tampilkan di modal viewer</p>
                     </div>
-                    <p className="text-sm text-gray-700">{step}</p>
                   </div>
-                ))}
+                </div>
               </div>
 
-              <h4 className="font-bold text-gray-900 text-lg">Cara Menggunakan Perintah Lainnya</h4>
-              <div className="space-y-3">
-                {[
-                  'Buka halaman "Komputer" dari sidebar',
-                  'Klik pada komputer yang ingin dikontrol',
-                  'Pilih tab "Kontrol" pada panel detail',
-                  'Klik tombol perintah yang diinginkan',
-                  'Konfirmasi akan muncul untuk perintah kritis (Shutdown/Restart)',
-                  'Tunggu feedback "Perintah berhasil dikirim"',
-                ].map((step, idx) => (
-                  <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                    <div className="w-7 h-7 bg-rose-600 text-white rounded-full flex items-center justify-center text-xs font-bold shrink-0">
-                      {idx + 1}
-                    </div>
-                    <p className="text-sm text-gray-700">{step}</p>
+              <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <Lightbulb className="w-5 h-5 text-yellow-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-yellow-900">Tips Penggunaan</p>
+                    <ul className="text-yellow-800 text-sm mt-2 space-y-1">
+                      <li>• Screenshot pertama mungkin butuh 2-5 detik</li>
+                      <li>• Gunakan interval 3-5 detik untuk monitoring normal</li>
+                      <li>• Gunakan interval 1-2 detik untuk monitoring intensif</li>
+                      <li>• Pause auto-capture jika tidak perlu untuk hemat bandwidth</li>
+                      <li>• Download screenshot untuk dokumentasi</li>
+                    </ul>
                   </div>
-                ))}
+                </div>
               </div>
             </div>
           </section>
 
-          {/* 10. Troubleshooting */}
+          {/* 14. Troubleshooting */}
           <section id="guide-troubleshooting" className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
             <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-amber-50 to-yellow-50">
               <div className="flex items-center gap-3">
@@ -1790,7 +1734,7 @@ socket.on('new-activity', (data) => {
                   <Wrench className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">11. Troubleshooting</h3>
+                  <h3 className="text-xl font-bold text-gray-900">14. Troubleshooting</h3>
                   <p className="text-sm text-gray-600">Masalah umum dan cara mengatasinya</p>
                 </div>
               </div>
@@ -1801,7 +1745,27 @@ socket.on('new-activity', (data) => {
                 {[
                   {
                     q: 'Komputer tidak muncul di dashboard?',
-                    a: 'Pastikan agent LabMonitor berjalan di komputer tersebut. Cek koneksi LAN, pastikan IP address benar, dan restart agent jika perlu. Periksa juga apakah firewall memblokir port 8080.'
+                    a: 'Pastikan agent LabMonitor berjalan di komputer tersebut. Cek koneksi LAN, pastikan IP address benar, dan restart agent jika perlu. Periksa juga apakah firewall memblokir port 3001.'
+                  },
+                  {
+                    q: 'Status komputer tetap "online" meskipun agent sudah disconnect?',
+                    a: 'Pastikan backend menggunakan versi v1.2.0 atau lebih baru yang memiliki real-time connection tracking. Restart backend untuk reset semua status ke offline.'
+                  },
+                  {
+                    q: 'Agent tidak auto-start saat komputer boot?',
+                    a: 'Gunakan installer baru install-autostart-simple.bat yang lebih reliable. Jalankan sebagai Administrator, ini akan membuat Task Scheduler task. Verifikasi: buka Task Scheduler (taskschd.msc), cari "LabMonitor Agent", pastikan status "Ready" atau "Running". Jika masih bermasalah, coba setup manual via Task Scheduler atau gunakan command: schtasks /create /tn "LabMonitor Agent" /tr "node.exe C:\\labmonitor-agent\\src\\agent.js" /sc onstart /ru SYSTEM /rl highest /f'
+                  },
+                  {
+                    q: 'Internet diblokir tapi agent tidak bisa connect ke server?',
+                    a: 'Pastikan backend menggunakan versi terbaru dengan whitelist server IP. Agent akan otomatis whitelist IP server sebelum block internet. Cek firewall rules di PC siswa.'
+                  },
+                  {
+                    q: 'Screenshot tidak muncul di dashboard?',
+                    a: 'Pastikan agent running sebagai Administrator. Cek agent log untuk error screenshot. Pastikan PowerShell execution policy mengizinkan. Coba manual unblock jika perlu.'
+                  },
+                  {
+                    q: 'Mouse/keyboard control tidak berfungsi?',
+                    a: 'Agent harus running sebagai Administrator untuk mouse/keyboard control. Pastikan "Mode Kontrol" aktif (bukan "Lihat Saja"). Cek agent log untuk error PowerShell.'
                   },
                   {
                     q: 'Data CPU/RAM tidak update?',
@@ -1821,15 +1785,43 @@ socket.on('new-activity', (data) => {
                   },
                   {
                     q: 'Bagaimana cara menambah komputer baru?',
-                    a: 'Instal agent LabMonitor di komputer baru, pastikan terhubung ke jaringan yang sama. Komputer akan otomatis terdeteksi oleh server dalam waktu 30 detik.'
+                    a: 'Instal agent LabMonitor di komputer baru, pastikan terhubung ke jaringan yang sama. Jalankan install-autostart.bat untuk auto-start. Komputer akan otomatis terdeteksi oleh server.'
                   },
                   {
-                    q: 'Agent tidak otomatis berjalan setelah komputer restart?',
-                    a: 'Pastikan Anda sudah menjalankan perintah "labmonitor-agent --install-service" dan mengonfigurasi startup type ke "Automatic". Buka Services (services.msc), cari "LabMonitorAgent", pastikan Startup Type = Automatic dan Status = Running. Jika masih bermasalah, jalankan "sc config LabMonitorAgent start= auto" di Command Prompt (Admin).'
+                    q: 'IP server berubah-ubah, agent tidak bisa connect?',
+                    a: 'Set IP statis di server atau gunakan DHCP reservation di router. Update BACKEND_URL di .env agent dengan IP baru. Restart agent setelah update.'
                   },
                   {
-                    q: 'Agent berjalan tapi tidak terkoneksi ke server setelah restart?',
-                    a: 'Kemungkinan server belum siap saat agent start. Agent memiliki mekanisme auto-reconnect yang akan mencoba setiap 30 detik. Jika setelah 5 menit masih tidak terhubung, restart service agent dengan perintah "net stop LabMonitorAgent && net start LabMonitorAgent".'
+                    q: 'Bagaimana cara setup auto-start yang reliable?',
+                    a: 'Gunakan installer baru install-autostart-simple.bat yang menggunakan Task Scheduler (tidak perlu node-windows package). Jalankan sebagai Administrator di PC siswa. Installer akan otomatis create task, configure auto-start, dan test agent. Setelah install, restart komputer untuk verifikasi agent auto-start.'
+                  },
+                  {
+                    q: 'Task Scheduler task ada tapi agent tidak running?',
+                    a: 'Buka Task Scheduler, klik kanan "LabMonitor Agent" → Properties. Pastikan: (1) "Run with highest privileges" tercentang, (2) "Run whether user is logged on or not" terpilih, (3) Tab Conditions: uncheck "Start only if on AC power". Jika masih bermasalah, delete task dan create ulang menggunakan installer baru.'
+                  },
+                  {
+                    q: 'Bagaimana cara menyembunyikan window CMD dari siswa?',
+                    a: 'Gunakan fitur Switch Mode. Setelah instalasi dan testing selesai, jalankan "switch-to-silent.bat" sebagai Administrator. Agent akan switch ke SILENT mode tanpa window CMD. Siswa tidak akan bisa melihat atau menutup agent. Jika perlu debugging, jalankan "switch-to-visible.bat" untuk menampilkan kembali window CMD.'
+                  },
+                  {
+                    q: 'Bagaimana cara switch antara VISIBLE dan SILENT mode?',
+                    a: 'Untuk switch ke SILENT mode (tanpa CMD): jalankan "switch-to-silent.bat". Untuk switch ke VISIBLE mode (dengan CMD): jalankan "switch-to-visible.bat". Kedua script harus dijalankan sebagai Administrator. Agent akan tetap running saat switch mode, tidak ada interrupt.'
+                  },
+                  {
+                    q: 'Siswa masih bisa lihat node.exe di Task Manager, bagaimana cara menyembunyikannya?',
+                    a: 'Untuk menyembunyikan agent sepenuhnya: (1) Disable Task Manager via Group Policy, (2) Hide folder agent dengan command "attrib +h C:\\labmonitor-agent", (3) Rename folder agent ke nama yang tidak mencurigakan seperti "C:\\WindowsSystem32". Agent tetap running sebagai SYSTEM sehingga siswa tidak bisa close.'
+                  },
+                  {
+                    q: 'Bagaimana cara menambah domain baru ke sistem klasifikasi website?',
+                    a: 'Edit file agent/src/monitors/browser.js, tambahkan domain ke array categories sesuai kategori. Contoh: tambahkan "new-site.com" ke array "educational" domains. Setelah update, restart agent di PC siswa. Sistem akan otomatis mengklasifikasi website tersebut dengan benar.'
+                  },
+                  {
+                    q: 'Website masih masuk kategori "other", bagaimana cara memperbaikinya?',
+                    a: 'Website masuk "other" karena tidak ada di database 200+ domain. Solusi: (1) Tambahkan domain ke file browser.js di kategori yang sesuai, (2) Tambahkan keywords yang relevan, (3) Restart agent. Sistem akan otomatis mengklasifikasi dengan benar setelah update.'
+                  },
+                  {
+                    q: 'IP address di topologi jaringan tidak muncul atau salah?',
+                    a: 'IP address diambil dari database MySQL. Pastikan: (1) Field ip_address di tabel computers terisi dengan benar, (2) Backend sudah restart setelah update database, (3) VITE_SERVER_IP di file .env sesuai dengan IP server Anda. Refresh halaman topologi untuk melihat update.'
                   },
                 ].map((faq, idx) => (
                   <div key={idx} className="border border-gray-200 rounded-xl overflow-hidden">
@@ -1854,6 +1846,82 @@ socket.on('new-activity', (data) => {
                 ))}
               </div>
 
+              <h4 className="font-bold text-gray-900 text-lg">Auto-Start Setup Guide</h4>
+              <div className="bg-gradient-to-r from-teal-50 to-cyan-50 border-l-4 border-teal-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <Terminal className="w-5 h-5 text-teal-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-teal-900">Setup Auto-Start dengan Task Scheduler (NEW!)</p>
+                    <p className="text-teal-800 text-sm mt-2 leading-relaxed">
+                      Installer baru <code className="bg-teal-200 px-1.5 py-0.5 rounded text-xs font-mono">install-autostart-simple.bat</code> menggunakan Task Scheduler yang lebih simple dan reliable. Tidak perlu install <code className="bg-teal-200 px-1.5 py-0.5 rounded text-xs font-mono">node-windows</code> package.
+                    </p>
+                    <div className="mt-3 bg-white/60 rounded-lg p-3 border border-teal-200">
+                      <p className="text-xs font-bold text-teal-900 mb-1">📋 Langkah Setup:</p>
+                      <ol className="text-xs text-teal-800 space-y-1 list-decimal list-inside">
+                        <li>Copy <code className="bg-teal-200 px-1 rounded">install-autostart-simple.bat</code> ke PC siswa</li>
+                        <li>Right-click → Run as administrator</li>
+                        <li>Tunggu installer selesai (1-2 menit)</li>
+                        <li>Restart komputer untuk test auto-start</li>
+                        <li>Verifikasi: <code className="bg-teal-200 px-1 rounded">tasklist | findstr node</code></li>
+                      </ol>
+                    </div>
+                    <div className="mt-3 bg-white/60 rounded-lg p-3 border border-teal-200">
+                      <p className="text-xs font-bold text-teal-900 mb-1">🔧 Manual Setup (jika installer error):</p>
+                      <div className="bg-gray-900 rounded p-2 mt-2">
+                        <pre className="text-green-400 text-xs font-mono">{`# Create task via command line
+schtasks /create /tn "LabMonitor Agent" \\
+  /tr "node.exe C:\\labmonitor-agent\\src\\agent.js" \\
+  /sc onstart /ru SYSTEM /rl highest /delay 0000:30 /f
+
+# Configure task
+schtasks /change /tn "LabMonitor Agent" /ru SYSTEM
+schtasks /change /tn "LabMonitor Agent" /ri 1 /k
+
+# Test task
+schtasks /run /tn "LabMonitor Agent"
+
+# Verify
+tasklist | findstr node`}</pre>
+                      </div>
+                    </div>
+                    <div className="mt-3 bg-white/60 rounded-lg p-3 border border-teal-200">
+                      <p className="text-xs font-bold text-teal-900 mb-1">✅ Verifikasi Auto-Start:</p>
+                      <ul className="text-xs text-teal-800 space-y-1">
+                        <li>• Buka Task Scheduler: <code className="bg-teal-200 px-1 rounded">taskschd.msc</code></li>
+                        <li>• Cari "LabMonitor Agent"</li>
+                        <li>• Status harus: "Ready" atau "Running"</li>
+                        <li>• Trigger: "At startup"</li>
+                        <li>• Run as: "SYSTEM"</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Emergency Recovery</h4>
+              <div className="bg-red-50 border-l-4 border-red-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-red-900">Jika Agent Tidak Bisa Connect Setelah Block Internet</p>
+                    <p className="text-red-800 text-sm mt-2 leading-relaxed">
+                      Jalankan <code className="bg-red-200 px-1.5 py-0.5 rounded text-xs font-mono">manual-unblock-internet.bat</code> di PC siswa sebagai Administrator.
+                      Script ini akan menghapus semua firewall rules LabMonitor dan memulihkan koneksi internet.
+                    </p>
+                    <div className="mt-3 bg-white/60 rounded-lg p-3 border border-red-200">
+                      <p className="text-xs font-bold text-red-900 mb-1">📋 Langkah Emergency:</p>
+                      <ol className="text-xs text-red-800 space-y-1 list-decimal list-inside">
+                        <li>Di PC siswa, buka Command Prompt sebagai Administrator</li>
+                        <li>Navigate ke folder agent: <code className="bg-red-200 px-1 rounded">cd C:\labmonitor-agent</code></li>
+                        <li>Jalankan: <code className="bg-red-200 px-1 rounded">manual-unblock-internet.bat</code></li>
+                        <li>Tunggu script selesai (5-10 detik)</li>
+                        <li>Agent akan auto-reconnect dalam 5-10 detik</li>
+                      </ol>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <h4 className="font-bold text-gray-900 text-lg">Perintah Diagnostik</h4>
               <div className="bg-gray-900 rounded-xl p-5 overflow-x-auto">
                 <pre className="text-green-400 text-xs font-mono space-y-2">
@@ -1861,19 +1929,64 @@ socket.on('new-activity', (data) => {
 labmonitor-agent --status
 
 # Cek koneksi ke server
-ping 192.168.1.1
+ping 192.168.100.166
 
 # Lihat log agent
-labmonitor-agent --log --last 50
+type C:\\labmonitor-agent\\logs\\agent.log
 
 # Restart agent
-labmonitor-agent --restart
+cd C:\\labmonitor-agent
+npm start
 
 # Cek port yang digunakan
-netstat -tlnp | grep 8080
+netstat -ano | findstr :3001
 
 # Test koneksi agent ke server
-labmonitor-agent --test-connection`}
+labmonitor-agent --test-connection
+
+# Cek connected agents
+curl http://localhost:3001/api/connected-agents
+
+# Manual unblock internet (emergency)
+C:\\labmonitor-agent\\manual-unblock-internet.bat
+
+# Setup auto-start (RECOMMENDED - Task Scheduler)
+C:\\labmonitor-agent\\install-autostart-simple.bat
+
+# Setup auto-start (legacy - node-windows)
+C:\\labmonitor-agent\\install-autostart.bat
+
+# Uninstall auto-start
+C:\\labmonitor-agent\\uninstall-autostart.bat
+
+# Check Task Scheduler task
+schtasks /query /tn "LabMonitor Agent" /v /fo list
+
+# Run task manually
+schtasks /run /tn "LabMonitor Agent"
+
+# Delete task
+schtasks /delete /tn "LabMonitor Agent" /f
+
+# ========================================
+# SWITCH MODE COMMANDS
+# ========================================
+
+# Switch to SILENT mode (no CMD window)
+C:\\labmonitor-agent\\switch-to-silent.bat
+
+# Switch to VISIBLE mode (with CMD window)
+C:\\labmonitor-agent\\switch-to-visible.bat
+
+# Check current mode
+schtasks /query /tn "LabMonitor Agent" /v /fo list | findstr "Task To Run"
+# Output: wscript.exe = SILENT mode, node.exe = VISIBLE mode
+
+# Hide agent folder (optional security)
+attrib +h C:\\labmonitor-agent
+
+# Unhide agent folder
+attrib -h C:\\labmonitor-agent`}
                 </pre>
               </div>
 
@@ -1914,8 +2027,14 @@ labmonitor-agent --test-connection`}
               </div>
               <h4 className="font-bold text-lg">LabMonitor</h4>
             </div>
-            <p className="text-gray-400 text-sm">Sistem Monitoring Lab Komputer v1.0.0</p>
+            <p className="text-gray-400 text-sm">Sistem Monitoring Lab Komputer v1.2.0</p>
             <p className="text-gray-500 text-xs mt-2">© 2024 LabMonitor. Panduan penggunaan lengkap.</p>
+            <div className="mt-4 flex items-center justify-center gap-4 text-xs text-gray-500">
+              <span>✅ Real-time Monitoring</span>
+              <span>✅ Mouse & Keyboard Control</span>
+              <span>✅ Screenshot Dashboard</span>
+              <span>✅ Agent Auto-Start</span>
+            </div>
           </div>
         </main>
       </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ViewMode, Computer, BrowsingActivity, Alert } from './types';
+import { ViewMode, Computer, BrowsingActivity, Alert, Screenshot } from './types';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import ComputerGrid from './components/ComputerGrid';
@@ -9,6 +9,7 @@ import AlertsView from './components/AlertsView';
 import NetworkMap from './components/NetworkMap';
 import GuidePage from './components/GuidePage';
 import LoginPage from './components/LoginPage';
+import ScreenshotViewer from './components/ScreenshotViewer';
 import { computers as mockComputers, activities as mockActivities, alerts as mockAlerts } from './data/mockData';
 import { computersAPI, activitiesAPI, alertsAPI } from './services/api';
 import socketService from './services/socket';
@@ -30,6 +31,10 @@ function App() {
   const [apiConnected, setApiConnected] = useState(false);
   const [socketConnected, setSocketConnected] = useState(false);
   const [useRealData, setUseRealData] = useState(false);
+  
+  // Screenshot state
+  const [currentScreenshot, setCurrentScreenshot] = useState<Screenshot | null>(null);
+  const [screenshots, setScreenshots] = useState<Screenshot[]>([]);
 
   // Check login status on mount
   useEffect(() => {
@@ -74,20 +79,44 @@ function App() {
             currentUrl: c.current_url || '',
             row: 0,
             col: 0,
+            isConnected: c.isConnected || false,
+            lastHeartbeat: c.last_heartbeat || c.lastHeartbeat,
           }));
 
           setComputers(transformedComputers);
           setUseRealData(true);
           setApiConnected(true);
           console.log('✅ Data loaded from API:', transformedComputers.length, 'computers');
+          console.log('📊 Connected agents:', transformedComputers.filter(c => c.isConnected).length);
         }
 
         if (activitiesRes.data.success && activitiesRes.data.data.length > 0) {
-          setActivities(activitiesRes.data.data);
+          // Transform activities - convert timestamp string ke Date object
+          const transformedActivities: BrowsingActivity[] = activitiesRes.data.data.map((a: any) => ({
+            id: a.id.toString(),
+            timestamp: new Date(a.timestamp), // Convert string ke Date
+            url: a.url,
+            domain: a.domain,
+            category: a.category || 'other',
+            duration: a.duration || 0,
+            studentName: a.student_name || 'Unknown',
+            computerId: a.computer_id?.toString() || '',
+          }));
+          setActivities(transformedActivities);
         }
 
         if (alertsRes.data.success && alertsRes.data.data.length > 0) {
-          setAlerts(alertsRes.data.data);
+          // Transform alerts - convert timestamp string ke Date object
+          const transformedAlerts: Alert[] = alertsRes.data.data.map((al: any) => ({
+            id: al.id.toString(),
+            type: al.type,
+            message: al.message,
+            timestamp: new Date(al.timestamp), // Convert string ke Date
+            computerId: al.computer_id?.toString() || '',
+            studentName: al.student_name || 'Unknown',
+            is_read: al.is_read || false,
+          }));
+          setAlerts(transformedAlerts);
         }
 
       } catch (error) {
@@ -103,11 +132,178 @@ function App() {
     // Connect socket
     socketService.connect();
     
-    // Listen socket events
-    socketService.onComputerUpdated((data) => {
-      console.log('📡 Real-time update:', data);
-      // Refresh data
-      fetchData();
+    // Listen for real-time computer updates from agent
+    socketService.onComputerUpdated((data: any) => {
+      console.log('📡 Real-time computer update:', data);
+      
+      // Update computer in state with FULL data from backend
+      setComputers(prev => {
+        const computerIndex = prev.findIndex(c => c.id === data.computerId);
+        
+        if (computerIndex === -1) {
+          console.warn('⚠️ Computer not found in state:', data.computerId);
+          return prev;
+        }
+        
+        // Create updated computer object with all fields
+        const updatedComputer = {
+          ...prev[computerIndex],
+          status: data.status || prev[computerIndex].status,
+          cpu: data.cpu ?? prev[computerIndex].cpu,
+          ram: data.ram ?? prev[computerIndex].ram,
+          networkSpeed: data.networkSpeed ?? prev[computerIndex].networkSpeed,
+          currentApp: data.currentApp || prev[computerIndex].currentApp,
+          currentUrl: data.currentUrl || prev[computerIndex].currentUrl,
+          studentName: data.studentName || prev[computerIndex].studentName,
+          studentId: data.studentId || prev[computerIndex].studentId,
+          name: data.name || prev[computerIndex].name,
+          ipAddress: data.ipAddress || prev[computerIndex].ipAddress,
+          os: data.os || prev[computerIndex].os,
+          isConnected: data.isConnected ?? prev[computerIndex].isConnected,
+          lastHeartbeat: data.lastHeartbeat || data.timestamp || prev[computerIndex].lastHeartbeat,
+        };
+        
+        // Create new array with updated computer
+        const newComputers = [...prev];
+        newComputers[computerIndex] = updatedComputer;
+        
+        console.log('✅ Computer updated in state:', {
+          id: updatedComputer.id,
+          status: updatedComputer.status,
+          cpu: updatedComputer.cpu,
+          ram: updatedComputer.ram
+        });
+        
+        return newComputers;
+      });
+    });
+    
+    // Listen for computer OFFLINE events (NEW!)
+    socketService.on('computer-offline', (data: any) => {
+      console.log('🔴 Computer OFFLINE:', data.computerId, 'reason:', data.reason);
+      
+      setComputers(prev => {
+        const computerIndex = prev.findIndex(c => c.id === data.computerId);
+        
+        if (computerIndex === -1) {
+          return prev;
+        }
+        
+        const newComputers = [...prev];
+        newComputers[computerIndex] = {
+          ...newComputers[computerIndex],
+          status: 'offline',
+          isConnected: false,
+          cpu: 0,
+          ram: 0,
+          networkSpeed: 0,
+          currentApp: '',
+          currentUrl: '',
+        };
+        
+        console.log('✅ Computer marked offline in state:', data.computerId);
+        
+        return newComputers;
+      });
+    });
+    
+    // Listen for full computer list (for sync)
+    socketService.onComputerList((data: any) => {
+      console.log('📋 Received full computer list:', data.length, 'computers');
+      console.log('🟢 Connected:', data.filter((c: any) => c.isConnected).length);
+      console.log('🔴 Offline:', data.filter((c: any) => !c.isConnected).length);
+      
+      const transformedComputers: Computer[] = data.map((c: any) => ({
+        id: c.computerId,
+        name: c.name,
+        ipAddress: c.ipAddress,
+        macAddress: c.macAddress || '',
+        status: c.status,
+        studentName: c.studentName || 'Belum ditetapkan',
+        studentId: c.studentId || '',
+        cpu: c.cpu || 0,
+        ram: c.ram || 0,
+        networkSpeed: c.networkSpeed || 0,
+        os: c.os || 'Windows 11 Pro',
+        uptime: 0,
+        currentApp: c.currentApp || '',
+        currentUrl: c.currentUrl || '',
+        row: 0,
+        col: 0,
+        isConnected: c.isConnected || false,
+        lastHeartbeat: c.lastHeartbeat,
+      }));
+      
+      setComputers(transformedComputers);
+    });
+
+    // Request computer list every 10 seconds to ensure sync
+    const syncInterval = setInterval(() => {
+      if (socketService.isConnected()) {
+        socketService.requestComputerList();
+      }
+    }, 10000);
+
+    // Listen for real-time activity updates from agent
+    socketService.onNewActivity((data: any) => {
+      console.log('🌐 Real-time activity:', data);
+      
+      // Add new activity to state
+      const newActivity: BrowsingActivity = {
+        id: data.id?.toString() || Date.now().toString(),
+        timestamp: new Date(data.timestamp),
+        url: data.url || '',
+        domain: data.domain || '',
+        category: data.category || 'other',
+        duration: data.duration || 0,
+        studentName: data.studentName || 'Unknown',
+        computerId: data.computerId || '',
+        tabs: data.tabs || [],
+      };
+      
+      setActivities(prev => [newActivity, ...prev].slice(0, 100)); // Keep last 100
+    });
+
+    // Listen for screenshot captures from agent
+    socketService.onScreenshotCaptured((data: any) => {
+      console.log('📸 Screenshot captured:', data.computerId);
+      console.log('📸 Image data length:', data.image?.length || 0);
+      
+      // Validate and fix base64 format
+      let validImage = data.image || '';
+      
+      // Check jika sudah ada prefix 'data:'
+      if (!validImage.startsWith('data:')) {
+        // Check jika ada prefix 'image/png;base64,' tanpa 'data:'
+        if (validImage.startsWith('image/png;base64,')) {
+          validImage = 'data:' + validImage;
+          console.log('📸 Fixed: Added "data:" prefix');
+        } 
+        // Check jika hanya base64 string tanpa prefix
+        else if (!validImage.includes('base64,')) {
+          validImage = 'data:image/png;base64,' + validImage;
+          console.log('📸 Fixed: Added full data URI prefix');
+        }
+      }
+      
+      console.log('📸 Image format valid:', validImage.substring(0, 50) + '...');
+      
+      const newScreenshot: Screenshot = {
+        id: data.id || Date.now().toString(),
+        computerId: data.computerId,
+        computerName: data.computerName || 'Unknown',
+        studentName: data.studentName || 'Unknown',
+        image: validImage,
+        timestamp: new Date(data.timestamp || Date.now()),
+        size: data.size || 0,
+        path: data.path,
+      };
+      
+      // Add to screenshots array
+      setScreenshots(prev => [newScreenshot, ...prev].slice(0, 50)); // Keep last 50
+      
+      // Set as current screenshot to display
+      setCurrentScreenshot(newScreenshot);
     });
 
     // Check socket connection
@@ -117,6 +313,7 @@ function App() {
 
     return () => {
       clearInterval(checkSocket);
+      clearInterval(syncInterval);
       socketService.disconnect();
     };
   }, [isLoggedIn]);
@@ -284,6 +481,14 @@ function App() {
           computer={selectedComputer}
           activities={activities}
           onClose={() => setSelectedComputer(null)}
+        />
+      )}
+
+      {/* Screenshot Viewer Modal */}
+      {currentScreenshot && (
+        <ScreenshotViewer
+          screenshot={currentScreenshot}
+          onClose={() => setCurrentScreenshot(null)}
         />
       )}
     </div>
