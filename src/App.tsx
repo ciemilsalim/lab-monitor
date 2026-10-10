@@ -11,6 +11,7 @@ import GuidePage from './components/GuidePage';
 import LoginPage from './components/LoginPage';
 import ScreenshotViewer from './components/ScreenshotViewer';
 import CleanupPanel from './components/CleanupPanel';
+import ReportGenerator from './components/ReportGenerator';
 import { computers as mockComputers, activities as mockActivities, alerts as mockAlerts } from './data/mockData';
 import { computersAPI, activitiesAPI, alertsAPI } from './services/api';
 import socketService from './services/socket';
@@ -376,6 +377,8 @@ function App() {
         return <GuidePage />;
       case 'cleanup':
         return <CleanupPanel />;
+      case 'reports':
+        return <ReportGenerator />;
       default:
         return <Dashboard computers={computers} activities={activities} alerts={alerts} />;
     }

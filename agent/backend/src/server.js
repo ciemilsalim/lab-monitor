@@ -124,6 +124,7 @@ app.use('/api/students', require('./routes/students'));
 app.use('/api/activities', require('./routes/activities'));
 app.use('/api/alerts', require('./routes/alerts'));
 app.use('/api/cleanup', require('./routes/cleanup'));
+app.use('/api/reports', require('./routes/reports'));
 
 // ========================================
 // SOCKET.IO HANDLERS

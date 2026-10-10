@@ -76,4 +76,4 @@ export interface Alert {
   is_read?: boolean;
 }
 
-export type ViewMode = 'dashboard' | 'computers' | 'activity' | 'alerts' | 'network' | 'guide' | 'cleanup';
+export type ViewMode = 'dashboard' | 'computers' | 'activity' | 'alerts' | 'network' | 'guide' | 'cleanup' | 'reports';
