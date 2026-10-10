@@ -50,7 +50,7 @@ router.get('/:id', async (req, res) => {
     
     res.json({ 
       success: true, 
-       computers[0] 
+      data: computers[0] 
     });
   } catch (error) {
     res.status(500).json({ 

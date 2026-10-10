@@ -96,7 +96,7 @@ app.get('/health', (req, res) => {
 app.get('/api/alert-rules', (req, res) => {
   res.json({
     success: true,
-     alertEngine.getRules()
+    data: alertEngine.getRules()
   });
 });
 
@@ -106,7 +106,7 @@ app.put('/api/alert-rules', (req, res) => {
     res.json({
       success: true,
       message: 'Alert rules updated',
-       alertEngine.getRules()
+      data: alertEngine.getRules()
     });
   } catch (error) {
     res.status(500).json({

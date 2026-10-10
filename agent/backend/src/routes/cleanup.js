@@ -44,7 +44,7 @@ router.get('/stats', async (req, res) => {
     
     res.json({
       success: true,
-       {
+      data: {
         activities: {
           total: activities[0].count,
           older_than_7_days: oldActivities[0].count,
@@ -100,7 +100,7 @@ router.delete('/activities', async (req, res) => {
     res.json({
       success: true,
       message: `Cleanup completed`,
-       {
+      data: {
         deleted_activities: deletedActivities.affectedRows,
         deleted_browser_tabs: deletedTabs.affectedRows,
         older_than_days: days
@@ -138,7 +138,7 @@ router.delete('/alerts', async (req, res) => {
     res.json({
       success: true,
       message: `Alerts cleanup completed`,
-       {
+      data: {
         deleted_alerts: deletedAlerts.affectedRows,
         older_than_days: days,
         read_only: read_only
@@ -169,7 +169,7 @@ router.delete('/screenshots', async (req, res) => {
       return res.json({
         success: true,
         message: 'No screenshots directory found',
-         {
+        data: {
           deleted_files: 0,
           freed_space_mb: 0
         }
@@ -198,7 +198,7 @@ router.delete('/screenshots', async (req, res) => {
     res.json({
       success: true,
       message: `Screenshots cleanup completed`,
-       {
+      data: {
         deleted_files: deletedCount,
         freed_space_mb: (freedSpace / 1024 / 1024).toFixed(2),
         older_than_days: days
@@ -272,7 +272,7 @@ router.delete('/all', async (req, res) => {
     res.json({
       success: true,
       message: 'Full cleanup completed',
-       {
+      data: {
         deleted_activities: deletedActivities.affectedRows,
         deleted_browser_tabs: deletedTabs.affectedRows,
         deleted_alerts: deletedAlerts.affectedRows,

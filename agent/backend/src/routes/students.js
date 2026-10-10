@@ -39,7 +39,7 @@ router.get('/:id', async (req, res) => {
     
     res.json({ 
       success: true, 
-       students[0] 
+      data: students[0] 
     });
   } catch (error) {
     res.status(500).json({ 
