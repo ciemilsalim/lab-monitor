@@ -52,7 +52,7 @@ router.get('/monitoring', async (req, res) => {
 
     res.json({
       success: true,
-       {
+      data: {
         activities: activities.map(a => ({
           id: a.id,
           timestamp: a.timestamp,
