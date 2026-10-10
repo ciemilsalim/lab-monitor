@@ -4,7 +4,7 @@ import {
   Network, Shield, Download, Server, ChevronRight, ChevronDown,
   CheckCircle2, Info, Lightbulb, Wrench, Terminal, Users, Cpu,
   Eye, Search, Filter, Bell, MousePointer, Keyboard, Zap, HelpCircle,
-  Camera, Lock, Power, RotateCcw
+  Camera, Lock, Power, RotateCcw, Trash2, Database, HardDrive, RefreshCw
 } from 'lucide-react';
 
 type GuideSection =
@@ -21,6 +21,7 @@ type GuideSection =
   | 'network'
   | 'remote-control'
   | 'screenshot'
+  | 'cleanup'
   | 'troubleshooting';
 
 interface SectionItem {
@@ -44,6 +45,7 @@ const sections: SectionItem[] = [
   { id: 'network', label: 'Peta Jaringan', icon: Network, sub: 'Topologi LAN' },
   { id: 'remote-control', label: 'Kontrol Remote', icon: Shield, sub: 'Mouse & keyboard control' },
   { id: 'screenshot', label: 'Screenshot Dashboard', icon: Camera, sub: 'Lihat layar siswa' },
+  { id: 'cleanup', label: 'Cleanup & Maintenance', icon: Trash2, sub: 'Bersihkan data lama' },
   { id: 'troubleshooting', label: 'Troubleshooting', icon: Wrench, sub: 'Masalah & solusi' },
 ];
 
@@ -62,45 +64,56 @@ export default function GuidePage() {
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-600 rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden">
+      <div className="bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-600 rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-4 right-4 w-32 h-32 bg-white rounded-full blur-3xl" />
+          <div className="absolute top-4 right-4 w-32 h-32 bg-white rounded-full blur-3xl animate-pulse" />
           <div className="absolute bottom-4 left-4 w-48 h-48 bg-white rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-white rounded-full blur-3xl opacity-5" />
         </div>
-        <div className="relative z-10 flex items-start justify-between">
-          <div>
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30">
-                <BookOpen className="w-7 h-7" />
+        <div className="relative z-10">
+          <div className="flex items-start justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30 shadow-lg">
+                <BookOpen className="w-8 h-8" />
               </div>
               <div>
-                <h2 className="text-3xl font-bold">Panduan Penggunaan</h2>
-                <p className="text-blue-100 text-sm mt-1">LabMonitor - Sistem Monitoring Lab Komputer v1.2.0</p>
+                <h2 className="text-4xl font-bold tracking-tight">Panduan Penggunaan</h2>
+                <p className="text-blue-100 text-base mt-1">LabMonitor - Sistem Monitoring Lab Komputer</p>
               </div>
             </div>
-            <p className="text-blue-100 max-w-2xl mt-4 leading-relaxed">
-              Panduan lengkap mulai dari instalasi, konfigurasi, hingga cara menggunakan seluruh fitur aplikasi.
-              Ikuti langkah-langkah berikut untuk mengoptimalkan penggunaan LabMonitor di lab komputer Anda.
-            </p>
+            <div className="hidden lg:flex items-center gap-3">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2 border border-white/20">
+                <div className="flex items-center gap-2">
+                  <Info className="w-4 h-4" />
+                  <span className="text-sm font-semibold">v1.0</span>
+                </div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2 border border-white/20">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold">by zahradev</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="hidden lg:flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2 border border-white/20">
-            <Info className="w-4 h-4" />
-            <span className="text-sm font-medium">Versi 1.2.0</span>
-          </div>
+          <p className="text-blue-100 max-w-3xl text-base leading-relaxed">
+            Panduan lengkap mulai dari instalasi, konfigurasi, hingga cara menggunakan seluruh fitur aplikasi.
+            Ikuti langkah-langkah berikut untuk mengoptimalkan penggunaan LabMonitor di lab komputer Anda.
+          </p>
         </div>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Sidebar Navigation */}
-        <aside className="lg:w-72 shrink-0">
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-lg sticky top-6 overflow-hidden">
-            <div className="p-4 bg-gradient-to-r from-gray-50 to-slate-50 border-b border-gray-200">
-              <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                <HelpCircle className="w-5 h-5 text-blue-600" />
+        <aside className="lg:w-80 shrink-0">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-xl sticky top-6 overflow-hidden">
+            <div className="p-5 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
+              <h3 className="font-bold text-gray-900 flex items-center gap-2 text-lg">
+                <HelpCircle className="w-6 h-6 text-blue-600" />
                 Daftar Isi
               </h3>
+              <p className="text-xs text-gray-600 mt-1">15 Bagian Panduan Lengkap</p>
             </div>
-            <nav className="p-3 space-y-1 max-h-[70vh] overflow-y-auto">
+            <nav className="p-3 space-y-1.5 max-h-[75vh] overflow-y-auto">
               {sections.map((section, idx) => {
                 const Icon = section.icon;
                 const isActive = activeSection === section.id;
@@ -108,24 +121,28 @@ export default function GuidePage() {
                   <button
                     key={section.id}
                     onClick={() => scrollToSection(section.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${
+                    className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-left transition-all duration-200 ${
                       isActive
-                        ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md'
-                        : 'text-gray-700 hover:bg-gray-100'
+                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-[1.02]'
+                        : 'text-gray-700 hover:bg-gray-50 hover:scale-[1.01]'
                     }`}
                   >
-                    <span className={`flex items-center justify-center w-8 h-8 rounded-lg text-xs font-bold shrink-0 ${
-                      isActive ? 'bg-white/20' : 'bg-gray-100 text-gray-600'
+                    <span className={`flex items-center justify-center w-9 h-9 rounded-lg text-xs font-bold shrink-0 transition-all ${
+                      isActive ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'
                     }`}>
                       {idx + 1}
                     </span>
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold truncate">{section.label}</p>
-                      <p className={`text-xs truncate ${isActive ? 'text-blue-100' : 'text-gray-500'}`}>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm font-semibold truncate ${isActive ? 'text-white' : 'text-gray-900'}`}>
+                        {section.label}
+                      </p>
+                      <p className={`text-xs truncate mt-0.5 ${isActive ? 'text-blue-100' : 'text-gray-500'}`}>
                         {section.sub}
                       </p>
                     </div>
-                    <ChevronRight className={`w-4 h-4 ml-auto shrink-0 ${isActive ? 'text-white/70' : 'text-gray-400'}`} />
+                    <ChevronRight className={`w-4 h-4 shrink-0 transition-all ${
+                      isActive ? 'text-white/80 translate-x-0.5' : 'text-gray-400'
+                    }`} />
                   </button>
                 );
               })}
@@ -136,15 +153,15 @@ export default function GuidePage() {
         {/* Content */}
         <main className="flex-1 space-y-8">
           {/* 1. Overview */}
-          <section id="guide-overview" className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
-            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-indigo-50 to-blue-50">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <BookOpen className="w-6 h-6 text-white" />
+          <section id="guide-overview" className="bg-white rounded-2xl border border-gray-200 shadow-xl overflow-hidden transition-all hover:shadow-2xl">
+            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-indigo-50 via-blue-50 to-cyan-50">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform">
+                  <BookOpen className="w-7 h-7 text-white" />
                 </div>
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900">1. Ikhtisar Aplikasi</h3>
-                  <p className="text-sm text-gray-600">Mengenal LabMonitor secara keseluruhan</p>
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold text-gray-900">1. Ikhtisar Aplikasi</h3>
+                  <p className="text-sm text-gray-600 mt-0.5">Mengenal LabMonitor secara keseluruhan</p>
                 </div>
               </div>
             </div>
@@ -1726,7 +1743,207 @@ VITE_SUBNET=192.168.100.0/24`}</pre>
             </div>
           </section>
 
-          {/* 14. Troubleshooting */}
+          {/* 14. Cleanup & Maintenance */}
+          <section id="guide-cleanup" className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
+            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-red-50 to-orange-50">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Trash2 className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">14. Cleanup & Maintenance</h3>
+                  <p className="text-sm text-gray-600">Bersihkan data lama untuk optimasi server</p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6 space-y-6">
+              <div className="bg-gradient-to-r from-red-50 to-orange-50 border-l-4 border-red-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <Info className="w-5 h-5 text-red-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-red-900">Apa itu Cleanup & Maintenance?</p>
+                    <p className="text-red-800 text-sm mt-1 leading-relaxed">
+                      Fitur <strong>Cleanup & Maintenance</strong> memungkinkan admin untuk membersihkan data lama (aktivitas browsing, alerts, screenshot) 
+                      agar server tidak terbebani dengan data yang tidak diperlukan lagi. Fitur ini membantu menjaga performa aplikasi dan menghemat ruang penyimpanan.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Fitur Cleanup</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  { icon: Database, title: 'Cleanup Aktivitas', desc: 'Hapus aktivitas browsing & browser tabs lama', color: 'from-blue-500 to-cyan-600' },
+                  { icon: AlertTriangle, title: 'Cleanup Alerts', desc: 'Hapus notifikasi/alerts lama', color: 'from-yellow-500 to-orange-600' },
+                  { icon: HardDrive, title: 'Cleanup Screenshot', desc: 'Hapus file screenshot lama', color: 'from-purple-500 to-pink-600' },
+                  { icon: RefreshCw, title: 'Optimasi Database', desc: 'Reclaim space & improve performance', color: 'from-green-500 to-emerald-600' },
+                ].map((feature, idx) => {
+                  const Icon = feature.icon;
+                  return (
+                    <div key={idx} className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                      <div className={`w-10 h-10 bg-gradient-to-br ${feature.color} rounded-lg flex items-center justify-center shrink-0`}>
+                        <Icon className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-gray-900 text-sm">{feature.title}</p>
+                        <p className="text-xs text-gray-600 mt-1">{feature.desc}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Statistik Real-time</h4>
+              <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
+                <p className="text-sm text-gray-700 mb-3">Halaman cleanup menampilkan statistik data secara real-time:</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {[
+                    { label: 'Total Aktivitas', value: '1,234', color: 'text-blue-600' },
+                    { label: 'Browser Tabs', value: '5,678', color: 'text-purple-600' },
+                    { label: 'Total Alerts', value: '89', color: 'text-yellow-600' },
+                    { label: 'Database Size', value: '45.23 MB', color: 'text-green-600' },
+                  ].map((stat) => (
+                    <div key={stat.label} className="bg-white rounded-lg p-3 border border-gray-200 text-center">
+                      <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+                      <p className="text-xs text-gray-600 mt-1">{stat.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Cara Menggunakan</h4>
+              <div className="space-y-3">
+                {[
+                  'Login ke dashboard admin',
+                  'Klik menu "Cleanup" di sidebar (icon 🗑️)',
+                  'Lihat statistik data yang tersedia',
+                  'Konfigurasi periode cleanup (7 hari, 30 hari, dll)',
+                  'Klik tombol cleanup yang diinginkan',
+                  'Konfirmasi aksi di modal',
+                  'Lihat hasil cleanup (jumlah data dihapus, space freed)',
+                  'Klik "Optimasi Database" untuk reclaim space',
+                ].map((step, idx) => (
+                  <div key={idx} className="flex items-center gap-3 p-3 bg-gradient-to-r from-red-50 to-orange-50 rounded-xl border border-red-100">
+                    <div className="w-7 h-7 bg-gradient-to-br from-red-600 to-orange-600 text-white rounded-full flex items-center justify-center text-xs font-bold shrink-0">
+                      {idx + 1}
+                    </div>
+                    <p className="text-sm text-gray-700">{step}</p>
+                  </div>
+                ))}
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Rekomendasi Jadwal Cleanup</h4>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border border-gray-200 rounded-xl overflow-hidden">
+                  <thead>
+                    <tr className="bg-gradient-to-r from-gray-100 to-gray-50">
+                      <th className="px-4 py-3 text-left font-bold text-gray-900">Frekuensi</th>
+                      <th className="px-4 py-3 text-left font-bold text-gray-900">Aksi</th>
+                      <th className="px-4 py-3 text-left font-bold text-gray-900">Estimasi Waktu</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-t border-gray-200">
+                      <td className="px-4 py-3 font-semibold text-gray-900">Mingguan</td>
+                      <td className="px-4 py-3 text-gray-700">Cleanup aktivitas + screenshot (&gt;7 hari)</td>
+                      <td className="px-4 py-3 text-gray-700">2-3 menit</td>
+                    </tr>
+                    <tr className="border-t border-gray-200 bg-gray-50">
+                      <td className="px-4 py-3 font-semibold text-gray-900">Bulanan</td>
+                      <td className="px-4 py-3 text-gray-700">Full cleanup + optimasi database</td>
+                      <td className="px-4 py-3 text-gray-700">5-10 menit</td>
+                    </tr>
+                    <tr className="border-t border-gray-200">
+                      <td className="px-4 py-3 font-semibold text-gray-900">3 Bulanan</td>
+                      <td className="px-4 py-3 text-gray-700">Full cleanup (30 hari) + backup</td>
+                      <td className="px-4 py-3 text-gray-700">10-15 menit</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <Lightbulb className="w-5 h-5 text-yellow-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-yellow-900">Best Practices</p>
+                    <ul className="text-yellow-800 text-sm mt-2 space-y-1">
+                      <li>• <strong>Backup database</strong> sebelum melakukan cleanup besar</li>
+                      <li>• Jalankan cleanup saat <strong>low-traffic time</strong> (malam hari)</li>
+                      <li>• Monitor ukuran database secara berkala</li>
+                      <li>• Gunakan "Optimasi Database" setelah cleanup</li>
+                      <li>• Setup automated cleanup untuk maintenance rutin</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-red-50 border-l-4 border-red-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-red-900">Perhatian!</p>
+                    <p className="text-red-800 text-sm mt-1 leading-relaxed">
+                      Cleanup <strong>tidak dapat dibatalkan</strong> setelah data dihapus. Pastikan untuk:
+                    </p>
+                    <ul className="text-red-800 text-sm mt-2 space-y-1">
+                      <li>• Backup database sebelum cleanup</li>
+                      <li>• Konfirmasi data yang akan dihapus</li>
+                      <li>• Pilih periode cleanup yang sesuai</li>
+                      <li>• Informasikan ke user jika ada downtime</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-gray-900 text-lg">Setup Backend Cleanup</h4>
+              <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
+                <p className="text-sm text-gray-700 mb-3">Untuk mengaktifkan fitur cleanup, setup backend terlebih dahulu:</p>
+                <div className="bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                  <pre className="text-green-400 text-xs font-mono whitespace-pre">{`# 1. Copy file route cleanup
+copy agent\\backend-routes-cleanup.js D:\\labmonitor-backend\\src\\routes\\cleanup.js
+
+# 2. Edit server.js - tambahkan route
+# Buka D:\\labmonitor-backend\\src\\server.js
+# Tambahkan di bagian API ROUTES:
+app.use('/api/cleanup', require('./routes/cleanup'));
+
+# 3. Restart backend
+cd D:\\labmonitor-backend
+npm run dev`}</pre>
+                </div>
+              </div>
+
+              <div className="bg-green-50 border-l-4 border-green-500 rounded-r-xl p-5">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-green-900">Manfaat Cleanup</p>
+                    <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="bg-white/60 rounded-lg p-3 border border-green-200">
+                        <p className="text-xs font-bold text-green-900 mb-1">✅ Performa:</p>
+                        <ul className="text-xs text-green-800 space-y-1">
+                          <li>• Database size berkurang 30-50%</li>
+                          <li>• Query lebih cepat</li>
+                          <li>• Aplikasi lebih responsive</li>
+                        </ul>
+                      </div>
+                      <div className="bg-white/60 rounded-lg p-3 border border-green-200">
+                        <p className="text-xs font-bold text-green-900 mb-1">💾 Storage:</p>
+                        <ul className="text-xs text-green-800 space-y-1">
+                          <li>• Disk space reclaimed</li>
+                          <li>• File screenshot dihapus</li>
+                          <li>• Database optimized</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* 15. Troubleshooting */}
           <section id="guide-troubleshooting" className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
             <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-amber-50 to-yellow-50">
               <div className="flex items-center gap-3">
@@ -1734,7 +1951,7 @@ VITE_SUBNET=192.168.100.0/24`}</pre>
                   <Wrench className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">14. Troubleshooting</h3>
+                  <h3 className="text-xl font-bold text-gray-900">15. Troubleshooting</h3>
                   <p className="text-sm text-gray-600">Masalah umum dan cara mengatasinya</p>
                 </div>
               </div>
@@ -2020,20 +2237,47 @@ attrib -h C:\\labmonitor-agent`}
           </section>
 
           {/* Footer */}
-          <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-6 text-white text-center">
-            <div className="flex items-center justify-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
-                <Monitor className="w-5 h-5" />
+          <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl p-8 text-white shadow-2xl border border-gray-700">
+            <div className="flex flex-col items-center gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Monitor className="w-6 h-6" />
+                </div>
+                <div className="text-left">
+                  <h4 className="font-bold text-xl">LabMonitor</h4>
+                  <p className="text-gray-400 text-xs">Sistem Monitoring Lab Komputer</p>
+                </div>
               </div>
-              <h4 className="font-bold text-lg">LabMonitor</h4>
-            </div>
-            <p className="text-gray-400 text-sm">Sistem Monitoring Lab Komputer v1.2.0</p>
-            <p className="text-gray-500 text-xs mt-2">© 2024 LabMonitor. Panduan penggunaan lengkap.</p>
-            <div className="mt-4 flex items-center justify-center gap-4 text-xs text-gray-500">
-              <span>✅ Real-time Monitoring</span>
-              <span>✅ Mouse & Keyboard Control</span>
-              <span>✅ Screenshot Dashboard</span>
-              <span>✅ Agent Auto-Start</span>
+              
+              <div className="w-full max-w-md h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent" />
+              
+              <div className="text-center space-y-2">
+                <p className="text-gray-300 text-sm font-medium">Versi 1.0</p>
+                <p className="text-gray-400 text-xs">
+                  Dikembangkan dengan ❤️ oleh <span className="text-blue-400 font-semibold">zahradev</span>
+                </p>
+                <p className="text-gray-500 text-xs">© 2024 LabMonitor. All rights reserved.</p>
+              </div>
+
+              <div className="w-full max-w-md h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent" />
+
+              <div className="flex flex-wrap items-center justify-center gap-3 text-xs">
+                <span className="px-3 py-1.5 bg-blue-500/10 text-blue-400 rounded-lg border border-blue-500/20">
+                  ✅ Real-time Monitoring
+                </span>
+                <span className="px-3 py-1.5 bg-purple-500/10 text-purple-400 rounded-lg border border-purple-500/20">
+                  ✅ Mouse & Keyboard Control
+                </span>
+                <span className="px-3 py-1.5 bg-pink-500/10 text-pink-400 rounded-lg border border-pink-500/20">
+                  ✅ Screenshot Dashboard
+                </span>
+                <span className="px-3 py-1.5 bg-green-500/10 text-green-400 rounded-lg border border-green-500/20">
+                  ✅ Agent Auto-Start
+                </span>
+                <span className="px-3 py-1.5 bg-orange-500/10 text-orange-400 rounded-lg border border-orange-500/20">
+                  ✅ Cleanup & Maintenance
+                </span>
+              </div>
             </div>
           </div>
         </main>
