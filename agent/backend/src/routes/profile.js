@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
       // Return default empty profile
       return res.json({
         success: true,
-        data: {
+         {
           id: 1,
           school_name: '',
           school_address: '',
