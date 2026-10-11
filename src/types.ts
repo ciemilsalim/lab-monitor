@@ -76,4 +76,19 @@ export interface Alert {
   is_read?: boolean;
 }
 
-export type ViewMode = 'dashboard' | 'computers' | 'activity' | 'alerts' | 'network' | 'guide' | 'cleanup' | 'reports';
+export type ViewMode = 'dashboard' | 'computers' | 'activity' | 'alerts' | 'network' | 'guide' | 'cleanup' | 'reports' | 'profile';
+
+export interface AppProfile {
+  id: number;
+  school_name: string;
+  school_address: string;
+  school_phone: string;
+  school_email: string;
+  lab_head_name: string;
+  lab_head_nip: string;
+  lab_head_position: string;
+  logo_url: string;
+  city: string;
+  province: string;
+  updated_at: string;
+}

@@ -50,6 +50,10 @@ router.get('/monitoring', async (req, res) => {
     const uniqueStudents = new Set(activities.map(a => a.student_id)).size;
     const uniqueComputers = new Set(activities.map(a => a.computer_id)).size;
 
+    // Get app profile for report header
+    const [profiles] = await db.query('SELECT * FROM app_profile LIMIT 1');
+    const profile = profiles.length > 0 ? profiles[0] : null;
+
     res.json({
       success: true,
       data: {
@@ -72,7 +76,8 @@ router.get('/monitoring', async (req, res) => {
             start: start_date,
             end: end_date
           }
-        }
+        },
+        profile: profile
       }
     });
   } catch (error) {

@@ -40,6 +40,18 @@ interface ReportData {
       end: string;
     };
   };
+  profile: {
+    school_name: string;
+    school_address: string;
+    school_phone: string;
+    school_email: string;
+    lab_head_name: string;
+    lab_head_nip: string;
+    lab_head_position: string;
+    logo_url: string;
+    city: string;
+    province: string;
+  } | null;
 }
 
 export default function ReportGenerator() {
@@ -110,13 +122,18 @@ export default function ReportGenerator() {
         return `${hours} jam ${remainingMinutes} menit`;
       };
 
+      // Get profile data
+      const profile = reportData.profile;
+      
       // KOP Laporan
       const headerContent = [
         {
           columns: [
             {
               width: 80,
-              stack: [
+              stack: profile?.logo_url ? [
+                { image: profile.logo_url, width: 70, height: 70 }
+              ] : [
                 { text: 'LOGO', style: 'logoPlaceholder' }
               ]
             },
@@ -125,9 +142,9 @@ export default function ReportGenerator() {
               stack: [
                 { text: 'PEMERINTAH DAERAH', style: 'kopTitle1' },
                 { text: 'DINAS PENDIDIKAN', style: 'kopTitle2' },
-                { text: 'SMA NEGERI 1 CONTOH', style: 'kopTitle3' },
-                { text: 'Jl. Pendidikan No. 123, Kota Contoh, Provinsi 12345', style: 'kopAddress' },
-                { text: 'Telp: (021) 1234-5678 | Email: info@sman1contoh.sch.id', style: 'kopContact' }
+                { text: profile?.school_name || 'SMA NEGERI 1 CONTOH', style: 'kopTitle3' },
+                { text: profile?.school_address || 'Jl. Pendidikan No. 123, Kota Contoh, Provinsi 12345', style: 'kopAddress' },
+                { text: `${profile?.school_phone ? `Telp: ${profile.school_phone}` : 'Telp: (021) 1234-5678'}${profile?.school_email ? ` | Email: ${profile.school_email}` : ' | Email: info@sman1contoh.sch.id'}`, style: 'kopContact' }
               ]
             }
           ]
@@ -219,10 +236,10 @@ export default function ReportGenerator() {
             {
               width: 'auto',
               stack: [
-                { text: 'Kota Contoh, ' + formatDate(new Date().toISOString()), alignment: 'center' },
-                { text: 'Kepala Laboratorium', alignment: 'center', margin: [0, 5, 0, 40] },
-                { text: '(___________________)', alignment: 'center' },
-                { text: 'NIP. 123456789012345678', alignment: 'center' }
+                { text: `${profile?.city || 'Kota Contoh'}, ${formatDate(new Date().toISOString())}`, alignment: 'center' },
+                { text: profile?.lab_head_position || 'Kepala Laboratorium', alignment: 'center', margin: [0, 5, 0, 40] },
+                { text: profile?.lab_head_name || '(___________________)', alignment: 'center', bold: true },
+                { text: `NIP. ${profile?.lab_head_nip || '123456789012345678'}`, alignment: 'center' }
               ]
             }
           ]

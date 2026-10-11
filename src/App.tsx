@@ -12,6 +12,7 @@ import LoginPage from './components/LoginPage';
 import ScreenshotViewer from './components/ScreenshotViewer';
 import CleanupPanel from './components/CleanupPanel';
 import ReportGenerator from './components/ReportGenerator';
+import ProfileSettings from './components/ProfileSettings';
 import { computers as mockComputers, activities as mockActivities, alerts as mockAlerts } from './data/mockData';
 import { computersAPI, activitiesAPI, alertsAPI } from './services/api';
 import socketService from './services/socket';
@@ -379,6 +380,8 @@ function App() {
         return <CleanupPanel />;
       case 'reports':
         return <ReportGenerator />;
+      case 'profile':
+        return <ProfileSettings />;
       default:
         return <Dashboard computers={computers} activities={activities} alerts={alerts} />;
     }

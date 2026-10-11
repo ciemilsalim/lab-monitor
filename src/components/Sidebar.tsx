@@ -1,4 +1,4 @@
-import { Monitor, LayoutDashboard, Globe, AlertTriangle, Network, Activity, BookOpen, Trash2, FileText } from 'lucide-react';
+import { Monitor, LayoutDashboard, Globe, AlertTriangle, Network, Activity, BookOpen, Trash2, FileText, Settings } from 'lucide-react';
 import { ViewMode } from '../types';
 
 interface SidebarProps {
@@ -15,6 +15,7 @@ export default function Sidebar({ currentView, onViewChange }: SidebarProps) {
     { id: 'network' as ViewMode, label: 'Jaringan', icon: Network },
     { id: 'cleanup' as ViewMode, label: 'Cleanup', icon: Trash2 },
     { id: 'reports' as ViewMode, label: 'Laporan', icon: FileText },
+    { id: 'profile' as ViewMode, label: 'Profil', icon: Settings },
     { id: 'guide' as ViewMode, label: 'Panduan', icon: BookOpen },
   ];
 

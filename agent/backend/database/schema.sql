@@ -117,6 +117,25 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- ========================================
+-- TABEL: app_profile (untuk profil aplikasi)
+-- ========================================
+CREATE TABLE IF NOT EXISTS app_profile (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  school_name VARCHAR(255) NOT NULL,
+  school_address TEXT,
+  school_phone VARCHAR(50),
+  school_email VARCHAR(100),
+  lab_head_name VARCHAR(255) NOT NULL,
+  lab_head_nip VARCHAR(50),
+  lab_head_position VARCHAR(100) DEFAULT 'Kepala Laboratorium',
+  logo_url TEXT,
+  city VARCHAR(100),
+  province VARCHAR(100),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- ========================================
 -- INSERT SAMPLE DATA
 -- ========================================
 
