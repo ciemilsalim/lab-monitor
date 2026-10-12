@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS app_profile (
   lab_head_name VARCHAR(255) NOT NULL,
   lab_head_nip VARCHAR(50),
   lab_head_position VARCHAR(100) DEFAULT 'Kepala Laboratorium',
-  logo_url TEXT,
+  logo_url LONGTEXT,
   city VARCHAR(100),
   province VARCHAR(100),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
