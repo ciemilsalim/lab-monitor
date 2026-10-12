@@ -1,13 +1,7 @@
-/**
- * Alerts Routes
- * File: src/routes/alerts.js
- */
-
 const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
 
-// GET /api/alerts - Get all alerts
 router.get('/', async (req, res) => {
   try {
     const [alerts] = await db.query(`
@@ -19,56 +13,36 @@ router.get('/', async (req, res) => {
       LIMIT 50
     `);
     
-    res.json({ 
-      success: true, 
-      data: alerts,
-      count: alerts.length
-    });
+    res.json({ success: true, data: alerts, count: alerts.length });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error.message 
-    });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
-// POST /api/alerts - Create new alert
 router.post('/', async (req, res) => {
   try {
-    const { computer_id, student_id, type, message } = req.body;
+    const computerId = req.body.computer_id;
+    const studentId = req.body.student_id;
+    const type = req.body.type;
+    const message = req.body.message;
     
     const [result] = await db.query(`
       INSERT INTO alerts (computer_id, student_id, type, message)
       VALUES (?, ?, ?, ?)
-    `, [computer_id, student_id, type, message]);
+    `, [computerId, studentId, type, message]);
     
-    res.json({ 
-      success: true, 
-      message: 'Alert created',
-      alertId: result.insertId
-    });
+    res.json({ success: true, message: 'Alert created', alertId: result.insertId });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error.message 
-    });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
-// PUT /api/alerts/:id/read - Mark alert as read
 router.put('/:id/read', async (req, res) => {
   try {
     await db.query('UPDATE alerts SET is_read = TRUE WHERE id = ?', [req.params.id]);
-    
-    res.json({ 
-      success: true, 
-      message: 'Alert marked as read' 
-    });
+    res.json({ success: true, message: 'Alert marked as read' });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error.message 
-    });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 

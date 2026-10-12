@@ -1,25 +1,19 @@
-/**
- * Reports Routes - Generate laporan monitoring
- */
-
 const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
 
-// GET /api/reports/monitoring - Get monitoring report data
 router.get('/monitoring', async (req, res) => {
   try {
-    const { start_date, end_date } = req.query;
+    const startDate = req.query.start_date;
+    const endDate = req.query.end_date;
     
-    // Validate dates
-    if (!start_date || !end_date) {
-      return res.status(400).json({
-        success: false,
-        error: 'start_date and end_date are required'
+    if (!startDate || !endDate) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'start_date and end_date are required' 
       });
     }
 
-    // Query activities with student and computer info
     const [activities] = await db.query(`
       SELECT 
         a.id,
@@ -42,50 +36,44 @@ router.get('/monitoring', async (req, res) => {
       WHERE DATE(a.timestamp) BETWEEN ? AND ?
       ORDER BY a.timestamp DESC
       LIMIT 1000
-    `, [start_date, end_date]);
+    `, [startDate, endDate]);
 
-    // Calculate summary
+    const [profiles] = await db.query('SELECT * FROM app_profile LIMIT 1');
+    const profile = profiles.length > 0 ? profiles[0] : null;
+
     const totalActivities = activities.length;
     const totalViolations = activities.filter(a => a.is_violation).length;
     const uniqueStudents = new Set(activities.map(a => a.student_id)).size;
     const uniqueComputers = new Set(activities.map(a => a.computer_id)).size;
 
-    // Get app profile for report header
-    const [profiles] = await db.query('SELECT * FROM app_profile LIMIT 1');
-    const profile = profiles.length > 0 ? profiles[0] : null;
+    const responseData = {
+      activities: activities.map(a => ({
+        id: a.id,
+        timestamp: a.timestamp,
+        student_name: a.student_name || 'Unknown',
+        computer_id: a.computer_id || 'Unknown',
+        domain: a.domain,
+        category: a.category,
+        duration: a.duration || 0,
+        is_violation: Boolean(a.is_violation)
+      })),
+      summary: {
+        total_activities: totalActivities,
+        total_violations: totalViolations,
+        total_students: uniqueStudents,
+        total_computers: uniqueComputers,
+        date_range: {
+          start: startDate,
+          end: endDate
+        }
+      },
+      profile: profile
+    };
 
-    res.json({
-      success: true,
-      data: {
-        activities: activities.map(a => ({
-          id: a.id,
-          timestamp: a.timestamp,
-          student_name: a.student_name || 'Unknown',
-          computer_id: a.computer_id || 'Unknown',
-          domain: a.domain,
-          category: a.category,
-          duration: a.duration || 0,
-          is_violation: Boolean(a.is_violation)
-        })),
-        summary: {
-          total_activities: totalActivities,
-          total_violations: totalViolations,
-          total_students: uniqueStudents,
-          total_computers: uniqueComputers,
-          date_range: {
-            start: start_date,
-            end: end_date
-          }
-        },
-        profile: profile
-      }
-    });
+    res.json({ success: true, data: responseData });
   } catch (error) {
     console.error('Error generating report:', error);
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 

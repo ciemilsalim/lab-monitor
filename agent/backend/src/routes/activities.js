@@ -1,13 +1,7 @@
-/**
- * Activities Routes
- * File: src/routes/activities.js
- */
-
 const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
 
-// GET /api/activities - Get all activities
 router.get('/', async (req, res) => {
   try {
     const [activities] = await db.query(`
@@ -19,39 +13,29 @@ router.get('/', async (req, res) => {
       LIMIT 100
     `);
     
-    res.json({ 
-      success: true, 
-      data: activities,
-      count: activities.length
-    });
+    res.json({ success: true, data: activities, count: activities.length });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error.message 
-    });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
-// POST /api/activities - Create new activity
 router.post('/', async (req, res) => {
   try {
-    const { computer_id, student_id, url, domain, category, duration } = req.body;
+    const computerId = req.body.computer_id;
+    const studentId = req.body.student_id;
+    const url = req.body.url;
+    const domain = req.body.domain;
+    const category = req.body.category;
+    const duration = req.body.duration;
     
     const [result] = await db.query(`
       INSERT INTO activities (computer_id, student_id, url, domain, category, duration)
       VALUES (?, ?, ?, ?, ?, ?)
-    `, [computer_id, student_id, url, domain, category, duration]);
+    `, [computerId, studentId, url, domain, category, duration]);
     
-    res.json({ 
-      success: true, 
-      message: 'Activity logged',
-      activityId: result.insertId
-    });
+    res.json({ success: true, message: 'Activity logged', activityId: result.insertId });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error.message 
-    });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 

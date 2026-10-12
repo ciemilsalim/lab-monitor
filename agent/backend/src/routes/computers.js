@@ -1,13 +1,7 @@
-/**
- * Computers Routes
- * File: src/routes/computers.js
- */
-
 const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
 
-// GET /api/computers - Get all computers
 router.get('/', async (req, res) => {
   try {
     const [computers] = await db.query(`
@@ -17,21 +11,13 @@ router.get('/', async (req, res) => {
       ORDER BY c.computer_id
     `);
     
-    res.json({ 
-      success: true, 
-      data: computers,
-      count: computers.length
-    });
+    res.json({ success: true, data: computers, count: computers.length });
   } catch (error) {
     console.error('Error fetching computers:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: error.message 
-    });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
-// GET /api/computers/:id - Get computer by ID
 router.get('/:id', async (req, res) => {
   try {
     const [computers] = await db.query(`
@@ -42,45 +28,34 @@ router.get('/:id', async (req, res) => {
     `, [req.params.id]);
     
     if (computers.length === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        error: 'Computer not found' 
-      });
+      return res.status(404).json({ success: false, error: 'Computer not found' });
     }
     
-    res.json({ 
-      success: true, 
-      data: computers[0] 
-    });
+    res.json({ success: true, data: computers[0] });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error.message 
-    });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
-// PUT /api/computers/:id/status - Update computer status
 router.put('/:id/status', async (req, res) => {
   try {
-    const { status, cpu_usage, ram_usage, network_speed, current_app, current_url } = req.body;
+    const status = req.body.status;
+    const cpuUsage = req.body.cpu_usage;
+    const ramUsage = req.body.ram_usage;
+    const networkSpeed = req.body.network_speed;
+    const currentApp = req.body.current_app;
+    const currentUrl = req.body.current_url;
     
     await db.query(`
       UPDATE computers 
       SET status = ?, cpu_usage = ?, ram_usage = ?, network_speed = ?, 
           current_app = ?, current_url = ?, last_heartbeat = NOW()
       WHERE id = ?
-    `, [status, cpu_usage, ram_usage, network_speed, current_app, current_url, req.params.id]);
+    `, [status, cpuUsage, ramUsage, networkSpeed, currentApp, currentUrl, req.params.id]);
     
-    res.json({ 
-      success: true, 
-      message: 'Computer status updated' 
-    });
+    res.json({ success: true, message: 'Computer status updated' });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error.message 
-    });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
