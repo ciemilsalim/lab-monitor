@@ -130,9 +130,9 @@ export default function ReportGenerator() {
         {
           columns: [
             {
-              width: 80,
+              width: 90,
               stack: profile?.logo_url ? [
-                { image: profile.logo_url, width: 70, height: 70 }
+                { image: profile.logo_url, width: 80, height: 80, alignment: 'center' }
               ] : [
                 { text: 'LOGO', style: 'logoPlaceholder' }
               ]
@@ -145,20 +145,21 @@ export default function ReportGenerator() {
                 { text: profile?.school_name || 'SMA NEGERI 1 CONTOH', style: 'kopTitle3' },
                 { text: profile?.school_address || 'Jl. Pendidikan No. 123, Kota Contoh, Provinsi 12345', style: 'kopAddress' },
                 { text: `${profile?.school_phone ? `Telp: ${profile.school_phone}` : 'Telp: (021) 1234-5678'}${profile?.school_email ? ` | Email: ${profile.school_email}` : ' | Email: info@sman1contoh.sch.id'}`, style: 'kopContact' }
-              ]
-            }
+              ],
+              alignment: 'center'
+            },
+            { width: 90, text: '' }
           ]
         },
-        { canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 2, lineColor: '#000' }] },
-        { canvas: [{ type: 'line', x1: 0, y1: 8, x2: 515, y2: 8, lineWidth: 1, lineColor: '#000' }] },
-        { text: ' ', margin: [0, 5, 0, 0] }
+        { canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 3, lineColor: '#000' }] },
+        { text: ' ', margin: [0, 10, 0, 0] }
       ];
 
       // Judul Laporan
       const titleContent = [
         { text: 'LAPORAN MONITORING LAB KOMPUTER', style: 'reportTitle' },
         { text: `Periode: ${formatDate(dateRange.start)} - ${formatDate(dateRange.end)}`, style: 'reportPeriod' },
-        { text: ' ', margin: [0, 10, 0, 0] }
+        { text: ' ', margin: [0, 15, 0, 0] }
       ];
 
       // Ringkasan
@@ -180,11 +181,15 @@ export default function ReportGenerator() {
           layout: {
             hLineWidth: () => 0.5,
             vLineWidth: () => 0.5,
-            hLineColor: () => '#ccc',
-            vLineColor: () => '#ccc'
+            hLineColor: () => '#ddd',
+            vLineColor: () => '#ddd',
+            paddingLeft: () => 8,
+            paddingRight: () => 8,
+            paddingTop: () => 4,
+            paddingBottom: () => 4
           }
         },
-        { text: ' ', margin: [0, 10, 0, 0] }
+        { text: ' ', margin: [0, 15, 0, 0] }
       ];
 
       // Tabel Detail Aktivitas
@@ -193,7 +198,7 @@ export default function ReportGenerator() {
         {
           table: {
             headerRows: 1,
-            widths: [30, 80, 70, 120, 60, 60, 95],
+            widths: [25, 75, 85, 65, 55, 100, 105],
             body: [
               [
                 { text: 'No', style: 'tableHeader' },
@@ -205,12 +210,12 @@ export default function ReportGenerator() {
                 { text: 'Status', style: 'tableHeader' }
               ],
               ...reportData.activities.map((activity, index) => [
-                { text: (index + 1).toString(), style: 'tableCell' },
-                { text: `${formatDate(activity.timestamp)}\n${formatTime(activity.timestamp)}`, style: 'tableCell' },
+                { text: (index + 1).toString(), style: 'tableCell', alignment: 'center' },
+                { text: `${formatDate(activity.timestamp)}\n${formatTime(activity.timestamp)}`, style: 'tableCell', fontSize: 7 },
                 { text: activity.student_name, style: 'tableCell' },
-                { text: activity.computer_id, style: 'tableCell' },
-                { text: formatDuration(activity.duration), style: 'tableCell' },
-                { text: activity.domain, style: 'tableCell' },
+                { text: activity.computer_id, style: 'tableCell', alignment: 'center' },
+                { text: formatDuration(activity.duration), style: 'tableCell', alignment: 'center' },
+                { text: activity.domain, style: 'tableCell', fontSize: 7 },
                 { 
                   text: activity.is_violation ? 'PELANGGARAN' : 'Normal',
                   style: activity.is_violation ? 'violationCell' : 'normalCell'
@@ -221,25 +226,29 @@ export default function ReportGenerator() {
           layout: {
             hLineWidth: () => 0.5,
             vLineWidth: () => 0.5,
-            hLineColor: () => '#ccc',
-            vLineColor: () => '#ccc'
+            hLineColor: (i: number) => i === 0 ? '#4a5568' : '#e2e8f0',
+            vLineColor: () => '#e2e8f0',
+            paddingLeft: () => 4,
+            paddingRight: () => 4,
+            paddingTop: () => 3,
+            paddingBottom: () => 3
           }
         }
       ];
 
       // Footer
       const footerContent = [
-        { text: ' ', margin: [0, 20, 0, 0] },
+        { text: ' ', margin: [0, 30, 0, 0] },
         {
           columns: [
             { width: '*', text: '' },
             {
-              width: 'auto',
+              width: 200,
               stack: [
-                { text: `${profile?.city || 'Kota Contoh'}, ${formatDate(new Date().toISOString())}`, alignment: 'center' },
-                { text: profile?.lab_head_position || 'Kepala Laboratorium', alignment: 'center', margin: [0, 5, 0, 40] },
-                { text: profile?.lab_head_name || '(___________________)', alignment: 'center', bold: true },
-                { text: `NIP. ${profile?.lab_head_nip || '123456789012345678'}`, alignment: 'center' }
+                { text: `${profile?.city || 'Kota Contoh'}, ${formatDate(new Date().toISOString())}`, alignment: 'center', fontSize: 10 },
+                { text: profile?.lab_head_position || 'Kepala Laboratorium', alignment: 'center', margin: [0, 4, 0, 50], fontSize: 10 },
+                { text: profile?.lab_head_name || '(___________________)', alignment: 'center', bold: true, fontSize: 10 },
+                { text: `NIP. ${profile?.lab_head_nip || '123456789012345678'}`, alignment: 'center', fontSize: 9, margin: [0, 2, 0, 0] }
               ]
             }
           ]
@@ -249,7 +258,7 @@ export default function ReportGenerator() {
       // Document Definition
       const docDefinition = {
         pageSize: 'A4',
-        pageMargins: [40, 60, 40, 60],
+        pageMargins: [50, 60, 50, 60],
         
         header: (current: number, pageCount: number) => {
           if (current === 1) return null;
@@ -258,7 +267,7 @@ export default function ReportGenerator() {
               { text: 'Laporan Monitoring Lab Komputer', style: 'headerText' },
               { text: `Halaman ${current} dari ${pageCount}`, style: 'headerPage' }
             ],
-            margin: [40, 20, 40, 0]
+            margin: [50, 20, 50, 0]
           };
         },
         
@@ -267,7 +276,7 @@ export default function ReportGenerator() {
             text: `Dicetak pada: ${new Date().toLocaleString('id-ID')} | Halaman ${current} dari ${pageCount}`,
             alignment: 'center',
             style: 'footerText',
-            margin: [0, 20, 0, 0]
+            margin: [0, 15, 0, 0]
           };
         },
         
@@ -281,24 +290,27 @@ export default function ReportGenerator() {
         
         styles: {
           kopTitle1: {
-            fontSize: 12,
+            fontSize: 11,
             bold: true,
-            alignment: 'center'
+            alignment: 'center',
+            margin: [0, 0, 0, 0]
           },
           kopTitle2: {
-            fontSize: 14,
+            fontSize: 13,
             bold: true,
-            alignment: 'center'
+            alignment: 'center',
+            margin: [0, 0, 0, 0]
           },
           kopTitle3: {
-            fontSize: 16,
+            fontSize: 15,
             bold: true,
-            alignment: 'center'
+            alignment: 'center',
+            margin: [0, 2, 0, 0]
           },
           kopAddress: {
             fontSize: 10,
             alignment: 'center',
-            margin: [0, 2, 0, 0]
+            margin: [0, 3, 0, 0]
           },
           kopContact: {
             fontSize: 9,
@@ -308,60 +320,65 @@ export default function ReportGenerator() {
           logoPlaceholder: {
             fontSize: 10,
             alignment: 'center',
-            margin: [0, 20, 0, 0],
+            margin: [0, 25, 0, 0],
             color: '#999'
           },
           reportTitle: {
-            fontSize: 16,
+            fontSize: 14,
             bold: true,
             alignment: 'center',
-            margin: [0, 10, 0, 5]
+            margin: [0, 5, 0, 3]
           },
           reportPeriod: {
-            fontSize: 12,
+            fontSize: 11,
             alignment: 'center',
-            margin: [0, 0, 0, 10]
+            margin: [0, 0, 0, 5]
           },
           sectionTitle: {
-            fontSize: 12,
+            fontSize: 11,
             bold: true,
-            margin: [0, 10, 0, 5]
+            margin: [0, 12, 0, 6],
+            color: '#2d3748'
           },
           summaryLabel: {
-            fontSize: 10,
-            margin: [5, 3, 0, 3]
+            fontSize: 9,
+            margin: [4, 2, 0, 2],
+            color: '#4a5568'
           },
           summaryValue: {
-            fontSize: 10,
+            fontSize: 9,
             bold: true,
             alignment: 'right',
-            margin: [0, 3, 5, 3]
+            margin: [0, 2, 4, 2],
+            color: '#2d3748'
           },
           tableHeader: {
-            fontSize: 9,
+            fontSize: 8,
             bold: true,
             alignment: 'center',
             color: '#fff',
-            fillColor: '#4a5568',
-            margin: [2, 3, 2, 3]
+            fillColor: '#2d3748',
+            margin: [3, 4, 3, 4]
           },
           tableCell: {
             fontSize: 8,
-            margin: [2, 2, 2, 2]
+            margin: [3, 3, 3, 3],
+            color: '#4a5568'
           },
           violationCell: {
-            fontSize: 8,
+            fontSize: 7,
             bold: true,
             color: '#fff',
             fillColor: '#e53e3e',
             alignment: 'center',
-            margin: [2, 2, 2, 2]
+            margin: [3, 3, 3, 3]
           },
           normalCell: {
-            fontSize: 8,
+            fontSize: 7,
             color: '#38a169',
             alignment: 'center',
-            margin: [2, 2, 2, 2]
+            margin: [3, 3, 3, 3],
+            bold: true
           },
           headerText: {
             fontSize: 8,
