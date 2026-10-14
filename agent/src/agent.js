@@ -109,6 +109,12 @@ class LabMonitorAgent {
   }
 
   setupRemoteCommands() {
+    // Command queue for throttling
+    this.commandQueue = [];
+    this.isProcessingQueue = false;
+    this.LAST_MOUSE_MOVE_TIME = 0;
+    this.MOUSE_MOVE_THROTTLE = 50; // Only allow mouse move every 50ms
+    
     // Listen untuk execute-command dari backend
     this.socketService.on('execute-command', async (command) => {
       try {
@@ -124,6 +130,42 @@ class LabMonitorAgent {
           return;
         }
         
+        // OPTIMIZED: Throttle mouse move commands
+        if (command.action === 'mouse_move' || command.action === 'move_mouse') {
+          const now = Date.now();
+          if (now - this.LAST_MOUSE_MOVE_TIME < this.MOUSE_MOVE_THROTTLE) {
+            logger.debug(`⏱️ Mouse move throttled (${now - this.LAST_MOUSE_MOVE_TIME}ms)`);
+            return; // Skip this command
+          }
+          this.LAST_MOUSE_MOVE_TIME = now;
+        }
+        
+        // OPTIMIZED: Queue system for commands
+        this.commandQueue.push(command);
+        
+        if (!this.isProcessingQueue) {
+          this.processCommandQueue();
+        }
+
+      } catch (error) {
+        logger.error('❌ Error handling command:', error.message);
+        logger.error('❌ Stack:', error.stack);
+      }
+    });
+
+    logger.info('✅ Remote command listener active (with throttling)');
+  }
+
+  /**
+   * Process command queue with throttling
+   */
+  async processCommandQueue() {
+    this.isProcessingQueue = true;
+    
+    while (this.commandQueue.length > 0) {
+      const command = this.commandQueue.shift();
+      
+      try {
         // Execute command
         const result = await this.remoteController.execute(command);
         
@@ -143,10 +185,12 @@ class LabMonitorAgent {
           logger.error('❌ Command execution failed');
           logger.error(`❌ Error: ${result.message}`);
         }
-
+        
+        // Small delay between commands to prevent overload
+        await new Promise(r => setTimeout(r, 50));
+        
       } catch (error) {
         logger.error('❌ Error executing command:', error.message);
-        logger.error('❌ Stack:', error.stack);
         
         this.socketService.emit('command-result', {
           computerId: this.computerId,
@@ -156,9 +200,9 @@ class LabMonitorAgent {
           timestamp: new Date().toISOString()
         });
       }
-    });
-
-    logger.info('✅ Remote command listener active');
+    }
+    
+    this.isProcessingQueue = false;
   }
 
   async stop() {

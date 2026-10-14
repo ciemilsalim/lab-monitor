@@ -10,6 +10,9 @@ import NetworkMap from './components/NetworkMap';
 import GuidePage from './components/GuidePage';
 import LoginPage from './components/LoginPage';
 import ScreenshotViewer from './components/ScreenshotViewer';
+import CleanupPanel from './components/CleanupPanel';
+import ReportGenerator from './components/ReportGenerator';
+import ProfileSettings from './components/ProfileSettings';
 import { computers as mockComputers, activities as mockActivities, alerts as mockAlerts } from './data/mockData';
 import { computersAPI, activitiesAPI, alertsAPI } from './services/api';
 import socketService from './services/socket';
@@ -207,6 +210,50 @@ function App() {
       });
     });
     
+    // Listen for computer STATUS CHANGED events (real-time connection tracking)
+    socketService.on('computer-status-changed', (data: any) => {
+      console.log('🔄 Computer status changed:', data.computerId, '→', data.status);
+      
+      setComputers(prev => {
+        const computerIndex = prev.findIndex(c => c.id === data.computerId);
+        
+        if (computerIndex === -1) {
+          console.warn('⚠️ Computer not found in state:', data.computerId);
+          return prev;
+        }
+        
+        const newComputers = [...prev];
+        const isOnline = data.status === 'online';
+        
+        newComputers[computerIndex] = {
+          ...newComputers[computerIndex],
+          status: data.status,
+          isConnected: isOnline,
+          lastHeartbeat: data.connectedAt || data.disconnectedAt || new Date().toISOString(),
+          // Reset metrics if offline
+          cpu: isOnline ? newComputers[computerIndex].cpu : 0,
+          ram: isOnline ? newComputers[computerIndex].ram : 0,
+          networkSpeed: isOnline ? newComputers[computerIndex].networkSpeed : 0,
+          currentApp: isOnline ? newComputers[computerIndex].currentApp : '',
+          currentUrl: isOnline ? newComputers[computerIndex].currentUrl : '',
+        };
+        
+        console.log('✅ Computer status updated in state:', {
+          id: data.computerId,
+          status: data.status,
+          isConnected: isOnline
+        });
+        
+        return newComputers;
+      });
+    });
+    
+    // Listen for connected agents list update
+    socketService.on('connected-agents-updated', (data: any) => {
+      console.log('📊 Connected agents updated:', data.count, 'agents');
+      console.log('🟢 Connected computers:', data.agents);
+    });
+    
     // Listen for full computer list (for sync)
     socketService.onComputerList((data: any) => {
       console.log('📋 Received full computer list:', data.length, 'computers');
@@ -306,6 +353,26 @@ function App() {
       setCurrentScreenshot(newScreenshot);
     });
 
+    // 🚨 Listen for NEW ALERTS from Alert Engine (REAL-TIME!)
+    socketService.onNewAlert((data: any) => {
+      console.log('🚨 New alert received:', data);
+      
+      const newAlert: Alert = {
+        id: data.id?.toString() || Date.now().toString(),
+        type: data.type || 'info',
+        message: data.message || 'Unknown alert',
+        timestamp: new Date(data.timestamp || Date.now()),
+        computerId: data.computer_id || data.computerId || '',
+        studentName: data.student_name || data.studentName || 'Unknown',
+        is_read: false,
+      };
+      
+      // Add new alert to the beginning of alerts array
+      setAlerts(prev => [newAlert, ...prev].slice(0, 100)); // Keep last 100 alerts
+      
+      console.log('✅ Alert added to state:', newAlert.message);
+    });
+
     // Check socket connection
     const checkSocket = setInterval(() => {
       setSocketConnected(socketService.isConnected());
@@ -353,6 +420,12 @@ function App() {
         return <NetworkMap computers={computers} />;
       case 'guide':
         return <GuidePage />;
+      case 'cleanup':
+        return <CleanupPanel />;
+      case 'reports':
+        return <ReportGenerator />;
+      case 'profile':
+        return <ProfileSettings />;
       default:
         return <Dashboard computers={computers} activities={activities} alerts={alerts} />;
     }

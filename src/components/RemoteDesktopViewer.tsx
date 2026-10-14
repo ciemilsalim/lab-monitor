@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   X, Maximize2, Minimize2, MousePointer, Keyboard, Eye, Unlock,
   MessageSquare, Camera, VolumeX, Monitor,
@@ -133,14 +133,25 @@ export default function RemoteDesktopViewer({ computer, onClose }: RemoteDesktop
     }
   };
 
+  const lastMouseMoveRef = useRef<number>(0);
+  const MOUSE_MOVE_THROTTLE = 50; // Only send mouse move every 50ms
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!session.mouseControl) return;
+    
     const rect = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
     setMousePosition({ x, y });
     
-    // Send mouse move to agent
+    // OPTIMIZED: Throttle mouse move commands
+    const now = Date.now();
+    if (now - lastMouseMoveRef.current < MOUSE_MOVE_THROTTLE) {
+      return; // Skip this mouse move event
+    }
+    lastMouseMoveRef.current = now;
+    
+    // Send mouse move to agent (throttled)
     socketService.emitRemoteCommand({
       action: 'mouse_move',
       computerId: computer.id,
