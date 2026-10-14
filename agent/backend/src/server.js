@@ -31,6 +31,15 @@ const app = express();
 const server = http.createServer(app);
 
 // ========================================
+// CONNECTION TRACKING
+// ========================================
+// Track connected agents: Map<computerId, { socketId, connectedAt, lastHeartbeat }>
+const connectedAgents = new Map();
+
+// Make connectedAgents available to routes
+app.set('connectedAgents', connectedAgents);
+
+// ========================================
 // SOCKET.IO CONFIGURATION
 // ========================================
 const io = socketIo(server, {
@@ -86,7 +95,30 @@ app.get('/health', (req, res) => {
   res.json({
     status: 'OK',
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
+    uptime: process.uptime(),
+    connectedAgents: connectedAgents.size
+  });
+});
+
+// ========================================
+// CONNECTED AGENTS API
+// ========================================
+app.get('/api/connected-agents', (req, res) => {
+  const agents = [];
+  for (const [computerId, agentData] of connectedAgents.entries()) {
+    agents.push({
+      computerId,
+      socketId: agentData.socketId,
+      connectedAt: new Date(agentData.connectedAt).toISOString(),
+      lastHeartbeat: new Date(agentData.lastHeartbeat).toISOString(),
+      isAlive: (Date.now() - agentData.lastHeartbeat) < 60000 // 60 seconds
+    });
+  }
+  
+  res.json({
+    success: true,
+    count: agents.length,
+    agents: agents
   });
 });
 
@@ -140,12 +172,31 @@ io.on('connection', (socket) => {
     console.log('🤖 Agent connected:', data.computerId);
     
     try {
+      // Track connection
+      connectedAgents.set(data.computerId, {
+        socketId: socket.id,
+        connectedAt: Date.now(),
+        lastHeartbeat: Date.now()
+      });
+      
       await db.query(
         'UPDATE computers SET status = ?, last_heartbeat = NOW() WHERE computer_id = ?',
         ['online', data.computerId]
       );
       console.log('✅ Agent status updated in database');
-      io.emit('computer-updated', { computerId: data.computerId, status: 'online' });
+      
+      // Emit status change to all clients
+      io.emit('computer-status-changed', { 
+        computerId: data.computerId, 
+        status: 'online',
+        connectedAt: new Date().toISOString()
+      });
+      
+      // Broadcast connected agents list
+      io.emit('connected-agents-updated', {
+        count: connectedAgents.size,
+        agents: Array.from(connectedAgents.keys())
+      });
     } catch (error) {
       console.error('❌ Error updating agent status:', error.message);
     }
@@ -158,6 +209,11 @@ io.on('connection', (socket) => {
     console.log('📡 Computer update received:', data.computerId);
     
     try {
+      // Update lastHeartbeat in connectedAgents
+      if (connectedAgents.has(data.computerId)) {
+        connectedAgents.get(data.computerId).lastHeartbeat = Date.now();
+      }
+      
       // Get student_id dari database
       const [computers] = await db.query(
         'SELECT id, student_id FROM computers WHERE computer_id = ?',
@@ -346,10 +402,108 @@ io.on('connection', (socket) => {
   // ----------------------------------------
   // DISCONNECT
   // ----------------------------------------
-  socket.on('disconnect', () => {
+  socket.on('disconnect', async () => {
     console.log('❌ Client disconnected:', socket.id);
+    
+    // Find which computer this socket belongs to
+    let disconnectedComputerId = null;
+    for (const [computerId, agentData] of connectedAgents.entries()) {
+      if (agentData.socketId === socket.id) {
+        disconnectedComputerId = computerId;
+        break;
+      }
+    }
+    
+    if (disconnectedComputerId) {
+      console.log('🔴 Agent disconnected:', disconnectedComputerId);
+      
+      try {
+        // Remove from connectedAgents
+        connectedAgents.delete(disconnectedComputerId);
+        
+        // Update database
+        await db.query(
+          'UPDATE computers SET status = ? WHERE computer_id = ?',
+          ['offline', disconnectedComputerId]
+        );
+        
+        // Emit status change to all clients
+        io.emit('computer-status-changed', { 
+          computerId: disconnectedComputerId, 
+          status: 'offline',
+          disconnectedAt: new Date().toISOString()
+        });
+        
+        // Broadcast connected agents list
+        io.emit('connected-agents-updated', {
+          count: connectedAgents.size,
+          agents: Array.from(connectedAgents.keys())
+        });
+        
+        console.log('✅ Agent status updated to offline:', disconnectedComputerId);
+      } catch (error) {
+        console.error('❌ Error updating disconnect status:', error.message);
+      }
+    }
   });
 });
+
+// ========================================
+// HEARTBEAT CHECKER
+// ========================================
+// Check every 30 seconds for agents that haven't sent heartbeat in 60 seconds
+setInterval(async () => {
+  const now = Date.now();
+  const timeout = 60000; // 60 seconds
+  
+  for (const [computerId, agentData] of connectedAgents.entries()) {
+    if (now - agentData.lastHeartbeat > timeout) {
+      console.log('⚠️ Agent heartbeat timeout:', computerId);
+      
+      try {
+        // Remove from connectedAgents
+        connectedAgents.delete(computerId);
+        
+        // Update database
+        await db.query(
+          'UPDATE computers SET status = ? WHERE computer_id = ?',
+          ['offline', computerId]
+        );
+        
+        // Emit status change
+        io.emit('computer-status-changed', { 
+          computerId: computerId, 
+          status: 'offline',
+          reason: 'heartbeat timeout',
+          disconnectedAt: new Date().toISOString()
+        });
+        
+        // Broadcast connected agents list
+        io.emit('connected-agents-updated', {
+          count: connectedAgents.size,
+          agents: Array.from(connectedAgents.keys())
+        });
+        
+        console.log('✅ Agent marked offline due to heartbeat timeout:', computerId);
+      } catch (error) {
+        console.error('❌ Error updating timeout status:', error.message);
+      }
+    }
+  }
+}, 30000); // Check every 30 seconds
+
+// ========================================
+// RESET ALL COMPUTERS TO OFFLINE ON STARTUP
+// ========================================
+async function resetAllComputersOffline() {
+  try {
+    console.log('🔄 Resetting all computers to offline on startup...');
+    await db.query('UPDATE computers SET status = ?', ['offline']);
+    console.log('✅ All computers reset to offline');
+  } catch (error) {
+    console.error('❌ Error resetting computers:', error.message);
+  }
+}
 
 // ========================================
 // START SERVER
@@ -357,27 +511,31 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 3001;
 const HOST = process.env.HOST || '0.0.0.0';
 
-server.listen(PORT, HOST, () => {
-  console.log('');
-  console.log('🚀 ========================================');
-  console.log(`🚀 LabMonitor Backend Server v1.3`);
-  console.log('🚀 ========================================');
-  console.log(`📡 Local:   http://localhost:${PORT}`);
-  console.log(`📡 Network: http://192.168.100.166:${PORT}`);
-  console.log('🚀 ========================================');
-  console.log('');
-  console.log('✅ Socket.io ready');
-  console.log('✅ Alert Engine ENABLED');
-  console.log('✅ Real-time alerts ENABLED');
-  console.log('✅ Auto-generate alerts ENABLED');
-  console.log('');
-  console.log('📋 Alert Rules:');
-  const rules = alertEngine.getRules();
-  console.log(`   - Non-educational sites: ${rules.nonEducationalSites.enabled ? 'ON' : 'OFF'}`);
-  console.log(`   - High bandwidth (>${rules.highBandwidth.threshold} Mbps): ${rules.highBandwidth.enabled ? 'ON' : 'OFF'}`);
-  console.log(`   - High CPU (>${rules.highCPU.threshold}%): ${rules.highCPU.enabled ? 'ON' : 'OFF'}`);
-  console.log(`   - High RAM (>${rules.highRAM.threshold}%): ${rules.highRAM.enabled ? 'ON' : 'OFF'}`);
-  console.log('');
+// Reset all computers to offline before starting server
+resetAllComputersOffline().then(() => {
+  server.listen(PORT, HOST, () => {
+    console.log('');
+    console.log('🚀 ========================================');
+    console.log(`🚀 LabMonitor Backend Server v1.3`);
+    console.log('🚀 ========================================');
+    console.log(`📡 Local:   http://localhost:${PORT}`);
+    console.log(`📡 Network: http://192.168.100.166:${PORT}`);
+    console.log('🚀 ========================================');
+    console.log('');
+    console.log('✅ Socket.io ready');
+    console.log('✅ Alert Engine ENABLED');
+    console.log('✅ Real-time alerts ENABLED');
+    console.log('✅ Auto-generate alerts ENABLED');
+    console.log('✅ Connection tracking ENABLED');
+    console.log('');
+    console.log('📋 Alert Rules:');
+    const rules = alertEngine.getRules();
+    console.log(`   - Non-educational sites: ${rules.nonEducationalSites.enabled ? 'ON' : 'OFF'}`);
+    console.log(`   - High bandwidth (>${rules.highBandwidth.threshold} Mbps): ${rules.highBandwidth.enabled ? 'ON' : 'OFF'}`);
+    console.log(`   - High CPU (>${rules.highCPU.threshold}%): ${rules.highCPU.enabled ? 'ON' : 'OFF'}`);
+    console.log(`   - High RAM (>${rules.highRAM.threshold}%): ${rules.highRAM.enabled ? 'ON' : 'OFF'}`);
+    console.log('');
+  });
 });
 
 // ========================================

@@ -210,6 +210,50 @@ function App() {
       });
     });
     
+    // Listen for computer STATUS CHANGED events (real-time connection tracking)
+    socketService.on('computer-status-changed', (data: any) => {
+      console.log('🔄 Computer status changed:', data.computerId, '→', data.status);
+      
+      setComputers(prev => {
+        const computerIndex = prev.findIndex(c => c.id === data.computerId);
+        
+        if (computerIndex === -1) {
+          console.warn('⚠️ Computer not found in state:', data.computerId);
+          return prev;
+        }
+        
+        const newComputers = [...prev];
+        const isOnline = data.status === 'online';
+        
+        newComputers[computerIndex] = {
+          ...newComputers[computerIndex],
+          status: data.status,
+          isConnected: isOnline,
+          lastHeartbeat: data.connectedAt || data.disconnectedAt || new Date().toISOString(),
+          // Reset metrics if offline
+          cpu: isOnline ? newComputers[computerIndex].cpu : 0,
+          ram: isOnline ? newComputers[computerIndex].ram : 0,
+          networkSpeed: isOnline ? newComputers[computerIndex].networkSpeed : 0,
+          currentApp: isOnline ? newComputers[computerIndex].currentApp : '',
+          currentUrl: isOnline ? newComputers[computerIndex].currentUrl : '',
+        };
+        
+        console.log('✅ Computer status updated in state:', {
+          id: data.computerId,
+          status: data.status,
+          isConnected: isOnline
+        });
+        
+        return newComputers;
+      });
+    });
+    
+    // Listen for connected agents list update
+    socketService.on('connected-agents-updated', (data: any) => {
+      console.log('📊 Connected agents updated:', data.count, 'agents');
+      console.log('🟢 Connected computers:', data.agents);
+    });
+    
     // Listen for full computer list (for sync)
     socketService.onComputerList((data: any) => {
       console.log('📋 Received full computer list:', data.length, 'computers');

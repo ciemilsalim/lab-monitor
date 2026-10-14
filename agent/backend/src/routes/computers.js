@@ -11,7 +11,20 @@ router.get('/', async (req, res) => {
       ORDER BY c.computer_id
     `);
     
-    res.json({ success: true, data: computers, count: computers.length });
+    // Get connected agents from global scope (if available)
+    // This will be populated by server.js
+    const connectedAgents = req.app.get('connectedAgents') || new Map();
+    
+    // Add real-time connection status
+    const computersWithStatus = computers.map(c => ({
+      ...c,
+      isConnected: connectedAgents.has(c.computer_id),
+      lastHeartbeat: connectedAgents.has(c.computer_id) 
+        ? new Date(connectedAgents.get(c.computer_id).lastHeartbeat).toISOString()
+        : c.last_heartbeat
+    }));
+    
+    res.json({ success: true, data: computersWithStatus, count: computersWithStatus.length });
   } catch (error) {
     console.error('Error fetching computers:', error);
     res.status(500).json({ success: false, error: error.message });
